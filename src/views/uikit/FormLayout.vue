@@ -74,7 +74,7 @@ const dropdownItem = ref(null);
                         </div>
                         <Button label="Submit" :fluid="false"></Button>
                     </div>
-                </div>
+                </div> 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Help Text</div>
                     <div class="flex flex-wrap gap-2">
