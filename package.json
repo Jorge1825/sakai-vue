@@ -9,14 +9,17 @@
     },
     "dependencies": {
         "@primevue/themes": "^4.0.0",
+        "@quasar/extras": "^1.16.12",
         "chart.js": "3.3.2",
         "primeicons": "^6.0.1",
         "primevue": "^4.0.0",
+        "quasar": "^2.17.0",
         "vue": "^3.4.34",
         "vue-router": "^4.4.0"
     },
     "devDependencies": {
         "@primevue/auto-import-resolver": "^4.0.1",
+        "@quasar/vite-plugin": "^1.7.0",
         "@rushstack/eslint-patch": "^1.8.0",
         "@vitejs/plugin-vue": "^5.0.5",
         "@vue/eslint-config-prettier": "^9.0.0",
