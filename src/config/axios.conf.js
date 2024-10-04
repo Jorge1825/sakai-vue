@@ -1,22 +1,49 @@
-import axios from "axios";
-import { Dialog } from "quasar";
-import Cookies from "js-cookie";
-let dialogC = null;
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+
+// Crear el div y añadirlo al body
+const spinnerOverlay = document.createElement('div');
+spinnerOverlay.id = 'spinner-overlay';
+spinnerOverlay.style.display = 'none';
+spinnerOverlay.style.position = 'fixed';
+spinnerOverlay.style.top = '0';
+spinnerOverlay.style.left = '0';
+spinnerOverlay.style.width = '100%';
+spinnerOverlay.style.height = '100%';
+spinnerOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+spinnerOverlay.style.zIndex = '1000';
+spinnerOverlay.style.justifyContent = 'center';
+spinnerOverlay.style.alignItems = 'center';
+
+const spinner = document.createElement('div');
+spinner.className = 'spinner';
+spinner.style.border = '16px solid #f3f3f3';
+spinner.style.borderTop = '16px solid #3498db';
+spinner.style.borderRadius = '50%';
+spinner.style.width = '120px';
+spinner.style.height = '120px';
+spinner.style.animation = 'spin 2s linear infinite';
+
+spinnerOverlay.appendChild(spinner);
+document.body.appendChild(spinnerOverlay);
+
+// Añadir estilos CSS para la animación del spinner
+const style = document.createElement('style');
+style.innerHTML = `
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+`;
+document.head.appendChild(style);
 
 function showDefault() {
-    dialogC = Dialog.create({
-        title: "Processing",
-        message: "Please wait...",
-        progress: true,
-        persistent: true,
-        ok: false,
-    });
+    spinnerOverlay.style.display = 'flex';
 }
 
 function hideDefault() {
-    if (dialogC) {
-        dialogC.hide();
-    }
+    spinnerOverlay.style.display = 'none';
 }
 
 const axiosInstance = axios.create({
@@ -53,6 +80,6 @@ axiosInstance.interceptors.response.use(response => {
 function handle401Error() {
     // Manejar el error 401 aquí, por ejemplo, redirigir al usuario a la página de inicio de sesión
     console.log('Error 401: No autorizado');
-
 }
+
 export default axiosInstance;
