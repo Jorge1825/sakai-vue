@@ -1,5 +1,31 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
+import Cookies from "js-cookie";
+
+const checkAuth = () => {
+//   const cookie = Cookies.get("access_token");
+//   console.log(cookie);
+//   if (!cookie) return false;
+  return false;
+};
+
+const auth = (to, from, next) => {
+  if (checkAuth()) {
+    next();
+  } else {
+    next({ name: "login" });
+  }
+};
+
+const returnHome = (to, from, next) => {
+  if (checkAuth()) {
+    next({ name: "dashboard" });
+  } else {
+    next();
+  }
+};
+
+
 
 const router = createRouter({
     history: createWebHistory(),
@@ -120,7 +146,8 @@ const router = createRouter({
         {
             path: '/auth/login',
             name: 'login',
-            component: () => import('@/views/pages/auth/Login.vue')
+            component: () => import('@/views/pages/auth/Login.vue'),
+            beforeEnter: returnHome,
         },
         {
             path: '/auth/access',
