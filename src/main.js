@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import { Quasar } from 'quasar'
+import { Quasar, Dialog, Notify } from 'quasar'
 import quasarLang from 'quasar/lang/es'
 // Import icon libraries
 import '@quasar/extras/roboto-font-latin-ext/roboto-font-latin-ext.css'
@@ -39,7 +39,10 @@ app.use(PrimeVue, {
 app.use(ToastService);
 app.use(ConfirmationService);
 app.use(Quasar, {
-    plugins: {}, // import Quasar plugins and add here
+    plugins: {
+        Dialog,
+        Notify,
+    }, // import Quasar plugins and add here
     lang: quasarLang,
   })
 

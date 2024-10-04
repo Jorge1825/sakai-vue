@@ -1,14 +1,23 @@
 <script setup>
+import { login } from '@/api/auth.js';
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref } from 'vue';
-//import { login } from 'C:\Users\Jefferson S\Documents\SOSTENIWEB\src\service\AuthService.js';
 
 //Vriables dearivas para email, password y error
 const email = ref('');
 const password = ref('');
+const isPwd = ref(true);
 const checked = ref(false);
 //const error = ref(null);
 //const router = useRouter();
+
+async function signIn() {
+    console.log(email.value);
+    console.log(password.value);
+    const data = await login(email.value, password.value);
+
+    console.log(data);
+}
 </script>
 
 <template>
@@ -25,7 +34,7 @@ const checked = ref(false);
                         <span class="text-muted-color font-medium">Ingresa los datos para continuar</span>
                     </div>
 
-                    <div>
+                    <!--         <div>
                         <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Correo</label>
                         <InputText id="email1" type="text" placeholder="Dirección del correo" class="w-full md:w-[30rem] mb-8" v-model="email" />
 
@@ -39,8 +48,50 @@ const checked = ref(false);
                             </div>
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">¿Olvidaste la contraseña?</span>
                         </div>
-                        <Button label="Ingresar" class="w-full" as="router-link" to="/"></Button>
-                    </div>
+                        <Button label="Ingresar" class="w-full" @click="signIn()"></Button>
+                    </div> -->
+
+                    <q-form @submit.prevent.stop="signIn" novalidate>
+                        <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Correo</label>
+                        <q-input
+                            color="secondary"
+                            filled
+                            v-model="email"
+                            placeholder="Ingrese su correo"
+                            :dense="true"
+                            lazy-rules
+                            :rules="[(val) => (val && val.length > 0) || 'Correo electrónico requerido', (val) => /.+@.+\..+/.test(val) || 'Correo electrónico inválido']"
+                        />
+
+                        <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña</label>
+                        <q-input
+                            color="secondary"
+                            filled
+                            v-model="password"
+                            placeholder="Ingrese su contraseña"
+                            :dense="true"
+                            lazy-rules
+                            :rules="[(val) => (val && val.length > 0) || 'Contraseña requerida']"
+                            :type="isPwd ? 'password' : 'text'"
+                            append
+                            :append-icon="password ? 'pi-eye' : 'pi-eye-slash'"
+                            @click:append="password = !password"
+                        >
+                            <template v-slot:append>
+                                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                            </template>
+                        </q-input>
+
+                        <div class="flex items-cstify-between mt-2 mb-8 gap-8">
+                            <div class="flex items-center">
+                                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
+                                <label for="rememberme1">Recordar usuario</label>
+                            </div>
+                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">¿Olvidaste la contraseña?</span>
+                        </div>
+
+                        <q-btn color="secondary" label="Ingresar" class="w-full" type="submit" />
+                    </q-form>
                 </div>
             </div>
         </div>
