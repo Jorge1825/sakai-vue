@@ -405,12 +405,12 @@ function smoothScroll(id) {
             </div>
 
             <div class="py-6 px-6 mx-0 mt-20 lg:mx-20">
-                <div class="grid grid-cols-12 gap-4">
+                <div class="container">
                     <div class="col-span-12 md:col-span-2">
                         <a @click="smoothScroll('#home')"
                             class="flex flex-wrap items-center justify-center md:justify-start md:mb-0 mb-4 cursor-pointer">
                             <img src="/public/demo/images/LogoSosteniweb/sosteniweb manual-23.png" alt="Logo Sosteniweb" class="logo">
-                            <h4 class="font-medium text-3xl text-surface-900 dark:text-surface-0">SOSTENIWEB</h4>
+                            <p class="font-medium text-3xl text-surface-900 dark:text-surface-0">SOSTENIWEB</p>
                         </a>
                     </div>
 
