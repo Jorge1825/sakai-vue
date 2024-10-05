@@ -25,7 +25,7 @@ const events = ref([
         status: 'Delivered',
         date: '16/10/2020 10:00',
         icon: 'pi pi-check',
-        color: '#607D8B'
+        color: '#04B2D9'
     }
 ]);
 

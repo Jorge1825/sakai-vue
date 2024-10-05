@@ -8,4 +8,4 @@ const instance = axios.create({ //crear una constate llamada instance que es ins
   },
 });
 
-export default instance;// exportar por defecto la instancia de axios
+export default instance;// exportar por defecto la instancia de axios 
