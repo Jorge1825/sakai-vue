@@ -88,7 +88,6 @@ async function signIn() {
                             </div>
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">¿Olvidaste la contraseña?</span>
                         </div>
-
                         <q-btn style="background-color: #0EA5E9; color: white;" label="Ingresar" class="w-full" type="submit" />
                     </q-form>
                 </div>

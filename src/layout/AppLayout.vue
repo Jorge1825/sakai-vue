@@ -49,8 +49,18 @@ function isOutsideClicked(event) {
     const sidebarEl = document.querySelector('.layout-sidebar');
     const topbarEl = document.querySelector('.layout-menu-button');
 
-    return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
+    // Verifica si el sidebar y el topbar existen antes de utilizar isSameNode
+    if (sidebarEl && topbarEl) {
+        return !(sidebarEl.isSameNode(event.target) || 
+                 sidebarEl.contains(event.target) || 
+                 topbarEl.isSameNode(event.target) || 
+                 topbarEl.contains(event.target));
+    }
+
+    // Si alguno de los elementos no existe devuelve true.
+    return true;
 }
+
 </script>
 
 <template>

@@ -19,31 +19,28 @@ onMounted(() => {
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
 });
-
 function setChartData() {
-    const documentStyle = getComputedStyle(document.documentElement);
-
     return {
         labels: ['Q1', 'Q2', 'Q3', 'Q4'],
         datasets: [
             {
                 type: 'bar',
                 label: 'Subscriptions',
-                backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
+                backgroundColor: '#04b2d9', // Azul personalizado
                 data: [4000, 10000, 15000, 4000],
                 barThickness: 32
             },
             {
                 type: 'bar',
                 label: 'Advertising',
-                backgroundColor: documentStyle.getPropertyValue('--p-primary-300'),
+                backgroundColor: '#007bff', // Otro tono de azul
                 data: [2100, 8400, 2400, 7500],
                 barThickness: 32
             },
             {
                 type: 'bar',
                 label: 'Affiliate',
-                backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
+                backgroundColor: '#0056b3', // Otro tono de azul más oscuro
                 data: [4100, 5200, 3400, 7400],
                 borderRadius: {
                     topLeft: 8,
