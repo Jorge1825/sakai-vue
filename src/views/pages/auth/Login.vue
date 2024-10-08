@@ -14,7 +14,7 @@ const router = useRouter(); // Inicializar el router para redirigir después del
 async function signIn() {
   try {
     // Llamar a la función login y pasar las credenciales
-    const data = await login({ email: email.value, password: password.value });
+    const data = await login(email.value,password.value );
     
     // Si el login es exitoso
     if (data.token) {
