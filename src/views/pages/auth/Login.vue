@@ -2,7 +2,7 @@
 import { login } from '@/api/auth.js';
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router'; // Importar el router para redirección
+import { useRoute, useRouter } from 'vue-router'; // Importar el router para redirección
 
 const email = ref('');
 const password = ref('');
@@ -14,15 +14,22 @@ const router = useRouter(); // Inicializar el router para redirigir después del
 async function signIn() {
   try {
     // Llamar a la función login y pasar las credenciales
-    const data = await login(email.value,password.value );
+    const {data,status} = await login(email.value,password.value );
+
+    console.log(data);
     
     // Si el login es exitoso
-    if (data.token) {
+    if (data.token && status === 200) {
       errorMessage.value = ''; // Limpiar el mensaje de error si es exitoso
       
       // Redirigir a la página principal (asegúrate de que la ruta 'Home' exista)
-      router.push({ name: 'Home' });
+      router.push({ name: 'dashboard' });
     }
+
+    if (status === 401) {
+      errorMessage.value = 'Correo o contraseña incorrectos. Inténtalo de nuevo.';
+    }
+
   } catch (error) {
     // Si ocurre un error en el login, muestra el mensaje de error
     errorMessage.value = 'Correo o contraseña incorrectos. Inténtalo de nuevo.';

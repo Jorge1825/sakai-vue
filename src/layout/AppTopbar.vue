@@ -1,6 +1,7 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
 import AppConfigurator from './AppConfigurator.vue';
+import Profile from './Profile.vue';
 
 const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout();
 </script>
@@ -29,9 +30,19 @@ const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout();
                         type="button"
                         class="layout-topbar-action layout-topbar-action-highlight"
                     >
-                        <i class="pi pi-user"></i>
+                        <i class="pi pi-palette"></i>
                     </button>
                     <AppConfigurator />
+                </div>
+                <div class="relative">
+                    <button
+                        v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
+                        type="button"
+                        class="layout-topbar-action "
+                    >
+                        <i class="pi pi-user"></i>
+                    </button>
+                    <Profile />
                 </div>
             </div>
 

@@ -3,10 +3,10 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Cookies from "js-cookie";
 
 const checkAuth = () => {
-//   const cookie = Cookies.get("access_token");
-//   console.log(cookie);
-//   if (!cookie) return false;
-  return false;
+  const cookie = Cookies.get("access_token");
+  console.log(cookie);
+  if (!cookie) return false;
+  return true;
 };
 
 const auth = (to, from, next) => {
@@ -129,18 +129,26 @@ const router = createRouter({
                     path: '/documentation',
                     name: 'documentation',
                     component: () => import('@/views/pages/Documentation.vue')
+                },
+                {
+                    path: '/users',
+                    name: 'users',
+                    component: () => import('@/views/pages/Users.vue')
                 }
-            ]
+            ],
+            beforeEnter: auth
         },
         {
             path: '/landing',
             name: 'landing',
-            component: () => import('@/views/pages/Landing.vue')
+            component: () => import('@/views/pages/Landing.vue'),
+            beforeEnter: auth
         },
         {
             path: '/pages/notfound',
             name: 'notfound',
-            component: () => import('@/views/pages/NotFound.vue')
+            component: () => import('@/views/pages/NotFound.vue'),
+            beforeEnter: auth
         },
 
         {
@@ -152,12 +160,14 @@ const router = createRouter({
         {
             path: '/auth/access',
             name: 'accessDenied',
-            component: () => import('@/views/pages/auth/Access.vue')
+            component: () => import('@/views/pages/auth/Access.vue'),
+            beforeEnter: auth
         },
         {
             path: '/auth/error',
             name: 'error',
-            component: () => import('@/views/pages/auth/Error.vue')
+            component: () => import('@/views/pages/auth/Error.vue'),
+            beforeEnter: auth
         }
     ]
 });

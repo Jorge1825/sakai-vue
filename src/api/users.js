@@ -1,10 +1,10 @@
 
 import axiosInstance from "@/config/axios.conf";
 
-export const login = async (email,password) => {
+export const getUsers = async () => {
     try {
 
-        const response = await axiosInstance.post('/users/login', {email,password});
+        const response = await axiosInstance.get('/users');
 
         return response;
     } catch (error) {
