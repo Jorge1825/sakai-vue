@@ -1,10 +1,18 @@
 <script setup>
 import { ref } from 'vue';
 import deleteToken from '@/router/deleteToken.vue';
+import Cookies from "js-cookie";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 function logout() {
-    alert('Cerrar Sesión');
+    Cookies.remove("access_token");
+
+    // Redirige al login
+    router.push({ name: "login" });
 }
+
 </script>
 
 <template>
