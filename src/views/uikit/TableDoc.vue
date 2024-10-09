@@ -142,7 +142,7 @@ function calculateCustomerTotal(name) {
 </script>
 
 <template>
-    <div class="card">
+    <!-- <div class="card">
         <div class="font-semibold text-xl mb-4">Filtering</div>
         <DataTable
             :value="customers1"
@@ -285,7 +285,7 @@ function calculateCustomerTotal(name) {
                 </template>
             </Column>
         </DataTable>
-    </div>
+    </div> -->
 
     <div class="card">
         <div class="font-semibold text-xl mb-4">Row Expansion</div>
@@ -346,7 +346,7 @@ function calculateCustomerTotal(name) {
             </template>
         </DataTable>
     </div>
-
+<!-- 
     <div class="card">
         <div class="font-semibold text-xl mb-4">Grouping</div>
         <DataTable :value="customers3" rowGroupMode="subheader" groupRowsBy="representative.name" sortMode="single" sortField="representative.name" :sortOrder="1" scrollable scrollHeight="400px" tableStyle="min-width: 50rem">
@@ -377,7 +377,7 @@ function calculateCustomerTotal(name) {
                 <div class="flex justify-end font-bold w-full">Total Customers: {{ calculateCustomerTotal(slotProps.data.representative.name) }}</div>
             </template>
         </DataTable>
-    </div>
+    </div> -->
 </template>
 
 <style scoped lang="scss">
