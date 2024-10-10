@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue';
-import deleteToken from '@/router/deleteToken.vue';
 import Cookies from "js-cookie";
 import { useRouter } from "vue-router";
 
