@@ -20,7 +20,7 @@ export const editUserApi = async (data) => {
         
         return response;
     } catch (error) {
-        console.error('Error en el inicio de sesión', error); 
+        console.error('Error al editar usuario', error); 
         throw error; 
     }
     
@@ -32,9 +32,20 @@ export const createUserApi = async (data) => {
 
         return response;
     } catch (error) {
-        console.error('Error en el inicio de sesión', error); 
+        console.error('Error al crear usuario', error); 
         throw error; 
     }
     
+};
+export const toggleActiveUserApi = async (id) => {
+    try {
+        // Hacer la petición PUT al endpoint de activar/desactivar usuario
+        const response = await axiosInstance.put(`/users/toggle-active/${id}`);
+
+        return response;
+    } catch (error) {
+        console.error('Error al activar/desactivar usuario', error); 
+        throw error;
+    }
 };
 
