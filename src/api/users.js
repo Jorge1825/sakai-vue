@@ -25,7 +25,7 @@ export const editUserApi = async (data) => {
     }
     
 };
-export const createUser = async (data) => {
+export const createUserApi = async (data) => {
     try {
 
         const response = await axiosInstance.post('/users/create',data);

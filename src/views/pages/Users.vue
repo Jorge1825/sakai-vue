@@ -117,13 +117,22 @@
 </template>
 
 <script setup>
-import { getUsersApi, editUserApi} from '@/api/users';
+import { getUsersApi, editUserApi, createUserApi} from '@/api/users';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
 const users = ref([]);
 const userDialog = ref(false);
-const user = ref({});
+const user = ref({
+    id: null,
+    username: '',
+    email: '',
+    phone: '',
+    role: null,
+    status: null,
+    subscription: null,
+    password: ''
+});
 const expandedRows = ref([]);
 const status = ref([
     { label: 'ACTIVO', value: true },
@@ -156,7 +165,6 @@ async function getUsers() {
 }
 
 function openDialog() {
-    user.value = { id: null, username: '', email: '', phone: '', role: 'User', status: 'Activo', subscription: 'No Suscrito' };
     userDialog.value = true;
 }
 
@@ -192,9 +200,26 @@ async function saveUser() {
             Notify.create({ message: 'Error al actualizar el usuario.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     } else {
-        user.value.id = Math.max(...users.value.map((u) => u.id), 0) + 1;
-        users.value.push({ ...user.value });
-        Notify.create({ message: 'Usuario agregado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+        const userApi = {
+            username: user.value.username,
+            email: user.value.email,
+            phone: user.value.phone,
+            role: user.value.role.value,
+            status: user.value.status.value,
+            password: user.value.password
+        }
+
+        const response = await createUserApi(userApi)
+        console.log(response)
+
+        if (response.status === 200) {
+            Notify.create({ message: 'Usuario creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            await getUsers()
+            hideDialog();
+        }else{
+            Notify.create({ message: 'Error al crear el usuario.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+        }
+       
     }
    
 }
