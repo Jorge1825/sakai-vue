@@ -81,7 +81,7 @@
                 </q-card-section>
 
                 <q-card-section>
-                    <div class="row">
+                    <div class="row ">
                         <div class="col-6">
                             <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre de usuario requerido']" v-model="user.username" label="Nombre de Usuario" required style="padding: 10px" />
                         </div>
@@ -92,13 +92,17 @@
                             <q-input v-model="user.phone" label="Teléfono" type="number" required style="padding: 10px" />
                         </div>
                         <div class="col-6">
-                            <q-select v-model="user.role" :options="['Admin', 'User']" label="Rol" required style="padding: 10px" />
+                            <q-select v-model="user.role" :options="roles" label="Rol" required style="padding: 10px" />
                         </div>
                         <div class="col-6">
-                            <q-select v-model="user.status" :options="['Activo', 'Inactivo']" label="Estado" required style="padding: 10px" />
+                            <q-select v-model="user.status" :options="status" label="Estado" required style="padding: 10px" />
                         </div>
                         <div class="col-6">
                             <q-select v-model="user.subscription" :options="['Suscrito', 'No Suscrito']" label="Suscripción" required style="padding: 10px" />
+                        </div>
+
+                        <div class="col-6">
+                            <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'password requerida']" v-model="user.password" label="Contraseña" required style="padding: 10px" />
                         </div>
                     </div>
                 </q-card-section>
@@ -113,7 +117,7 @@
 </template>
 
 <script setup>
-import { getUsers } from '@/api/users';
+import { getUsersApi, editUserApi} from '@/api/users';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
@@ -121,6 +125,15 @@ const users = ref([]);
 const userDialog = ref(false);
 const user = ref({});
 const expandedRows = ref([]);
+const status = ref([
+    { label: 'ACTIVO', value: true },
+    { label: 'INACTIVO', value: false }
+]);
+
+const roles = ref([
+    { label: 'ADMIN', value: 'ADMIN' },
+    { label: 'USER', value: 'USER' }
+]);
 
 const exampleUsers = [
     { id: 1, username: 'Jeferson1', email: 'Jeferson1@gmail.com', phone: '1234567890', role: 'Admin', status: 'Activo', subscription: 'Suscrito' },
@@ -129,14 +142,18 @@ const exampleUsers = [
 ];
 
 onBeforeMount(async () => {
+   await getUsers();
+});
+
+async function getUsers() {
     try {
-        const { data } = await getUsers();
+        const { data } = await getUsersApi();
         users.value = data.length ? data : exampleUsers;
     } catch (error) {
         console.error(error);
         users.value = exampleUsers;
     }
-});
+}
 
 function openDialog() {
     user.value = { id: null, username: '', email: '', phone: '', role: 'User', status: 'Activo', subscription: 'No Suscrito' };
@@ -147,21 +164,39 @@ function hideDialog() {
     userDialog.value = false;
 }
 
-function saveUser() {
+async function saveUser() {
     if (!validateUser()) return;
 
-    if (user.value.id) {
-        const index = users.value.findIndex((u) => u.id === user.value.id);
-        if (index !== -1) {
-            users.value[index] = { ...user.value };
+    console.log(user.value);
+
+    if (user.value._id) {
+
+        const userApi = {
+            id: user.value._id,
+            username: user.value.username,
+            email: user.value.email,
+            phone: user.value.phone,
+            role: user.value.role.value,
+            status: user.value.status.value,
+            password: user.value.password
+        }
+
+        const response = await editUserApi(userApi)
+        console.log(response)
+
+        if (response.status === 200) {
             Notify.create({ message: 'Usuario actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            await getUsers()
+            hideDialog();
+        }else{
+            Notify.create({ message: 'Error al actualizar el usuario.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     } else {
         user.value.id = Math.max(...users.value.map((u) => u.id), 0) + 1;
         users.value.push({ ...user.value });
         Notify.create({ message: 'Usuario agregado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
     }
-    hideDialog();
+   
 }
 
 function validateUser() {
@@ -206,6 +241,8 @@ function validateUser() {
 
 function editUser(selectedUser) {
     user.value = { ...selectedUser };
+    user.value.role = roles.value.find((r) => r.value === selectedUser.role);
+    user.value.status = status.value.find((s) => s.value === selectedUser.status);
     userDialog.value = true;
     console.log(user.value);
     

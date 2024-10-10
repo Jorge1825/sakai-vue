@@ -1,7 +1,7 @@
 
 import axiosInstance from "@/config/axios.conf";
 
-export const getUsers = async () => {
+export const getUsersApi = async () => {
     try {
 
         const response = await axiosInstance.get('/users');
@@ -13,7 +13,7 @@ export const getUsers = async () => {
     }
     
 };
-export const editUser = async (data) => {
+export const editUserApi = async (data) => {
     try {
         console.log(data);
         const response = await axiosInstance.put('/users/update',data);
