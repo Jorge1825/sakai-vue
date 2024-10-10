@@ -18,11 +18,11 @@
             <DataTable v-model:expandedRows="expandedRows" :value="users" dataKey="id" responsiveLayout="scroll"
                 paginator rows="10">
                 <Column field="id" header="ID" style="width: 5%" />
-                <Column field="username" header="Nombre de Usuario" style="width: 20%" />
-                <Column field="email" header="Email" :sortable="true" style="width: 30%" />
-                <Column field="phone" header="Teléfono" :sortable="true" style="width: 15%" />
-                <Column field="role" header="Rol" :sortable="true" style="width: 10%" />
-                <Column field="status" header="Estado" style="width: 10%; text-align: left; text-transform: uppercase;">
+                <Column field="username" header="NOMBRE DE USUARIO" style="width: 20%" />
+                <Column field="email" header="EMAIL" :sortable="true" style="width: 30%" />
+                <Column field="phone" header="TELÉFONO" :sortable="true" style="width: 15%" />
+                <Column field="role" header="ROL" :sortable="true" style="width: 10%" />
+                <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase;">
                     <template #body="slotProps">
                         <div style="text-align: left;">
                             <q-badge :color="slotProps.data.status === 'Activo' ? 'blue' : 'red'" class="q-ml-xs">
@@ -40,7 +40,7 @@
                         </div>
                     </template>
                 </Column>
-                <Column header="Acciones" style="width: 10%">
+                <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotProps">
                         <div class="button-group">
                             <q-btn :icon="slotProps.data.status === 'Activo' ? 'clear' : 'check'"
