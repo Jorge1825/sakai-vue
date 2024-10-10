@@ -134,6 +134,11 @@ const router = createRouter({
                     path: '/users',
                     name: 'users',
                     component: () => import('@/views/pages/Users.vue')
+                },
+                {
+                    path: '/roles',
+                    name: 'roles',
+                    component: () => import('@/views/pages/Roles.vue')
                 }
             ],
             beforeEnter: auth
