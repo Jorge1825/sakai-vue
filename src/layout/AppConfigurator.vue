@@ -3,7 +3,7 @@ import { useLayout } from '@/layout/composables/layout';
 import { $t, updatePreset, updateSurfacePalette } from '@primevue/themes';
 import Aura from '@primevue/themes/aura';
 import Lara from '@primevue/themes/lara';
-import { ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 
 const { layoutConfig, setPrimary, setSurface, setPreset, isDarkTheme, setMenuMode } = useLayout();
 
@@ -11,6 +11,16 @@ const presets = {
     Aura,
     Lara
 };
+
+onMounted(() => {
+
+    //esperar a que se cargue el tema
+    setTimeout(() => {
+        updateColors('primary', primaryColors.value.find((c) => c.name === 'emerald'));
+    }, 300);
+
+});
+
 const preset = ref(layoutConfig.preset);
 const presetOptions = ref(Object.keys(presets));
 
@@ -75,8 +85,16 @@ const surfaces = ref([
     }
 ]);
 
-function getPresetExt() {
-    const color = primaryColors.value.find((c) => c.name === layoutConfig.primary);
+function getPresetExt(nameColor) {
+    let color
+    
+    if(!nameColor) {
+        color = primaryColors.value.find((c) => c.name === layoutConfig.primary);
+    } else {
+        color = primaryColors.value.find((c) => c.name === nameColor);
+    }
+
+    console.log(color)
 
     if (color.name === 'noir') {
         return {
@@ -177,7 +195,7 @@ function updateColors(type, color) {
 
 function applyTheme(type, color) {
     if (type === 'primary') {
-        updatePreset(getPresetExt());
+        updatePreset(getPresetExt(color.name));
     } else if (type === 'surface') {
         updateSurfacePalette(color.palette);
     }
