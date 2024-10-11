@@ -29,12 +29,18 @@
                 <Column field="username" header="NOMBRE DE USUARIO" style="width: 20%" />
                 <Column field="email" header="EMAIL" :sortable="true" style="width: 30%" />
                 <Column field="phone" header="TELÉFONO" :sortable="true" style="width: 15%" />
-                <Column field="role" header="ROL" :sortable="true" style="width: 10%" />
+                <Column field="role" header="ROL" :sortable="true" style="width: 10%" >
+                    <template #body="slotProps">
+                        <div style="text-align: center">
+                                {{ slotProps.data.role?.name || '' }}
+                        </div>
+                    </template>
+                </Column>
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
                             <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
-                                {{ slotProps.data.status === true ? 'Activo' : 'Inactivo' }}
+                                {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </div>
                     </template>
@@ -63,11 +69,11 @@
                         <h5>Detalles del Usuario: {{ slotProps.data.username }}</h5>
                         <p><strong>Email:</strong> {{ slotProps.data.email }}</p>
                         <p><strong>Teléfono:</strong> {{ slotProps.data.phone }}</p>
-                        <p><strong>Rol:</strong> {{ slotProps.data.role }}</p>
+                        <p><strong>Rol:</strong> {{ slotProps.data.role.name }}</p>
                         <p>
                             <strong>Estado:</strong>
                             <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
-                                {{ status.value.find((s) => s.value === slotProps.data.status).label }}
+                                {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </p>
                         <p>
@@ -127,6 +133,7 @@
 </template>
 
 <script setup>
+import { getRolesApi } from '@/api/roles';
 import { createUserApi, editUserApi, getUsersApi, toggleActiveUserApi } from '@/api/users';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
@@ -162,12 +169,23 @@ const exampleUsers = [
 
 onBeforeMount(async () => {
     await getUsers();
+    await getRoles()
 });
 
 async function getUsers() {
     try {
         const { data } = await getUsersApi();
         users.value = data.length ? data : exampleUsers;
+    } catch (error) {
+        console.error(error);
+        users.value = exampleUsers;
+    }
+}
+
+async function getRoles() {
+    try {
+        const { data } = await getRolesApi();
+        roles.value = data.map((r) => ({ label: r.name, value: r._id }));
     } catch (error) {
         console.error(error);
         users.value = exampleUsers;
@@ -339,7 +357,7 @@ async function toggleStatus(selectedUser) {
 
 // Funciones para expandir y colapsar
 function expandAll() {
-    expandedRows.value = users.value.map((user) => user._id);
+    expandedRows.value = users.value.reduce((acc, p) => (acc[p._id] = true) && acc, {});
     console.log('expandedRows', expandedRows.value);
 }
 

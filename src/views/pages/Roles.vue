@@ -15,7 +15,16 @@
                 </div>
             </div>
             <!-- Tabla de usuarios -->
-            <DataTable v-model:expandedRows="expandedRows" :value="roles" dataKey="_id" responsiveLayout="scroll" paginator rows="10">
+            <DataTable
+                v-model:expandedRows="expandedRows"
+                :value="roles"
+                dataKey="_id"
+                responsiveLayout="scroll"
+                :paginator="true"
+                :rows="10"
+                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                :rowsPerPageOptions="[5, 10, 25]"
+            >
                 <Column field="name" header="NOMBRE" :sortable="true" style="width: 15%" />
                 <Column field="description" header="DESCRIPCIÓN" style="width: 35%" />
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
@@ -124,7 +133,7 @@ function openDialog() {
         id: null,
         name: '',
         description: '',
-        status: true
+        status: status.value[0]
     };
     roleDialog.value = true;
 }
@@ -220,7 +229,7 @@ async function toggleStatus(selectedRole) {
 
 // Funciones para expandir y colapsar
 function expandAll() {
-    expandedRows.value = roles.value.map((rol) => rol._id);
+    expandedRows.value = roles.value.reduce((acc, p) => (acc[p._id] = true) && acc, {});
 }
 
 function collapseAll() {
