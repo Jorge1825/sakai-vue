@@ -15,9 +15,17 @@
                 </div>
             </div>
             <!-- Tabla de usuarios -->
-            <DataTable v-model:expandedRows="expandedRows" :value="users" dataKey="id" responsiveLayout="scroll"
-                paginator rows="10">
-                <Column field="id" header="ID" style="width: 5%" />
+            <DataTable
+                v-model:expandedRows="expandedRows"
+                :value="users"
+                dataKey="_id"
+                responsiveLayout="scroll"
+                :paginator="true"
+                :rows="10"
+                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                :rowsPerPageOptions="[5, 10, 25]"
+        
+            >
                 <Column field="username" header="NOMBRE DE USUARIO" style="width: 20%" />
                 <Column field="email" header="EMAIL" :sortable="true" style="width: 30%" />
                 <Column field="phone" header="TELÉFONO" :sortable="true" style="width: 15%" />
@@ -25,18 +33,16 @@
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
-                            <q-badge :color="slotProps.data.status === 'Activo' ? 'blue' : 'red'" class="q-ml-xs">
-                                {{ slotProps.data.status }}
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
+                                {{ slotProps.data.status === true ? 'Activo' : 'Inactivo' }}
                             </q-badge>
                         </div>
                     </template>
                 </Column>
-                <Column field="subscription" header="Suscripción"
-                    style="width: 10%; text-align: center; text-transform: uppercase">
+                <Column field="subscription" header="Suscripción" style="width: 10%; text-align: center; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: center">
-                            <q-badge :color="slotProps.data.subscription === 'Suscrito' ? 'blue' : 'grey'"
-                                class="q-ml-xs">
+                            <q-badge :color="slotProps.data.subscription === 'Suscrito' ? 'blue' : 'grey'" class="q-ml-xs">
                                 {{ slotProps.data.subscription }}
                             </q-badge>
                         </div>
@@ -44,13 +50,9 @@
                 </Column>
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotProps">
-                        <div class="button-group"><!-- Modifique el boton para que llame al metodo toggleStatus-->
-                            <q-btn :icon="slotProps.data.status === 'Activo' ? 'clear' : 'check'"
-                                :color="slotProps.data.status === 'Activo' ? 'red' : 'blue'"
-                                @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
-                            <q-btn :icon="slotProps.data.status === 'Activo' ? 'clear' : 'check'"
-                                :color="slotProps.data.status === 'Activo' ? 'red' : 'blue'"
-                                @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
+                        <div class="button-group">
+                            <!-- Modifique el boton para que llame al metodo toggleStatus-->
+                            <q-btn :icon="slotProps.data.status === true ? 'clear' : 'check'" :color="slotProps.data.status === true ? 'red' : 'blue'" @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
                             <q-btn icon="edit" color="blue" @click="editUser(slotProps.data)" dense round />
                             <!-- <q-btn icon="delete" color="negative" @click="deleteUser(slotProps.data)" dense /> -->
                         </div>
@@ -64,8 +66,8 @@
                         <p><strong>Rol:</strong> {{ slotProps.data.role }}</p>
                         <p>
                             <strong>Estado:</strong>
-                            <q-badge :color="slotProps.data.status === 'Activo' ? 'blue' : 'red'">
-                                {{ slotProps.data.status }}
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
+                                {{ status.value.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </p>
                         <p>
@@ -85,39 +87,32 @@
         <q-card>
             <q-form @submit.prevent.stop="saveUser" novalidate>
                 <q-card-section>
-                    <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">AGREGAR
-                        USUARIO</div>
+                    <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">AGREGAR USUARIO</div>
                 </q-card-section>
 
                 <q-card-section>
-                    <div class="row ">
+                    <div class="row">
                         <div class="col-6">
-                            <q-input lazy-rules
-                                :rules="[(val) => (val && val.length > 0) || 'Nombre de usuario requerido']"
-                                v-model="user.username" label="Nombre de Usuario" required style="padding: 10px" />
+                            <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre de usuario requerido']" v-model="user.username" label="Nombre de Usuario" required style="padding: 10px" />
                         </div>
                         <div class="col-6">
                             <q-input v-model="user.email" label="Email" required style="padding: 10px" />
                         </div>
                         <div class="col-6">
-                            <q-input v-model="user.phone" label="Teléfono" type="number" required
-                                style="padding: 10px" />
+                            <q-input v-model="user.phone" label="Teléfono" type="number" required style="padding: 10px" />
                         </div>
                         <div class="col-6">
                             <q-select v-model="user.role" :options="roles" label="Rol" required style="padding: 10px" />
                         </div>
                         <div class="col-6">
-                            <q-select v-model="user.status" :options="status" label="Estado" required
-                                style="padding: 10px" />
+                            <q-select v-model="user.status" :options="status" label="Estado" required style="padding: 10px" />
                         </div>
                         <div class="col-6">
-                            <q-select v-model="user.subscription" :options="['Suscrito', 'No Suscrito']"
-                                label="Suscripción" required style="padding: 10px" />
+                            <q-select v-model="user.subscription" :options="['Suscrito', 'No Suscrito']" label="Suscripción" required style="padding: 10px" />
                         </div>
 
                         <div class="col-6">
-                            <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'password requerida']"
-                                v-model="user.password" label="Contraseña" required style="padding: 10px" />
+                            <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'password requerida']" v-model="user.password" label="Contraseña" required style="padding: 10px" />
                         </div>
                     </div>
                 </q-card-section>
@@ -132,7 +127,7 @@
 </template>
 
 <script setup>
-import { getUsersApi, editUserApi, createUserApi, toggleActiveUserApi } from '@/api/users';
+import { createUserApi, editUserApi, getUsersApi, toggleActiveUserApi } from '@/api/users';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
@@ -180,7 +175,8 @@ async function getUsers() {
 }
 
 function openDialog() {
-    user.value = { // Reinicar el objeto usuario
+    user.value = {
+        // Reinicar el objeto usuario
         id: null,
         username: '',
         email: '',
@@ -203,7 +199,6 @@ async function saveUser() {
     console.log(user.value);
 
     if (user.value._id) {
-
         const userApi = {
             id: user.value._id,
             username: user.value.username,
@@ -212,14 +207,14 @@ async function saveUser() {
             role: user.value.role.value,
             status: user.value.status.value,
             password: user.value.password
-        }
+        };
 
-        const response = await editUserApi(userApi)
-        console.log(response)
+        const response = await editUserApi(userApi);
+        console.log(response);
 
         if (response.status === 200) {
             Notify.create({ message: 'Usuario actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getUsers()
+            await getUsers();
             hideDialog();
         } else {
             Notify.create({ message: 'Error al actualizar el usuario.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
@@ -232,21 +227,19 @@ async function saveUser() {
             role: user.value.role.value,
             status: user.value.status.value,
             password: user.value.password
-        }
+        };
 
-        const response = await createUserApi(userApi)
-        console.log(response)
+        const response = await createUserApi(userApi);
+        console.log(response);
 
         if (response.status === 200) {
             Notify.create({ message: 'Usuario creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getUsers()
+            await getUsers();
             hideDialog();
         } else {
             Notify.create({ message: 'Error al crear el usuario.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
-
     }
-
 }
 
 function validateUser() {
@@ -295,7 +288,6 @@ function editUser(selectedUser) {
     user.value.status = status.value.find((s) => s.value === selectedUser.status);
     userDialog.value = true;
     console.log(user.value);
-
 }
 
 // Eliminar
@@ -306,11 +298,12 @@ function editUser(selectedUser) {
 //         Notify.create({ message: 'Usuario eliminado correctamente.', position: 'top', textColor: 'white', color: 'red', multiLine: true });
 //     }
 // }
-//funcion activar desactivavr usuario 
+//funcion activar desactivavr usuario
 async function toggleStatus(selectedUser) {
     try {
         // Cambia el estado del usuario (activo/inactivo)
-        const response = await toggleActiveUserApi(selectedUser.id);
+        console.log('selectedUser', selectedUser);
+        const response = await toggleActiveUserApi(selectedUser._id);
 
         if (response.status === 200) {
             // Actualiza el estado localmente después de recibir respuesta del backend
@@ -346,7 +339,8 @@ async function toggleStatus(selectedUser) {
 
 // Funciones para expandir y colapsar
 function expandAll() {
-    expandedRows.value = users.value.map((user) => user.id);
+    expandedRows.value = users.value.map((user) => user._id);
+    console.log('expandedRows', expandedRows.value);
 }
 
 function collapseAll() {

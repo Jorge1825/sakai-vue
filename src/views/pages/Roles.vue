@@ -5,7 +5,7 @@
             <div class="row q-my-md">
                 <div class="col-6">
                     <div class="text-h5" style="color: #1976d2; text-transform: uppercase">
-                        <strong>Usuarios</strong>
+                        <strong>Roles</strong>
                     </div>
                 </div>
                 <div class="col-12 flex justify-end">
@@ -15,63 +15,35 @@
                 </div>
             </div>
             <!-- Tabla de usuarios -->
-            <DataTable v-model:expandedRows="expandedRows" :value="users" dataKey="id" responsiveLayout="scroll"
-                paginator rows="10">
-                <Column field="id" header="ID" style="width: 5%" />
-                <Column field="username" header="NOMBRE DE USUARIO" style="width: 20%" />
-                <Column field="email" header="EMAIL" :sortable="true" style="width: 30%" />
-                <Column field="phone" header="TELÉFONO" :sortable="true" style="width: 15%" />
-                <Column field="role" header="ROL" :sortable="true" style="width: 10%" />
+            <DataTable v-model:expandedRows="expandedRows" :value="roles" dataKey="_id" responsiveLayout="scroll" paginator rows="10">
+                <Column field="name" header="NOMBRE" :sortable="true" style="width: 15%" />
+                <Column field="description" header="DESCRIPCIÓN" style="width: 35%" />
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
-                            <q-badge :color="slotProps.data.status === 'Activo' ? 'blue' : 'red'" class="q-ml-xs">
-                                {{ slotProps.data.status }}
-                            </q-badge>
-                        </div>
-                    </template>
-                </Column>
-                <Column field="subscription" header="Suscripción"
-                    style="width: 10%; text-align: center; text-transform: uppercase">
-                    <template #body="slotProps">
-                        <div style="text-align: center">
-                            <q-badge :color="slotProps.data.subscription === 'Suscrito' ? 'blue' : 'grey'"
-                                class="q-ml-xs">
-                                {{ slotProps.data.subscription }}
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
+                                {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </div>
                     </template>
                 </Column>
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotProps">
-                        <div class="button-group"><!-- Modifique el boton para que llame al metodo toggleStatus-->
-                            <q-btn :icon="slotProps.data.status === 'Activo' ? 'clear' : 'check'"
-                                :color="slotProps.data.status === 'Activo' ? 'red' : 'blue'"
-                                @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
-                            <q-btn :icon="slotProps.data.status === 'Activo' ? 'clear' : 'check'"
-                                :color="slotProps.data.status === 'Activo' ? 'red' : 'blue'"
-                                @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
-                            <q-btn icon="edit" color="blue" @click="editUser(slotProps.data)" dense round />
-                            <!-- <q-btn icon="delete" color="negative" @click="deleteUser(slotProps.data)" dense /> -->
+                        <div class="button-group">
+                            <!-- Modifique el boton para que llame al metodo toggleStatus-->
+                            <q-btn :icon="slotProps.data.status === true ? 'clear' : 'check'" :color="slotProps.data.status === true ? 'red' : 'blue'" @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
+                            <q-btn icon="edit" color="blue" @click="editRole(slotProps.data)" dense round />
                         </div>
                     </template>
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
-                        <h5>Detalles del Usuario: {{ slotProps.data.username }}</h5>
-                        <p><strong>Email:</strong> {{ slotProps.data.email }}</p>
-                        <p><strong>Teléfono:</strong> {{ slotProps.data.phone }}</p>
-                        <p><strong>Rol:</strong> {{ slotProps.data.role }}</p>
+                        <h5>Detalles del Rol: {{ slotProps.data.name }}</h5>
+                        <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
                         <p>
                             <strong>Estado:</strong>
-                            <q-badge :color="slotProps.data.status === 'Activo' ? 'blue' : 'red'">
-                                {{ slotProps.data.status }}
-                            </q-badge>
-                        </p>
-                        <p>
-                            <strong>Suscripción:</strong>
-                            <q-badge :color="slotProps.data.subscription === 'Suscrito' ? 'blue' : 'grey'">
-                                {{ slotProps.data.subscription }}
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
+                                {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </p>
                     </div>
@@ -81,43 +53,23 @@
     </div>
 
     <!-- Modal para agregar/editar usuario -->
-    <q-dialog v-model="userDialog" persistent width="800px">
+    <q-dialog v-model="roleDialog" persistent width="800px">
         <q-card>
-            <q-form @submit.prevent.stop="saveUser" novalidate>
+            <q-form @submit.prevent.stop="saveRole" novalidate>
                 <q-card-section>
-                    <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">AGREGAR
-                        USUARIO</div>
+                    <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">AGREGAR ROL</div>
                 </q-card-section>
 
                 <q-card-section>
-                    <div class="row ">
+                    <div class="row">
                         <div class="col-6">
-                            <q-input lazy-rules
-                                :rules="[(val) => (val && val.length > 0) || 'Nombre de usuario requerido']"
-                                v-model="user.username" label="Nombre de Usuario" required style="padding: 10px" />
+                            <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre del rol requerido']" v-model="role.name" label="Nombre del Rol" required style="padding: 10px" />
                         </div>
                         <div class="col-6">
-                            <q-input v-model="user.email" label="Email" required style="padding: 10px" />
+                            <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="role.description" label="Descripción" required style="padding: 10px" autogrow />
                         </div>
                         <div class="col-6">
-                            <q-input v-model="user.phone" label="Teléfono" type="number" required
-                                style="padding: 10px" />
-                        </div>
-                        <div class="col-6">
-                            <q-select v-model="user.role" :options="roles" label="Rol" required style="padding: 10px" />
-                        </div>
-                        <div class="col-6">
-                            <q-select v-model="user.status" :options="status" label="Estado" required
-                                style="padding: 10px" />
-                        </div>
-                        <div class="col-6">
-                            <q-select v-model="user.subscription" :options="['Suscrito', 'No Suscrito']"
-                                label="Suscripción" required style="padding: 10px" />
-                        </div>
-
-                        <div class="col-6">
-                            <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'password requerida']"
-                                v-model="user.password" label="Contraseña" required style="padding: 10px" />
+                            <q-select v-model="role.status" :options="status" label="Estado" required style="padding: 10px" />
                         </div>
                     </div>
                 </q-card-section>
@@ -132,21 +84,17 @@
 </template>
 
 <script setup>
-import { getUsersApi, editUserApi, createUserApi, toggleActiveUserApi } from '@/api/users';
+import { createRoleApi, editRoleApi, getRolesApi, toggleActiveRoleApi } from '@/api/roles';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
-const users = ref([]);
-const userDialog = ref(false);
-const user = ref({
+const roles = ref([]);
+const roleDialog = ref(false);
+const role = ref({
     id: null,
-    username: '',
-    email: '',
-    phone: '',
-    role: null,
-    status: null,
-    subscription: null,
-    password: ''
+    name: '',
+    description: '',
+    status: true
 });
 const expandedRows = ref([]);
 const status = ref([
@@ -154,180 +102,106 @@ const status = ref([
     { label: 'INACTIVO', value: false }
 ]);
 
-const roles = ref([
-    { label: 'ADMIN', value: 'ADMIN' },
-    { label: 'USER', value: 'USER' }
-]);
-
-const exampleUsers = [
-    { id: 1, username: 'Jeferson1', email: 'Jeferson1@gmail.com', phone: '1234567890', role: 'Admin', status: 'Activo', subscription: 'Suscrito' },
-    { id: 2, username: 'Jeferson2', email: 'Jeferson2@gmail.com', phone: '1234567891', role: 'User', status: 'Inactivo', subscription: 'No Suscrito' },
-    { id: 3, username: 'Jeferson3', email: 'Jeferson3@gmail.com', phone: '1234567892', role: 'User', status: 'Activo', subscription: 'Suscrito' }
-];
-
 onBeforeMount(async () => {
-    await getUsers();
+    await getRoles();
 });
 
-async function getUsers() {
+async function getRoles() {
     try {
-        const { data } = await getUsersApi();
-        users.value = data.length ? data : exampleUsers;
+        const { data } = await getRolesApi();
+        console.log(data);
+        roles.value = data.length ? data : [];
+
+        console.log(roles.value);
     } catch (error) {
         console.error(error);
-        users.value = exampleUsers;
     }
 }
 
 function openDialog() {
-    user.value = { // Reinicar el objeto usuario
+    role.value = {
+        // Reinicar el objeto usuario
         id: null,
-        username: '',
-        email: '',
-        phone: '',
-        role: null,
-        status: null,
-        subscription: null,
-        password: ''
+        name: '',
+        description: '',
+        status: true
     };
-    userDialog.value = true;
+    roleDialog.value = true;
 }
 
 function hideDialog() {
-    userDialog.value = false;
+    roleDialog.value = false;
 }
 
-async function saveUser() {
-    if (!validateUser()) return;
+async function saveRole() {
+    console.log(role.value);
 
-    console.log(user.value);
+    if (role.value._id) {
+        const roleApi = {
+            id: role.value._id,
+            name: role.value.name,
+            description: role.value.description,
+            status: role.value.status.value
+        };
 
-    if (user.value._id) {
-
-        const userApi = {
-            id: user.value._id,
-            username: user.value.username,
-            email: user.value.email,
-            phone: user.value.phone,
-            role: user.value.role.value,
-            status: user.value.status.value,
-            password: user.value.password
-        }
-
-        const response = await editUserApi(userApi)
-        console.log(response)
+        const response = await editRoleApi(roleApi);
 
         if (response.status === 200) {
-            Notify.create({ message: 'Usuario actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getUsers()
+            Notify.create({ message: 'Rol actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            await getRoles();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar el usuario.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar el rl.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     } else {
-        const userApi = {
-            username: user.value.username,
-            email: user.value.email,
-            phone: user.value.phone,
-            role: user.value.role.value,
-            status: user.value.status.value,
-            password: user.value.password
-        }
+        const roleApi = {
+            name: role.value.name,
+            description: role.value.description,
+            status: role.value.status.value
+        };
 
-        const response = await createUserApi(userApi)
-        console.log(response)
+        const response = await createRoleApi(roleApi);
+        console.log(response);
 
         if (response.status === 200) {
-            Notify.create({ message: 'Usuario creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getUsers()
+            Notify.create({ message: 'Rol creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            await getRoles();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear el usuario.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear el rol.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
-
     }
-
 }
 
-function validateUser() {
-    const usernameRegex = /^[a-zA-Z0-9 ]+$/;
-    if (!usernameRegex.test(user.value.username)) {
-        Notify.create({
-            message: 'El nombre de usuario no debe contener caracteres especiales.',
-            color: 'red',
-            textColor: 'white',
-            position: 'top',
-            classes: 'my-notification'
-        });
-        return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(user.value.email)) {
-        Notify.create({
-            message: 'El email no es válido.',
-            color: 'red',
-            textColor: 'white',
-            position: 'top',
-            classes: 'my-notification'
-        });
-        return false;
-    }
-
-    const phoneRegex = /^\d{10}$/;
-    if (!phoneRegex.test(user.value.phone)) {
-        Notify.create({
-            message: 'El teléfono debe contener 10 dígitos.',
-            color: 'red',
-            textColor: 'white',
-            position: 'top',
-            classes: 'my-notification'
-        });
-        return false;
-    }
-
-    return true;
+function editRole(selectedRole) {
+    role.value = { ...selectedRole };
+    role.value.status = status.value.find((s) => s.value === selectedRole.status);
+    roleDialog.value = true;
+    console.log(role.value);
 }
 
-function editUser(selectedUser) {
-    user.value = { ...selectedUser };
-    user.value.role = roles.value.find((r) => r.value === selectedUser.role);
-    user.value.status = status.value.find((s) => s.value === selectedUser.status);
-    userDialog.value = true;
-    console.log(user.value);
-
-}
-
-// Eliminar
-// function deleteUser(selectedUser) {
-//     const index = users.value.findIndex(u => u.id === selectedUser.id);
-//     if (index !== -1) {
-//         users.value.splice(index, 1);
-//         Notify.create({ message: 'Usuario eliminado correctamente.', position: 'top', textColor: 'white', color: 'red', multiLine: true });
-//     }
-// }
-//funcion activar desactivavr usuario 
-async function toggleStatus(selectedUser) {
+//funcion activar desactivavr usuario
+async function toggleStatus(selectedRole) {
     try {
         // Cambia el estado del usuario (activo/inactivo)
-        const response = await toggleActiveUserApi(selectedUser.id);
+        const response = await toggleActiveRoleApi(selectedRole._id);
 
         if (response.status === 200) {
             // Actualiza el estado localmente después de recibir respuesta del backend
-            selectedUser.status = selectedUser.status === 'Activo' ? 'Inactivo' : 'Activo';
+            selectedRole.status = selectedRole.status === 'Activo' ? 'Inactivo' : 'Activo';
 
             // Mostrar notificación de éxito
             Notify.create({
-                message: `Usuario ${selectedUser.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
+                message: `Usuario ${selectedRole.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedUser.status === 'Activo' ? 'blue' : 'red',
+                color: selectedRole.status === 'Activo' ? 'blue' : 'red',
                 multiLine: true
             });
 
             // Vuelve a cargar los usuarios si es necesario
-            await getUsers();
+            await getRoles();
         } else {
             throw new Error('Error al actualizar el estado del usuario.');
         }
@@ -346,7 +220,7 @@ async function toggleStatus(selectedUser) {
 
 // Funciones para expandir y colapsar
 function expandAll() {
-    expandedRows.value = users.value.map((user) => user.id);
+    expandedRows.value = roles.value.map((rol) => rol._id);
 }
 
 function collapseAll() {

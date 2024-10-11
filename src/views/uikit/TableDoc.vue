@@ -109,6 +109,8 @@ function initFilters1() {
 
 function expandAll() {
     expandedRows.value = products.value.reduce((acc, p) => (acc[p.id] = true) && acc, {});
+
+    console.log(expandedRows.value);
 }
 
 function collapseAll() {
