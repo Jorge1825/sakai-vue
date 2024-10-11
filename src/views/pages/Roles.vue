@@ -64,7 +64,7 @@
     <!-- Modal para agregar/editar usuario -->
     <q-dialog v-model="roleDialog" persistent width="800px">
         <q-card>
-            <q-form @submit.prevent.stop="saveRole" novalidate>
+            <q-form @submit.prevent.stop="saveRole" novalidate class="q-pa-md">
                 <q-card-section>
                     <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">AGREGAR ROL</div>
                 </q-card-section>
@@ -84,8 +84,8 @@
                 </q-card-section>
 
                 <q-card-actions align="right">
-                    <q-btn flat label="Cancelar" color="negative" @click="hideDialog" />
-                    <q-btn flat label="Guardar" color="blue" type="submit" />
+                    <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
+                    <q-btn class="q-mx-sm" outline label="Guardar" color="blue" type="submit" />
                 </q-card-actions>
             </q-form>
         </q-card>

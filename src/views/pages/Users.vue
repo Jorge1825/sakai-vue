@@ -91,7 +91,7 @@
     <!-- Modal para agregar/editar usuario -->
     <q-dialog v-model="userDialog" persistent width="800px">
         <q-card>
-            <q-form @submit.prevent.stop="saveUser" novalidate>
+            <q-form @submit.prevent.stop="saveUser" novalidate class="q-pa-md">
                 <q-card-section>
                     <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">AGREGAR USUARIO</div>
                 </q-card-section>
@@ -123,9 +123,9 @@
                     </div>
                 </q-card-section>
 
-                <q-card-actions align="right">
-                    <q-btn flat label="Cancelar" color="negative" @click="hideDialog" />
-                    <q-btn flat label="Guardar" color="blue" type="submit" />
+                <q-card-actions align="center">
+                    <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
+                    <q-btn class="q-mx-sm" outline label="Guardar" color="blue" type="submit" />
                 </q-card-actions>
             </q-form>
         </q-card>

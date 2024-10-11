@@ -60,7 +60,7 @@ async function signIn() {
                     <q-form @submit.prevent.stop="signIn" novalidate>
                         <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Correo</label>
                         <q-input
-                            color="secondary"
+                            color="primary"
                             filled
                             v-model="email"
                             placeholder="Ingrese su correo"
@@ -71,7 +71,7 @@ async function signIn() {
 
                         <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña</label>
                         <q-input
-                            color="secondary"
+                            color="primary"
                             filled
                             v-model="password"
                             placeholder="Ingrese su contraseña"
