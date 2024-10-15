@@ -112,36 +112,41 @@ async function signIn() {
 
   <!-- Modal de recuperación de contraseña -->
   <q-dialog v-model="showRecoverPasswordModal">
-    <q-card class="q-pa-md text-center" style="max-width: 400px; margin: auto;">
-      <q-card-section>
-        <div class="text-h6">RECUPERAR CONTRASEÑA</div>
-        <p class="q-mt-md">Ingrese el correo para recuperar la contraseña</p>
-      </q-card-section>
+    <div class="container bg-white">
+        <div class="watermark-container justify-center flex">
+            <q-card class="q-pa-md text-center bg-transparent" style="max-width: 400px; margin: auto;">
+                <q-card-section>
+                    <div class="text-h6">RECUPERAR CONTRASEÑA</div>
+                    <p class="q-mt-md">Ingrese el correo para recuperar la contraseña</p>
+                </q-card-section>
 
-      <q-card-section>
-        <q-form @submit.prevent="() => showRecoverPasswordModal = false">
-          <q-input
-            filled
-            v-model="recoverEmail"
-            label="Correo electrónico"
-            type="email"
-            :rules="[emailRequired]"
-            lazy-rules
-            clearable
-            autofocus
-            required
-          />
-          <!-- Centrando el botón con estilo de margen automático -->
-          <q-btn
-            type="submit"
-            label="Enviar código"
-            color="primary"
-            class="q-mt-md q-mx-auto"
-          />
-        </q-form>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
+                <q-card-section>
+                    <q-form @submit.prevent="() => showRecoverPasswordModal = false">
+                        <q-input
+                            filled
+                            v-model="recoverEmail"
+                            label="Correo electrónico"
+                            type="email"
+                            :rules="[emailRequired]"
+                            lazy-rules
+                            clearable
+                            autofocus
+                            required
+                        />
+                        <!-- Centrando el botón con estilo de margen automático -->
+                        <q-btn
+                            type="submit"
+                            label="Enviar código"
+                            color="primary"
+                            class="q-mt-md q-mx-auto"
+                        />
+                    </q-form>
+                </q-card-section>
+            </q-card>
+            <div class="watermark"></div>
+        </div>
+    </div>
+</q-dialog> 
 </template>
 
 <style scoped>
@@ -164,5 +169,21 @@ async function signIn() {
   display: flex;
   flex-direction: column;
   align-items: center; /* Centrar el contenido dentro del modal */
+}
+.watermark-container {
+    position: relative;
+    z-index: 1;
+}
+.watermark {
+    position: absolute;
+    bottom: 10px;
+    width: 200px;
+    height: 200px;
+    background-image: url('../../assets/sosteniweb/logo_negro.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: 0; /* Cambiar de -1 a 0 para estar en el mismo nivel que el contenido */
+    pointer-events: none;/* Para que no interfieraq con los clics del contenido*/
 }
 </style>

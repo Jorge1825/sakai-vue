@@ -256,7 +256,6 @@ function collapseAll() {
     position: relative;
     z-index: 1;
 }
-
 .watermark {
     position: absolute;
     bottom: 10px;
