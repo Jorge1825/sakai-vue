@@ -63,33 +63,41 @@
 
     <!-- Modal para agregar/editar usuario -->
     <q-dialog v-model="roleDialog" persistent width="800px">
-        <q-card>
-            <q-form @submit.prevent.stop="saveRole" novalidate class="q-pa-md">
-                <q-card-section>
-                    <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">AGREGAR ROL</div>
-                </q-card-section>
+    <div class="container bg-white">
+        <div class="watermark-container justify-center flex">
+            <q-card class="justify-center flex bg-transparent">
+                <q-form @submit.prevent.stop="saveRole" novalidate class="q-pa-md">
+                    <q-card-section>
+                        <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">
+                            AGREGAR ROL
+                        </div>
+                    </q-card-section>
 
-                <q-card-section>
-                    <div class="row">
-                        <div class="col-6">
-                            <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre del rol requerido']" v-model="role.name" label="Nombre del Rol" required style="padding: 10px" />
+                    <q-card-section>
+                        <div class="row">
+                            <div class="col-6">
+                                <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre del rol requerido']" v-model="role.name" label="Nombre del Rol" required style="padding: 10px" />
+                            </div>
+                            <div class="col-6">
+                                <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="role.description" label="Descripción" required style="padding: 10px" autogrow />
+                            </div>
+                            <div class="col-6">
+                                <q-select v-model="role.status" :options="status" label="Estado" required style="padding: 10px" />
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="role.description" label="Descripción" required style="padding: 10px" autogrow />
-                        </div>
-                        <div class="col-6">
-                            <q-select v-model="role.status" :options="status" label="Estado" required style="padding: 10px" />
-                        </div>
-                    </div>
-                </q-card-section>
+                    </q-card-section>
 
-                <q-card-actions align="right">
-                    <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
-                    <q-btn class="q-mx-sm" outline label="Guardar" color="blue" type="submit" />
-                </q-card-actions>
-            </q-form>
-        </q-card>
-    </q-dialog>
+                    <q-card-actions align="right">
+                        <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
+                        <q-btn class="q-mx-sm" outline label="Guardar" color="blue" type="submit" />
+                    </q-card-actions>
+                </q-form>
+            </q-card>
+            <div class="watermark"></div>
+        </div>
+    </div>
+</q-dialog>
+
 </template>
 
 <script setup>
@@ -243,5 +251,21 @@ function collapseAll() {
     justify-content: space-between;
     gap: 10px;
     /* Espacio entre los botones */
+}
+.watermark-container {
+    position: relative;
+    z-index: 1;
+}
+
+.watermark {
+    position: absolute;
+    bottom: 10px;
+    width: 300px;
+    height: 300px;
+    background-image: url('../../assets/sosteniweb/logo_negro.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
 }
 </style>
