@@ -24,15 +24,14 @@
                 :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
-        
             >
                 <Column field="username" header="NOMBRE DE USUARIO" style="width: 20%" />
                 <Column field="email" header="EMAIL" :sortable="true" style="width: 30%" />
                 <Column field="phone" header="TELÉFONO" :sortable="true" style="width: 15%" />
-                <Column field="role" header="ROL" :sortable="true" style="width: 10%" >
+                <Column field="role" header="ROL" :sortable="true" style="width: 10%">
                     <template #body="slotProps">
                         <div style="text-align: center">
-                                {{ slotProps.data.role?.name || '' }}
+                            {{ slotProps.data.role?.name || '' }}
                         </div>
                     </template>
                 </Column>
@@ -90,45 +89,50 @@
 
     <!-- Modal para agregar/editar usuario -->
     <q-dialog v-model="userDialog" persistent width="800px">
-        <q-card>
-            <q-form @submit.prevent.stop="saveUser" novalidate class="q-pa-md">
-                <q-card-section>
-                    <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">AGREGAR USUARIO</div>
-                </q-card-section>
+        <div class="container bg-white">
+            <div class="watermark-container justify-center flex">
+                <q-card class="justify-center flex bg-transparent">
+                    <q-form @submit.prevent.stop="saveUser" novalidate class="q-pa-md">
+                        <q-card-section>
+                            <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">AGREGAR USUARIO</div>
+                        </q-card-section>
 
-                <q-card-section>
-                    <div class="row">
-                        <div class="col-6">
-                            <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre de usuario requerido']" v-model="user.username" label="Nombre de Usuario" required style="padding: 10px" />
-                        </div>
-                        <div class="col-6">
-                            <q-input v-model="user.email" label="Email" required style="padding: 10px" />
-                        </div>
-                        <div class="col-6">
-                            <q-input v-model="user.phone" label="Teléfono" type="number" required style="padding: 10px" />
-                        </div>
-                        <div class="col-6">
-                            <q-select v-model="user.role" :options="roles" label="Rol" required style="padding: 10px" />
-                        </div>
-                        <div class="col-6">
-                            <q-select v-model="user.status" :options="status" label="Estado" required style="padding: 10px" />
-                        </div>
-                        <div class="col-6">
-                            <q-select v-model="user.subscription" :options="['Suscrito', 'No Suscrito']" label="Suscripción" required style="padding: 10px" />
-                        </div>
+                        <q-card-section>
+                            <div class="row">
+                                <div class="col-6">
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre de usuario requerido']" v-model="user.username" label="Nombre de Usuario" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input v-model="user.email" label="Email" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input v-model="user.phone" label="Teléfono" type="number" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-select v-model="user.role" :options="roles" label="Rol" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-select v-model="user.status" :options="status" label="Estado" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-select v-model="user.subscription" :options="['Suscrito', 'No Suscrito']" label="Suscripción" required style="padding: 10px" />
+                                </div>
 
-                        <div class="col-6">
-                            <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'password requerida']" v-model="user.password" label="Contraseña" required style="padding: 10px" />
-                        </div>
-                    </div>
-                </q-card-section>
+                                <div class="col-6">
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'password requerida']" v-model="user.password" label="Contraseña" required style="padding: 10px" />
+                                </div>
+                            </div>
+                        </q-card-section>
 
-                <q-card-actions align="center">
-                    <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
-                    <q-btn class="q-mx-sm" outline label="Guardar" color="blue" type="submit" />
-                </q-card-actions>
-            </q-form>
-        </q-card>
+                        <q-card-actions align="center">
+                            <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
+                            <q-btn class="q-mx-sm" outline label="Guardar" color="blue" type="submit" />
+                        </q-card-actions>
+                    </q-form>
+                </q-card>
+                <div class="watermark"></div>
+            </div>
+        </div>
     </q-dialog>
 </template>
 
@@ -169,7 +173,7 @@ const exampleUsers = [
 
 onBeforeMount(async () => {
     await getUsers();
-    await getRoles()
+    await getRoles();
 });
 
 async function getUsers() {
@@ -372,5 +376,21 @@ function collapseAll() {
     justify-content: space-between;
     gap: 10px;
     /* Espacio entre los botones */
+}
+.watermark-container {
+    position: relative;
+    z-index: 1;
+}
+
+.watermark {
+    position: absolute;
+    bottom: 10px;
+    width: 450px;
+    height: 450px;
+    background-image: url('../../assets/sosteniweb/logo_negro.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
 }
 </style>
