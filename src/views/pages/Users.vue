@@ -10,10 +10,12 @@
 
                 </div>
                 <div class="col-12 flex justify-end">
-    <q-btn icon="add" style="background-color: rgb(4, 178, 217); color: white;" @click="openDialog" class="q-mr-sm" />
-    <q-btn icon="expand_more" style="background-color: rgb(4, 178, 217); color: white;" @click="expandAll" class="q-mr-sm" />
-    <q-btn icon="expand_less" color="red" @click="collapseAll" />
-</div>
+                    <q-btn icon="add" style="background-color: rgb(4, 178, 217); color: white;" @click="openDialog"
+                        class="q-mr-sm" />
+                    <q-btn icon="expand_more" style="background-color: rgb(4, 178, 217); color: white;"
+                        @click="expandAll" class="q-mr-sm" />
+                    <q-btn icon="expand_less" color="red" @click="collapseAll" />
+                </div>
 
 
             </div>
@@ -55,14 +57,20 @@
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotProps">
                         <div class="button-group">
-                            <!-- Modifique el boton para que llame al metodo toggleStatus-->
+                            <!-- Botón que cambia de estado con colores según el estado -->
                             <q-btn :icon="slotProps.data.status === true ? 'clear' : 'check'"
-                                :color="slotProps.data.status === true ? 'red' : 'blue'"
+                                :style="{ backgroundColor: slotProps.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
                                 @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
-                            <q-btn icon="edit" color="blue" @click="editUser(slotProps.data)" dense round />
+
+                            <!-- Botón de edición con fondo azul claro y color de ícono blanco -->
+                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
+                                @click="editUser(slotProps.data)" dense round />
+
+                            <!-- Comentado el botón de eliminar -->
                             <!-- <q-btn icon="delete" color="negative" @click="deleteUser(slotProps.data)" dense /> -->
                         </div>
                     </template>
+
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
@@ -246,7 +254,13 @@ async function saveUser() {
         console.log(response);
 
         if (response.status === 200) {
-            Notify.create({ message: 'Usuario actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            Notify.create({ 
+                message: 'Usuario actualizado correctamente.', 
+                type: 'positive', 
+                position: 'top', 
+                textColor: 'white', 
+                color: 'blue', //rgb(4, 178, 217)
+                multiLine: true });
             await getUsers();
             hideDialog();
         } else {

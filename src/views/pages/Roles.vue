@@ -4,27 +4,30 @@
         <div class="card full-height" style="min-height: 82vh">
             <div class="row q-my-md">
                 <div class="col-6">
-                    <div class="text-h5" style="color: #1976d2; text-transform: uppercase">
+                    <div class="text-h5" style="color: rgb(4, 178, 217); text-transform: uppercase">
                         <strong>Roles</strong>
                     </div>
                 </div>
-                <div :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" class="col-12 flex justify-end">
-                    <q-btn icon="add" color="blue" @click="openDialog" class="q-mr-sm" />
-                    <q-btn icon="expand_more" color="blue" @click="expandAll" class="q-mr-sm" />
-                    <q-btn icon="expand_less" color="red" @click="collapseAll" />
+                <div class="col-12 flex justify-end">
+                    <!-- Botón de agregar con fondo azul claro y color de ícono blanco -->
+                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
+                        @click="openDialog" class="q-mr-sm" />
+
+                    <!-- Botón de expandir con fondo azul claro y color de ícono blanco -->
+                    <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
+                        @click="expandAll" class="q-mr-sm" />
+
+                    <!-- Botón de colapsar con fondo rojo y color de ícono blanco -->
+                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }"
+                        @click="collapseAll" />
                 </div>
+
             </div>
             <!-- Tabla de usuarios -->
-            <DataTable
-                v-model:expandedRows="expandedRows"
-                :value="roles"
-                dataKey="_id"
-                responsiveLayout="scroll"
-                :paginator="true"
-                :rows="10"
+            <DataTable v-model:expandedRows="expandedRows" :value="roles" dataKey="_id" responsiveLayout="scroll"
+                :paginator="true" :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                :rowsPerPageOptions="[5, 10, 25]"
-            >
+                :rowsPerPageOptions="[5, 10, 25]">
                 <Column field="name" header="NOMBRE" :sortable="true" style="width: 15%" />
                 <Column field="description" header="DESCRIPCIÓN" style="width: 35%" />
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
@@ -39,11 +42,17 @@
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotProps">
                         <div class="button-group">
-                            <!-- Modifique el boton para que llame al metodo toggleStatus-->
-                            <q-btn :icon="slotProps.data.status === true ? 'clear' : 'check'" :color="slotProps.data.status === true ? 'red' : 'blue'" @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
-                            <q-btn icon="edit" color="blue" @click="editRole(slotProps.data)" dense round />
+                            <!-- Botón que cambia color de fondo sin afectar el icono -->
+                            <q-btn :icon="slotProps.data.status === true ? 'clear' : 'check'"
+                                :style="{ backgroundColor: slotProps.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
+                                @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
+                            <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
+                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
+                                @click="editRole(slotProps.data)" dense round />
                         </div>
                     </template>
+
+
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
@@ -63,40 +72,46 @@
 
     <!-- Modal para agregar/editar usuario -->
     <q-dialog v-model="roleDialog" persistent width="800px">
-    <div class="container bg-white">
-        <div class="watermark-container justify-center flex">
-            <q-card class="justify-center flex bg-transparent">
-                <q-form @submit.prevent.stop="saveRole" novalidate class="q-pa-md">
-                    <q-card-section>
-                        <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">
-                            AGREGAR ROL
-                        </div>
-                    </q-card-section>
+        <div class="container bg-white">
+            <div class="watermark-container justify-center flex">
+                <q-card class="justify-center flex bg-transparent">
+                    <q-form @submit.prevent.stop="saveRole" novalidate class="q-pa-md">
+                        <q-card-section>
+                            <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">
+                                AGREGAR ROL
+                            </div>
+                        </q-card-section>
 
-                    <q-card-section>
-                        <div class="row">
-                            <div class="col-6">
-                                <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre del rol requerido']" v-model="role.name" label="Nombre del Rol" required style="padding: 10px" />
+                        <q-card-section>
+                            <div class="row">
+                                <div class="col-6">
+                                    <q-input lazy-rules
+                                        :rules="[(val) => (val && val.length > 0) || 'Nombre del rol requerido']"
+                                        v-model="role.name" label="Nombre del Rol" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules
+                                        :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']"
+                                        v-model="role.description" label="Descripción" required style="padding: 10px"
+                                        autogrow />
+                                </div>
+                                <div class="col-6">
+                                    <q-select v-model="role.status" :options="status" label="Estado" required
+                                        style="padding: 10px" />
+                                </div>
                             </div>
-                            <div class="col-6">
-                                <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="role.description" label="Descripción" required style="padding: 10px" autogrow />
-                            </div>
-                            <div class="col-6">
-                                <q-select v-model="role.status" :options="status" label="Estado" required style="padding: 10px" />
-                            </div>
-                        </div>
-                    </q-card-section>
+                        </q-card-section>
 
-                    <q-card-actions align="right">
-                        <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
-                        <q-btn class="q-mx-sm" outline label="Guardar" color="blue" type="submit" />
-                    </q-card-actions>
-                </q-form>
-            </q-card>
-            <div class="watermark"></div>
+                        <q-card-actions align="right">
+                            <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
+                            <q-btn class="q-mx-sm" outline label="Guardar" color="blue" type="submit" />
+                        </q-card-actions>
+                    </q-form>
+                </q-card>
+                <div class="watermark"></div>
+            </div>
         </div>
-    </div>
-</q-dialog>
+    </q-dialog>
 
 </template>
 
@@ -213,7 +228,7 @@ async function toggleStatus(selectedRole) {
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedRole.status === 'Activo' ? 'blue' : 'red',
+                color: selectedRole.status === 'Activo' ? 'blue' : 'red',//rgb(4, 178, 217)
                 multiLine: true
             });
 
@@ -252,10 +267,12 @@ function collapseAll() {
     gap: 10px;
     /* Espacio entre los botones */
 }
+
 .watermark-container {
     position: relative;
     z-index: 1;
 }
+
 .watermark {
     position: absolute;
     bottom: 10px;
