@@ -8,7 +8,7 @@
                         <strong>Roles</strong>
                     </div>
                 </div>
-                <div class="col-12 flex justify-end">
+                <div :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" class="col-12 flex justify-end">
                     <q-btn icon="add" color="blue" @click="openDialog" class="q-mr-sm" />
                     <q-btn icon="expand_more" color="blue" @click="expandAll" class="q-mr-sm" />
                     <q-btn icon="expand_less" color="red" @click="collapseAll" />

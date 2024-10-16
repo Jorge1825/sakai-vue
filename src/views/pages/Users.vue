@@ -4,27 +4,24 @@
         <div class="card full-height" style="min-height: 82vh">
             <div class="row q-my-md">
                 <div class="col-6">
-                    <div class="text-h5" style="color: #1976d2; text-transform: uppercase">
+                    <div class="text-h5" style="color: rgb(4, 178, 217); text-transform: uppercase">
                         <strong>Usuarios</strong>
                     </div>
+
                 </div>
                 <div class="col-12 flex justify-end">
-                    <q-btn icon="add" color="blue" @click="openDialog" class="q-mr-sm" />
-                    <q-btn icon="expand_more" color="blue" @click="expandAll" class="q-mr-sm" />
-                    <q-btn icon="expand_less" color="red" @click="collapseAll" />
-                </div>
+    <q-btn icon="add" style="background-color: rgb(4, 178, 217); color: white;" @click="openDialog" class="q-mr-sm" />
+    <q-btn icon="expand_more" style="background-color: rgb(4, 178, 217); color: white;" @click="expandAll" class="q-mr-sm" />
+    <q-btn icon="expand_less" color="red" @click="collapseAll" />
+</div>
+
+
             </div>
             <!-- Tabla de usuarios -->
-            <DataTable
-                v-model:expandedRows="expandedRows"
-                :value="users"
-                dataKey="_id"
-                responsiveLayout="scroll"
-                :paginator="true"
-                :rows="10"
+            <DataTable v-model:expandedRows="expandedRows" :value="users" dataKey="_id" responsiveLayout="scroll"
+                :paginator="true" :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                :rowsPerPageOptions="[5, 10, 25]"
-            >
+                :rowsPerPageOptions="[5, 10, 25]">
                 <Column field="username" header="NOMBRE DE USUARIO" style="width: 20%" />
                 <Column field="email" header="EMAIL" :sortable="true" style="width: 30%" />
                 <Column field="phone" header="TELÉFONO" :sortable="true" style="width: 15%" />
@@ -44,10 +41,12 @@
                         </div>
                     </template>
                 </Column>
-                <Column field="subscription" header="Suscripción" style="width: 10%; text-align: center; text-transform: uppercase">
+                <Column field="subscription" header="Suscripción"
+                    style="width: 10%; text-align: center; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: center">
-                            <q-badge :color="slotProps.data.subscription === 'Suscrito' ? 'blue' : 'grey'" class="q-ml-xs">
+                            <q-badge :color="slotProps.data.subscription === 'Suscrito' ? 'blue' : 'grey'"
+                                class="q-ml-xs">
                                 {{ slotProps.data.subscription }}
                             </q-badge>
                         </div>
@@ -57,7 +56,9 @@
                     <template #body="slotProps">
                         <div class="button-group">
                             <!-- Modifique el boton para que llame al metodo toggleStatus-->
-                            <q-btn :icon="slotProps.data.status === true ? 'clear' : 'check'" :color="slotProps.data.status === true ? 'red' : 'blue'" @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
+                            <q-btn :icon="slotProps.data.status === true ? 'clear' : 'check'"
+                                :color="slotProps.data.status === true ? 'red' : 'blue'"
+                                @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
                             <q-btn icon="edit" color="blue" @click="editUser(slotProps.data)" dense round />
                             <!-- <q-btn icon="delete" color="negative" @click="deleteUser(slotProps.data)" dense /> -->
                         </div>
@@ -94,32 +95,42 @@
                 <q-card class="justify-center flex bg-transparent">
                     <q-form @submit.prevent.stop="saveUser" novalidate class="q-pa-md">
                         <q-card-section>
-                            <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">AGREGAR USUARIO</div>
+                            <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">
+                                AGREGAR USUARIO</div>
                         </q-card-section>
 
                         <q-card-section>
                             <div class="row">
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre de usuario requerido']" v-model="user.username" label="Nombre de Usuario" required style="padding: 10px" />
+                                    <q-input lazy-rules
+                                        :rules="[(val) => (val && val.length > 0) || 'Nombre de usuario requerido']"
+                                        v-model="user.username" label="Nombre de Usuario" required
+                                        style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
                                     <q-input v-model="user.email" label="Email" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input v-model="user.phone" label="Teléfono" type="number" required style="padding: 10px" />
+                                    <q-input v-model="user.phone" label="Teléfono" type="number" required
+                                        style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-select v-model="user.role" :options="roles" label="Rol" required style="padding: 10px" />
+                                    <q-select v-model="user.role" :options="roles" label="Rol" required
+                                        style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-select v-model="user.status" :options="status" label="Estado" required style="padding: 10px" />
+                                    <q-select v-model="user.status" :options="status" label="Estado" required
+                                        style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-select v-model="user.subscription" :options="['Suscrito', 'No Suscrito']" label="Suscripción" required style="padding: 10px" />
+                                    <q-select v-model="user.subscription" :options="['Suscrito', 'No Suscrito']"
+                                        label="Suscripción" required style="padding: 10px" />
                                 </div>
 
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'password requerida']" v-model="user.password" label="Contraseña" required style="padding: 10px" />
+                                    <q-input lazy-rules
+                                        :rules="[(val) => (val && val.length > 0) || 'password requerida']"
+                                        v-model="user.password" label="Contraseña" required style="padding: 10px" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -377,6 +388,7 @@ function collapseAll() {
     gap: 10px;
     /* Espacio entre los botones */
 }
+
 .watermark-container {
     position: relative;
     z-index: 1;

@@ -23,7 +23,7 @@ async function signIn() {
     const { data, status } = await login(email.value, password.value);
 
     console.log(data);
-    
+
     // Si el login es exitoso
     if (data.token && status === 200) {
       errorMessage.value = ''; // Limpiar el mensaje de error si es exitoso
@@ -42,9 +42,11 @@ async function signIn() {
 
 <template>
   <FloatingConfigurator />
-  <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
+  <div
+    class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
     <div class="flex flex-col items-center justify-center">
-      <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, #0EA5E9 10%, rgba(4, 178, 217, 0) 30%)">
+      <div
+        style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, #0EA5E9 10%, rgba(4, 178, 217, 0) 30%)">
         <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
           <div class="text-center mb-8">
             <div class="image-container">
@@ -60,33 +62,21 @@ async function signIn() {
           </div>
 
           <q-form @submit.prevent.stop="signIn" novalidate>
-            <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Correo</label>
-            <q-input
-              color="primary"
-              filled
-              v-model="email"
-              placeholder="Ingrese su correo"
-              :dense="true"
-              lazy-rules
-              :rules="[(val) => (val && val.length > 0) || 'Correo electrónico requerido', (val) => /.+@.+\..+/.test(val) || 'Correo electrónico inválido']"
-            />
+            <label for="email1"
+              class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Correo</label>
+            <q-input style="border-color:rgb(4, 178, 217);" color="primary" filled v-model="email"
+              placeholder="Ingrese su correo" :dense="true" lazy-rules
+              :rules="[(val) => (val && val.length > 0) || 'Correo electrónico requerido', (val) => /.+@.+\..+/.test(val) || 'Correo electrónico inválido']" />
 
-            <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña</label>
-            <q-input
-              color="primary"
-              filled
-              v-model="password"
-              placeholder="Ingrese su contraseña"
-              :dense="true"
-              lazy-rules
-              :rules="[(val) => (val && val.length > 0) || 'Contraseña requerida']"
-              :type="isPwd ? 'password' : 'text'"
-              append
-              :append-icon="password ? 'pi-eye' : 'pi-eye-slash'"
-              @click:append="password = !password"
-            >
+            <label for="password1"
+              class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña</label>
+            <q-input style="border-color: rgb(4, 178, 217);" color="primary" filled v-model="password"
+              placeholder="Ingrese su contraseña" :dense="true" lazy-rules
+              :rules="[(val) => (val && val.length > 0) || 'Contraseña requerida']" :type="isPwd ? 'password' : 'text'"
+              append :append-icon="password ? 'pi-eye' : 'pi-eye-slash'" @click:append="password = !password">
               <template v-slot:append>
-                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
+                  @click="isPwd = !isPwd" />
               </template>
             </q-input>
 
@@ -96,14 +86,12 @@ async function signIn() {
                 <label for="rememberme1">Recordar usuario</label>
               </div>
               <!-- Mostrar modal al hacer clic en "¿Olvidaste la contraseña?" -->
-              <span
-                class="font-medium no-underline ml-2 text-right cursor-pointer text-primary"
-                @click="showRecoverPasswordModal = true"
-              >
+              <span class="forgot-password" @click="showRecoverPasswordModal = true">
                 ¿Olvidaste la contraseña?
               </span>
             </div>
-            <q-btn style="background-color: #0EA5E9; color: white;" label="Ingresar" class="w-full" type="submit" />
+            <q-btn style="background-color: rgb(4, 178, 217); color: white;" label="Ingresar" class="w-full"
+              type="submit" />
           </q-form>
         </div>
       </div>
@@ -113,46 +101,33 @@ async function signIn() {
   <!-- Modal de recuperación de contraseña -->
   <q-dialog v-model="showRecoverPasswordModal">
     <div class="container bg-white">
-        <div class="watermark-container justify-center flex">
-            <q-card class="q-pa-md text-center bg-transparent" style="max-width: 400px; margin: auto;">
-                <q-card-section>
-                    <div class="text-h6">RECUPERAR CONTRASEÑA</div>
-                    <p class="q-mt-md">Ingrese el correo para recuperar la contraseña</p>
-                </q-card-section>
+      <div class="watermark-container justify-center flex">
+        <q-card class="q-pa-md text-center bg-transparent" style="max-width: 400px; margin: auto;">
+          <q-card-section>
+            <div class="text-h6">RECUPERAR CONTRASEÑA</div>
+            <p class="q-mt-md">Ingrese el correo para recuperar la contraseña</p>
+          </q-card-section>
 
-                <q-card-section>
-                    <q-form @submit.prevent="() => showRecoverPasswordModal = false">
-                        <q-input
-                            filled
-                            v-model="recoverEmail"
-                            label="Correo electrónico"
-                            type="email"
-                            :rules="[emailRequired]"
-                            lazy-rules
-                            clearable
-                            autofocus
-                            required
-                        />
-                        <!-- Centrando el botón con estilo de margen automático -->
-                        <q-btn
-                            type="submit"
-                            label="Enviar código"
-                            color="primary"
-                            class="q-mt-md q-mx-auto"
-                        />
-                    </q-form>
-                </q-card-section>
-            </q-card>
-            <div class="watermark"></div>
-        </div>
+          <q-card-section>
+            <q-form @submit.prevent="() => showRecoverPasswordModal = false">
+              <q-input filled v-model="recoverEmail" label="Correo electrónico" type="email" :rules="[emailRequired]"
+                lazy-rules clearable autofocus required />
+              <!-- Centrando el botón con estilo de margen automático -->
+              <q-btn type="submit" label="Enviar código" color="primary" class="q-mt-md q-mx-auto" />
+            </q-form>
+          </q-card-section>
+        </q-card>
+        <div class="watermark"></div>
+      </div>
     </div>
-</q-dialog> 
+  </q-dialog>
 </template>
 
 <style scoped>
 .image-container {
   display: flex;
-  justify-content: center; /* Centrar horizontalmente */
+  justify-content: center;
+  /* Centrar horizontalmente */
 }
 
 .pi-eye {
@@ -168,22 +143,33 @@ async function signIn() {
 .q-card {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centrar el contenido dentro del modal */
+  align-items: center;
+  /* Centrar el contenido dentro del modal */
+}
+/* Estilo para el texto "¿Olvidaste la contraseña?" */
+.forgot-password {
+  color: rgb(4, 178, 217);
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
 }
 .watermark-container {
-    position: relative;
-    z-index: 1;
+  position: relative;
+  z-index: 1;
 }
+
 .watermark {
-    position: absolute;
-    bottom: 10px;
-    width: 200px;
-    height: 200px;
-    background-image: url('../../assets/sosteniweb/logo_negro.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    opacity: 0.05;
-    z-index: 0; /* Cambiar de -1 a 0 para estar en el mismo nivel que el contenido */
-    pointer-events: none;/* Para que no interfieraq con los clics del contenido*/
+  position: absolute;
+  bottom: 10px;
+  width: 200px;
+  height: 200px;
+  background-image: url('../../assets/sosteniweb/logo_negro.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.05;
+  z-index: 0;
+  /* Cambiar de -1 a 0 para estar en el mismo nivel que el contenido */
+  pointer-events: none;
+  /* Para que no interfieraq con los clics del contenido*/
 }
 </style>
