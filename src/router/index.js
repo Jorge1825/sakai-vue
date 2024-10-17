@@ -1,6 +1,7 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import Cookies from "js-cookie";
+import RequirementsPanel from '@/components/requirements/RequirementsPanel.vue';//Ruta a Requerimientos
 
 const checkAuth = () => {
   const cookie = Cookies.get("access_token");
@@ -139,7 +140,12 @@ const router = createRouter({
                     path: '/roles',
                     name: 'roles',
                     component: () => import('@/views/pages/Roles.vue')
-                }
+                },
+                {
+                    path: '/requirements',
+                    name: 'Requirements',
+                    component: RequirementsPanel,
+                  },
             ],
             beforeEnter: auth
         },
