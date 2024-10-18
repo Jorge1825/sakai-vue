@@ -6,90 +6,115 @@
             </q-card-section>
             <q-separator />
             <q-card-section>
-                <q-table :rows="requirements" :columns="columns" row-key="_id" class="q-pa-md" no-data-label="NO HAY REQUERIMIENTOS DISPONIBLES">
-                    <template v-slot:top-right>
-                        <q-btn label="AGREGAR REQUERIMIENTO" @click="openDialog" style="background-color: rgb(4, 178, 217); color: white" />
-                    </template>
-                </q-table>
+                <div class="q-pa-md" style="display: flex; justify-content: flex-end;">
+                    <q-btn label="AGREGAR REQUERIMIENTO" style="background-color: rgb(4, 178, 217); color: white;"
+                        @click="openDialog" class="q-mb-md" />
+                </div>
+                <q-table :rows="requirements" :columns="columns" row-key="_id" class="q-pa-md"
+                    no-data-label="NO HAY REQUERIMIENTOS DISPONIBLES" />
+                <q-dialog v-model="dialog" persistent>
+                    <q-card>
+                        <q-card-section style="border-bottom: 1px solid rgb(4, 178, 217);">
+                            <div class="text-h6" style="color: rgb(4, 178, 217); margin-bottom: 16px;">AGREGAR
+                                REQUERIMIENTO</div>
+                        </q-card-section>
+                        <q-card-section class="q-pa-lg">
+                            <q-input v-model="newRequirement.name" label="NOMBRE" />
+                            <q-input v-model="newRequirement.description" label="DESCRIPCIÓN" type="textarea" />
+                            <q-toggle v-model="newRequirement.status" label="ESTADO (ACTIVO/INACTIVO)" />
+                        </q-card-section>
+                        <q-card-actions>
+                            <q-btn label="CANCELAR" @click="closeDialog" />
+                            <q-btn label="GUARDAR" style="background-color: rgb(4, 178, 217); color: white;" @click="saveRequirement" />
+                        </q-card-actions>
+                    </q-card>
+                </q-dialog>
             </q-card-section>
         </q-card>
-
-        <!-- Modal para agregar requerimiento -->
-        <q-dialog v-model="dialog" persistent>
-            <q-card>
-                <q-card-section>
-                    <div class="text-h6">AGREGAR REQUERIMIENTO</div>
-                </q-card-section>
-                <q-card-section>
-                    <q-input v-model="newRequirement.name" label="NOMBRE" />
-                    <q-input v-model="newRequirement.description" label="DESCRIPCIÓN" type="textarea" />
-                    <q-toggle v-model="newRequirement.status" label="ESTADO (ACTIVO/INACTIVO)" />
-                </q-card-section>
-                <q-card-actions>
-                    <q-btn label="CANCELAR" @click="closeDialog" />
-                    <q-btn label="GUARDAR" color="primary" @click="saveRequirement" />
-                </q-card-actions>
-            </q-card>
-        </q-dialog>
     </div>
 </template>
 
 <script setup>
-import axios from 'axios';
-import { onBeforeMount, ref } from 'vue';
+import { ref, onBeforeMount } from 'vue';
+import { useQuasar } from 'quasar';
+import { getRequirementsApi, createRequirementApi } from '@/api/requirements'; // Importa las funciones API
 
-let requirements = ref([]);
-let dialog = ref(false);
-let newRequirement = ref({
+const requirements = ref([]);
+const dialog = ref(false);
+const newRequirement = ref({
     name: '',
     description: '',
-    status: true // Por defecto, el estado es activo
+    status: true,
 });
-let columns = ref([
+
+const columns = ref([
     { name: 'name', label: 'NOMBRE', align: 'left', field: 'name' },
     { name: 'description', label: 'DESCRIPCIÓN', align: 'left', field: 'description' },
-    { name: 'status', label: 'ESTADO', align: 'center', field: 'status', format: (val) => (val ? 'ACTIVO' : 'INACTIVO') }
+    {
+        name: 'status',
+        label: 'ESTADO',
+        align: 'center',
+        field: 'status',
+        format: (val) => (val ? 'ACTIVO' : 'INACTIVO'),
+    },
 ]);
 
+const $q = useQuasar();
+
 onBeforeMount(() => {
-    // Hacer una solicitud GET al backend para obtener los requerimientos
     fetchRequirements();
 });
 
-function fetchRequirements() {
-    axios
-        .get('/api/requirements')
-        .then((response) => {
-            this.requirements = response.data;
-        })
-        .catch((error) => {
-            console.error('Error al obtener los requerimientos:', error);
+const fetchRequirements = async () => {
+    try {
+        const response = await getRequirementsApi(); // Usamos la función importada
+        requirements.value = response.data;
+    } catch (error) {
+        console.error('Error al obtener los requerimientos:', error);
+        $q.notify({
+            type: 'negative',
+            message: 'Error al obtener los requerimientos.',
         });
-}
-function openDialog() {
-    this.dialog.value = true;
-    this.newRequirement.value = { name: '', description: '', status: true }; // Reiniciar el formulario
-}
-function closeDialog() {
-    this.dialog.value = false;
-}
-function saveRequirement() {
-    // Asegúrate de que la ruta y el formato del dato son correctos
-    axios
-        .post('/api/requirements', this.newRequirement)
-        .then(() => {
-            this.fetchRequirements(); // Recargar la lista de requerimientos
-            this.closeDialog(); // Cerrar el modal
-        })
-        .catch((error) => {
-            console.error('Error al guardar el requerimiento:', error);
+    }
+};
+
+const openDialog = () => {
+    dialog.value = true;
+    newRequirement.value = { name: '', description: '', status: true }; // Reiniciar el formulario
+};
+
+const closeDialog = () => {
+    dialog.value = false;
+};
+
+const saveRequirement = async () => {
+    if (!newRequirement.value.name || !newRequirement.value.description) {
+        $q.notify({
+            type: 'warning',
+            message: 'Por favor, completa todos los campos obligatorios.',
         });
-}
+        return;
+    }
+    try {
+        await createRequirementApi(newRequirement.value); // Usamos la función importada
+        $q.notify({
+            type: 'positive',
+            message: 'Requerimiento creado exitosamente.',
+        });
+        fetchRequirements();
+        closeDialog();
+    } catch (error) {
+        console.error('Error al guardar el requerimiento:', error);
+        $q.notify({
+            type: 'negative',
+            message: error.response ? `Error: ${error.response.data.message}` : 'Error al guardar el requerimiento.',
+        });
+    }
+};
 </script>
 
 <style scoped>
-/* Agrega estilos personalizados si es necesario */
 h2 {
-    color: rgb(4, 178, 217); /* Color del título */
+    color: rgb(4, 178, 217);
 }
 </style>
