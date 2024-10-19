@@ -103,8 +103,9 @@
                 <q-card class="justify-center flex bg-transparent">
                     <q-form @submit.prevent.stop="saveUser" novalidate class="q-pa-md">
                         <q-card-section>
-                            <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">
-                                AGREGAR USUARIO</div>
+                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
+                                {{ user._id ? 'EDITAR USUARIO' : 'AGREGAR USUARIO' }}
+                            </div>
                         </q-card-section>
 
                         <q-card-section>
@@ -145,7 +146,7 @@
 
                         <q-card-actions align="center">
                             <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
-                            <q-btn class="q-mx-sm" outline label="Guardar" color="blue" type="submit" />
+                            <q-btn class="q-mx-sm" outline label="Guardar" color="primary" type="submit" />
                         </q-card-actions>
                     </q-form>
                 </q-card>

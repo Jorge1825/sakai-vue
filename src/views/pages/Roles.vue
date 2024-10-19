@@ -74,16 +74,16 @@
     <q-dialog v-model="roleDialog" persistent width="800px">
         <div class="container bg-white">
             <div class="watermark-container justify-center flex">
-                <q-card class="justify-center flex bg-transparent">
-                    <q-form @submit.prevent.stop="saveRole" novalidate class="q-pa-md">
+                <q-card class="justify-center flex bg-transparent full-width">
+                    <q-form @submit.prevent.stop="saveRole" novalidate class="q-pa-md full-width">
                         <q-card-section>
-                            <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">
-                                AGREGAR ROL
+                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px;">
+                                {{ role._id ? 'EDITAR ROL' : 'NUEVO ROL' }}
                             </div>
                         </q-card-section>
 
                         <q-card-section>
-                            <div class="row">
+                            <div class="row full-width q-py-lg">
                                 <div class="col-6">
                                     <q-input lazy-rules
                                         :rules="[(val) => (val && val.length > 0) || 'Nombre del rol requerido']"
@@ -104,7 +104,7 @@
 
                         <q-card-actions align="right">
                             <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
-                            <q-btn class="q-mx-sm" outline label="Guardar" color="blue" type="submit" />
+                            <q-btn class="q-mx-sm" outline label="Guardar" color="primary" type="submit" />
                         </q-card-actions>
                     </q-form>
                 </q-card>

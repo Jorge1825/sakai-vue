@@ -3,7 +3,7 @@ import { useLayout } from '@/layout/composables/layout';
 import { $t, updatePreset, updateSurfacePalette } from '@primevue/themes';
 import Aura from '@primevue/themes/aura';
 import Lara from '@primevue/themes/lara';
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const { layoutConfig, setPrimary, setSurface, setPreset, isDarkTheme, setMenuMode } = useLayout();
 
@@ -13,12 +13,13 @@ const presets = {
 };
 
 onMounted(() => {
-
     //esperar a que se cargue el tema
     setTimeout(() => {
-        updateColors('primary', primaryColors.value.find((c) => c.name === 'emerald'));
+        updateColors(
+            'primary',
+            primaryColors.value.find((c) => c.name === 'emerald')
+        );
     }, 300);
-
 });
 
 const preset = ref(layoutConfig.preset);
@@ -32,7 +33,22 @@ const menuModeOptions = ref([
 
 const primaryColors = ref([
     { name: 'noir', palette: {} },
-    { name: 'emerald', palette: { 50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7', 400: '#34d399', 500: '#04B2D9', 600: '#059669', 700: '#047857', 800: '#065f46', 900: '#064e3b', 950: '#022c22' } },
+    {
+        name: 'emerald',
+        palette: {
+            50: '#e0f7fc',
+            100: '#b3ecf8',
+            200: '#80e0f3',
+            300: '#4dd4ee',
+            400: '#26c9ea',
+            500: '#01b1d9',
+            600: '#019ec3',
+            700: '#0189a8',
+            800: '#01748d',
+            900: '#015f72',
+            950: '#004b5a'
+        }
+    },
     { name: 'green', palette: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', 950: '#052e16' } },
     { name: 'lime', palette: { 50: '#f7fee7', 100: '#ecfccb', 200: '#d9f99d', 300: '#bef264', 400: '#a3e635', 500: '#84cc16', 600: '#65a30d', 700: '#4d7c0f', 800: '#3f6212', 900: '#365314', 950: '#1a2e05' } },
     { name: 'orange', palette: { 50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 800: '#9a3412', 900: '#7c2d12', 950: '#431407' } },
@@ -86,15 +102,15 @@ const surfaces = ref([
 ]);
 
 function getPresetExt(nameColor) {
-    let color
-    
-    if(!nameColor) {
+    let color;
+
+    if (!nameColor) {
         color = primaryColors.value.find((c) => c.name === layoutConfig.primary);
     } else {
         color = primaryColors.value.find((c) => c.name === nameColor);
     }
 
-    console.log(color)
+    console.log(color);
 
     if (color.name === 'noir') {
         return {

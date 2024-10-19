@@ -74,16 +74,16 @@
     <q-dialog v-model="dialog" persistent width="800px">
         <div class="container bg-white">
             <div class="watermark-container justify-center flex">
-                <q-card class="justify-center flex bg-transparent">
-                    <q-form @submit.prevent.stop="saveRequirement" novalidate class="q-pa-md">
+                <q-card class="justify-center flex bg-transparent full-width">
+                    <q-form @submit.prevent.stop="saveRequirement" novalidate class="q-pa-md full-width">
                         <q-card-section>
-                            <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">
-                                AGREGAR REQUISITO
+                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px;">
+                                {{ newRequirement._id ? 'EDITAR REQUISITO' : 'NUEVO REQUISITO' }}
                             </div>
                         </q-card-section>
 
                         <q-card-section>
-                            <div class="row">
+                            <div class="row full-width  q-py-lg">
                                 <div class="col-6">
                                     <q-input lazy-rules
                                         :rules="[(val) => (val && val.length > 0) || 'Nombre del requisito requerido']"
@@ -104,7 +104,7 @@
 
                         <q-card-actions align="right">
                             <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
-                            <q-btn class="q-mx-sm" outline label="Guardar" color="blue" type="submit" />
+                            <q-btn class="q-mx-sm" outline label="Guardar" color="primary" type="submit" />
                         </q-card-actions>
                     </q-form>
                 </q-card>
@@ -155,10 +155,10 @@ const fetchRequirements = async () => {
 
 const openDialog = () => {
     dialog.value = true;
-    newRequirement.value = { id: null, name: '', description: '', status: true }; // Reiniciar el formulario
+    newRequirement.value = { id: null, name: '', description: '', status: status.value[0] };
 };
 
-const closeDialog = () => {
+const hideDialog = () => {
     dialog.value = false;
 };
 
@@ -204,33 +204,9 @@ async function saveRequirement() {
 
 const editRequirement = (requirement) => {
     newRequirement.value = { ...requirement };
+    console.log(newRequirement.value);
     newRequirement.value.status = status.value.find((s) => s.value === requirement.status);
     dialog.value = true;
-};
-
-const deleteRequirement = async (id) => {
-    const confirmDelete = await $q.dialog({
-        title: 'Confirmar Eliminación',
-        message: '¿Estás seguro de que deseas eliminar este requisito?',
-        ok: 'Sí',
-        cancel: 'No',
-    });
-    if (confirmDelete) {
-        try {
-            await deleteRequirementApi(id); // Llama a la API para eliminar el requerimiento
-            $q.notify({
-                type: 'positive',
-                message: 'Requisito eliminado exitosamente.',
-            });
-            fetchRequirements(); // Actualiza la lista
-        } catch (error) {
-            console.error('Error al eliminar el requisito:', error);
-            $q.notify({
-                type: 'negative',
-                message: 'Error al eliminar el requisito.',
-            });
-        }
-    }
 };
 
 async function toggleStatus(selectedRequirement) {
