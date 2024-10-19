@@ -13,6 +13,7 @@ import '@quasar/extras/material-symbols-sharp/material-symbols-sharp.css'
 
 // Import Quasar css
 import 'quasar/src/css/index.sass'
+import 'animate.css';
 
 import App from './App.vue';
 import router from './router';
