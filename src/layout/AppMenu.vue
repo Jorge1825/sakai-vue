@@ -7,13 +7,14 @@ const model = ref([
     {
         label: 'Home',
         items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
-    },
+    },  
     {
         label: 'Administración',
         items: [
             { label: 'Usuarios', icon: 'pi pi-fw pi-id-card', to: '/users' },
             { label: 'Roles', icon: 'pi pi-fw pi-list', to: '/roles' },
-            { label: 'Requerimientos',icon: 'pi pi-fw pi-cog', to: '/requirements'},
+            { label: 'Requerimientos',icon: 'pi pi-fw pi-file', to: '/requirements'},
+            { label: 'Prompts',icon: 'pi pi-fw pi-cog', to: '/prompts'},
             // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },
             // { label: 'Input', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
             // { label: 'Button', icon: 'pi pi-fw pi-mobile', to: '/uikit/button', class: 'rotated-icon' },
