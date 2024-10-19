@@ -1,7 +1,7 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import Cookies from "js-cookie";
-import RequirementsPanel from '@/components/requirements/RequirementsPanel.vue';//Ruta a Requerimientos
+import RequirementsPanel from '@/views/pages/RequirementsPanel.vue';//Ruta a Requerimientos
 
 const checkAuth = () => {
   const cookie = Cookies.get("access_token");

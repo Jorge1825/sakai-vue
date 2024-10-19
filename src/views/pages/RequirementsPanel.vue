@@ -5,7 +5,7 @@
             <div class="row q-my-md">
                 <div class="col-6">
                     <div class="text-h5" style="color: rgb(4, 178, 217); text-transform: uppercase">
-                        <strong>Roles</strong>
+                        <strong>Requisitos</strong>
                     </div>
                 </div>
                 <div class="col-12 flex justify-end">
@@ -24,7 +24,7 @@
 
             </div>
             <!-- Tabla de usuarios -->
-            <DataTable v-model:expandedRows="expandedRows" :value="roles" dataKey="_id" responsiveLayout="scroll"
+            <DataTable v-model:expandedRows="expandedRows" :value="requirements " dataKey="_id" responsiveLayout="scroll"
                 :paginator="true" :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]">
@@ -48,7 +48,7 @@
                                 @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
                             <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="editRole(slotProps.data)" dense round />
+                                @click="editRequirement(slotProps.data)" dense round />
                         </div>
                     </template>
 
@@ -56,7 +56,7 @@
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
-                        <h5>Detalles del Rol: {{ slotProps.data.name }}</h5>
+                        <h5>Detalles del requisto: {{ slotProps.data.name }}</h5>
                         <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
                         <p>
                             <strong>Estado:</strong>
@@ -71,14 +71,14 @@
     </div>
 
     <!-- Modal para agregar/editar usuario -->
-    <q-dialog v-model="roleDialog" persistent width="800px">
+    <q-dialog v-model="dialog" persistent width="800px">
         <div class="container bg-white">
             <div class="watermark-container justify-center flex">
                 <q-card class="justify-center flex bg-transparent">
-                    <q-form @submit.prevent.stop="saveRole" novalidate class="q-pa-md">
+                    <q-form @submit.prevent.stop="saveRequirement" novalidate class="q-pa-md">
                         <q-card-section>
                             <div class="text-h6 text-center" style="font-weight: bold; font-size: 24px; color: #1976d2">
-                                AGREGAR ROL
+                                AGREGAR REQUISITO
                             </div>
                         </q-card-section>
 
@@ -86,17 +86,17 @@
                             <div class="row">
                                 <div class="col-6">
                                     <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Nombre del rol requerido']"
-                                        v-model="role.name" label="Nombre del Rol" required style="padding: 10px" />
+                                        :rules="[(val) => (val && val.length > 0) || 'Nombre del requisito requerido']"
+                                        v-model="newRequirement.name" label="Nombre del requisito" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
                                     <q-input lazy-rules
                                         :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']"
-                                        v-model="role.description" label="Descripción" required style="padding: 10px"
+                                        v-model="newRequirement.description" label="Descripción" required style="padding: 10px"
                                         autogrow />
                                 </div>
                                 <div class="col-6">
-                                    <q-select v-model="role.status" :options="status" label="Estado" required
+                                    <q-select v-model="newRequirement.status" :options="status" label="Estado" required
                                         style="padding: 10px" />
                                 </div>
                             </div>
@@ -112,21 +112,21 @@
             </div>
         </div>
     </q-dialog>
-
 </template>
 
-<script setup>
-import { createRoleApi, editRoleApi, getRolesApi, toggleActiveRoleApi } from '@/api/roles';
-import { Notify } from 'quasar';
-import { onBeforeMount, ref } from 'vue';
 
-const roles = ref([]);
-const roleDialog = ref(false);
-const role = ref({
+<script setup>
+import { ref, onBeforeMount } from 'vue';
+import { useQuasar, Notify } from 'quasar';
+import { getRequirementsApi, createRequirementApi, editRequirementApi, toggleActiveRequirementApi, /*deleteRequirementApi*/ } from '@/api/requirements'; // Importa las funciones API
+
+const requirements = ref([]);
+const dialog = ref(false);
+const newRequirement = ref({
     id: null,
     name: '',
     description: '',
-    status: true
+    status: true,
 });
 const expandedRows = ref([]);
 const status = ref([
@@ -134,113 +134,133 @@ const status = ref([
     { label: 'INACTIVO', value: false }
 ]);
 
-onBeforeMount(async () => {
-    await getRoles();
+const $q = useQuasar();
+
+onBeforeMount(async() => {
+    await fetchRequirements();
 });
 
-async function getRoles() {
+const fetchRequirements = async () => {
     try {
-        const { data } = await getRolesApi();
-        console.log(data);
-        roles.value = data.length ? data : [];
-
-        console.log(roles.value);
+        const response = await getRequirementsApi(); // Usamos la función importada
+        requirements.value = response.data;
     } catch (error) {
-        console.error(error);
+        console.error('Error al obtener los requisitos:', error);
+        $q.notify({
+            type: 'negative',
+            message: 'Error al obtener los requisitos.',
+        });
     }
-}
+};
 
-function openDialog() {
-    role.value = {
-        // Reinicar el objeto usuario
-        id: null,
-        name: '',
-        description: '',
-        status: status.value[0]
-    };
-    roleDialog.value = true;
-}
+const openDialog = () => {
+    dialog.value = true;
+    newRequirement.value = { id: null, name: '', description: '', status: true }; // Reiniciar el formulario
+};
 
-function hideDialog() {
-    roleDialog.value = false;
-}
+const closeDialog = () => {
+    dialog.value = false;
+};
 
-async function saveRole() {
-    console.log(role.value);
+async function saveRequirement() {
 
-    if (role.value._id) {
-        const roleApi = {
-            id: role.value._id,
-            name: role.value.name,
-            description: role.value.description,
-            status: role.value.status.value
+    if (newRequirement.value._id) {
+        const requirementApi = {
+            id: newRequirement.value._id,
+            name: newRequirement.value.name,
+            description: newRequirement.value.description,
+            status: newRequirement.value.status.value
         };
 
-        const response = await editRoleApi(roleApi);
-
+        const response = await editRequirementApi(requirementApi);
+        console.log(response.status);
+        
         if (response.status === 200) {
-            Notify.create({ message: 'Rol actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getRoles();
+            Notify.create({ message: 'Requisito actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            await fetchRequirements();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar el rol.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar el requisito.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     } else {
-        const roleApi = {
-            name: role.value.name,
-            description: role.value.description,
-            status: role.value.status.value
+        const requirementApi = {
+            name: newRequirement.value.name,
+            description: newRequirement.value.description,
+            status: newRequirement.value.status.value
         };
 
-        const response = await createRoleApi(roleApi);
+        const response = await createRequirementApi(requirementApi);
         console.log(response);
 
         if (response.status === 200) {
-            Notify.create({ message: 'Rol creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getRoles();
+            Notify.create({ message: 'Requerimiento creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            await fetchRequirements();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear el rol.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear el requerimiento.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     }
 }
 
-function editRole(selectedRole) {
-    role.value = { ...selectedRole };
-    role.value.status = status.value.find((s) => s.value === selectedRole.status);
-    roleDialog.value = true;
-    console.log(role.value);
-}
+const editRequirement = (requirement) => {
+    newRequirement.value = { ...requirement };
+    newRequirement.value.status = status.value.find((s) => s.value === requirement.status);
+    dialog.value = true;
+};
 
-//funcion activar desactivavr usuario
-async function toggleStatus(selectedRole) {
+const deleteRequirement = async (id) => {
+    const confirmDelete = await $q.dialog({
+        title: 'Confirmar Eliminación',
+        message: '¿Estás seguro de que deseas eliminar este requisito?',
+        ok: 'Sí',
+        cancel: 'No',
+    });
+    if (confirmDelete) {
+        try {
+            await deleteRequirementApi(id); // Llama a la API para eliminar el requerimiento
+            $q.notify({
+                type: 'positive',
+                message: 'Requisito eliminado exitosamente.',
+            });
+            fetchRequirements(); // Actualiza la lista
+        } catch (error) {
+            console.error('Error al eliminar el requisito:', error);
+            $q.notify({
+                type: 'negative',
+                message: 'Error al eliminar el requisito.',
+            });
+        }
+    }
+};
+
+async function toggleStatus(selectedRequirement) {
     try {
         // Cambia el estado del usuario (activo/inactivo)
-        const response = await toggleActiveRoleApi(selectedRole._id);
+        const response = await toggleActiveRequirementApi(selectedRequirement._id);
 
         if (response.status === 200) {
             // Actualiza el estado localmente después de recibir respuesta del backend
-            selectedRole.status = selectedRole.status === 'Activo' ? 'Inactivo' : 'Activo';
+            selectedRequirement.status = selectedRequirement.status === 'Activo' ? 'Inactivo' : 'Activo';
 
             // Mostrar notificación de éxito
             Notify.create({
-                message: `Rol ${selectedRole.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
+                message: `Requisito ${selectedRequirement.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedRole.status === 'Activo' ? 'blue' : 'red',//rgb(4, 178, 217)
+                color: selectedRequirement.status === 'Activo' ? 'blue' : 'red',//rgb(4, 178, 217)
                 multiLine: true
             });
 
             // Vuelve a cargar los usuarios si es necesario
-            await getRoles();
+            await fetchRequirements();
         } else {
-            throw new Error('Error al actualizar el estado del rol.');
+            throw new Error('Error al actualizar el estado del requisito.');
         }
     } catch (error) {
         console.error(error);
         Notify.create({
-            message: 'Hubo un error al cambiar el estado del rol.',
+            message: 'Hubo un error al cambiar el estado del requisito.',
             type: 'negative',
             position: 'top',
             textColor: 'white',
@@ -249,16 +269,15 @@ async function toggleStatus(selectedRole) {
         });
     }
 }
-
-// Funciones para expandir y colapsar
 function expandAll() {
-    expandedRows.value = roles.value.reduce((acc, p) => (acc[p._id] = true) && acc, {});
+    expandedRows.value = requirements.value.reduce((acc, p) => (acc[p._id] = true) && acc, {});
 }
 
 function collapseAll() {
     expandedRows.value = [];
 }
 </script>
+
 
 <style scoped>
 .button-group {

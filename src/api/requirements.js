@@ -25,7 +25,7 @@ export const createRequirementApi = async (data) => {
 // Editar un requisito
 export const editRequirementApi = async (data) => {
     try {
-        const response = await axiosInstance.put(`/requirements/update/${data.id}`, data);
+        const response = await axiosInstance.put(`/requirements/update`, data);
         return response;
     } catch (error) {
         console.error('Error al editar el requisito', error);
