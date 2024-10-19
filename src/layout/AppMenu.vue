@@ -150,6 +150,13 @@ const model = ref([
             <li v-if="item.separator" class="menu-separator"></li>
         </template>
     </ul>
+    <ul class="q-mt-lg ">
+        <router-link to="/" class="flex justify-center items-center gap-1 q-mr-md ani_heartBeat aniUtil_onMouse aniUtil_active aniUtil_onMouseRepeat">
+                <img src="/public/demo/images/LogoSosteniweb/sosteniweb manual-23.png" alt="Logo Sosteniweb" width="30" />
+
+                <span>SOSTENIWEB</span>
+            </router-link>
+    </ul>
 </template>
 
 <style lang="scss" scoped></style>
