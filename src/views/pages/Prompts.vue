@@ -56,6 +56,7 @@
                     <div class="p-4">
                         <h5>Detalles del Prompt: {{ slotProps.data.name }}</h5>
                         <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
+                        <p><strong>Prompt:</strong> {{ slotProps.data.prompt }}</p>
                         <p>
                             <strong>Estado:</strong>
                             <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
@@ -76,7 +77,7 @@
                     <q-form @submit.prevent.stop="savePrompt" novalidate class="q-pa-md full-width">
                         <q-card-section>
                             <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px;">
-                                {{ prompt._id ? 'EDITAR ROL' : 'NUEVO ROL' }}
+                                {{ prompt._id ? 'EDITAR PROMPT' : 'NUEVO PROMPT' }}
                             </div>
                         </q-card-section>
 
@@ -91,6 +92,12 @@
                                     <q-input lazy-rules
                                         :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']"
                                         v-model="prompt.description" label="Descripción" required style="padding: 10px"
+                                        autogrow />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules
+                                        :rules="[(val) => (val && val.length > 0) || 'Prompt requerido']"
+                                        v-model="prompt.prompt" label="Prompt" required style="padding: 10px"
                                         autogrow />
                                 </div>
                                 <div class="col-6">
@@ -124,6 +131,7 @@ const prompt = ref({
     id: null,
     name: '',
     description: '',
+    prompt: '',
     status: true
 });
 const expandedRows = ref([]);
@@ -153,6 +161,7 @@ function openDialog() {
         id: null,
         name: '',
         description: '',
+        prompt: '',
         status: status.value[0]
     };
     promptDialog.value = true;
@@ -170,6 +179,7 @@ async function savePrompt() {
             id: prompt.value._id,
             name: prompt.value.name,
             description: prompt.value.description,
+            prompt: prompt.value.prompt,
             status: prompt.value.status.value
         };
 
@@ -186,6 +196,7 @@ async function savePrompt() {
         const promptApi = {
             name: prompt.value.name,
             description: prompt.value.description,
+            prompt: prompt.value.prompt,
             status: prompt.value.status.value
         };
 

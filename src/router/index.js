@@ -1,33 +1,32 @@
 import AppLayout from '@/layout/AppLayout.vue';
-import { createRouter, createWebHistory } from 'vue-router';
-import Cookies from "js-cookie";
-import RequirementsPanel from '@/views/pages/RequirementsPanel.vue';//Ruta a Requerimientos
+import Norms from '@/views/pages/Norms.vue';
 import Prompts from '@/views/pages/Prompts.vue';
+import RequirementsPanel from '@/views/pages/RequirementsPanel.vue'; //Ruta a Requerimientos
+import Cookies from 'js-cookie';
+import { createRouter, createWebHistory } from 'vue-router';
 
 const checkAuth = () => {
-  const cookie = Cookies.get("access_token");
-  console.log(cookie);
-  if (!cookie) return false;
-  return true;
+    const cookie = Cookies.get('access_token');
+    console.log(cookie);
+    if (!cookie) return false;
+    return true;
 };
 
 const auth = (to, from, next) => {
-  if (checkAuth()) {
-    next();
-  } else {
-    next({ name: "login" });
-  }
+    if (checkAuth()) {
+        next();
+    } else {
+        next({ name: 'login' });
+    }
 };
 
 const returnHome = (to, from, next) => {
-  if (checkAuth()) {
-    next({ name: "dashboard" });
-  } else {
-    next();
-  }
+    if (checkAuth()) {
+        next({ name: 'dashboard' });
+    } else {
+        next();
+    }
 };
-
-
 
 const router = createRouter({
     history: createWebHistory(),
@@ -145,13 +144,18 @@ const router = createRouter({
                 {
                     path: '/requirements',
                     name: 'Requirements',
-                    component: RequirementsPanel,
-                  },
-                  {
+                    component: RequirementsPanel
+                },
+                {
                     path: '/prompts',
                     name: '{Prompts}',
-                    component: Prompts,
-                  },
+                    component: Prompts
+                },
+                {
+                    path: '/norms',
+                    name: 'norms',
+                    component: Norms
+                }
             ],
             beforeEnter: auth
         },
@@ -172,7 +176,7 @@ const router = createRouter({
             path: '/auth/login',
             name: 'login',
             component: () => import('@/views/pages/auth/Login.vue'),
-            beforeEnter: returnHome,
+            beforeEnter: returnHome
         },
         {
             path: '/auth/access',
@@ -189,4 +193,4 @@ const router = createRouter({
     ]
 });
 
-export default router;
+export default router;
