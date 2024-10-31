@@ -10,24 +10,26 @@
                 </div>
                 <div class="col-12 flex justify-end">
                     <!-- Botón de agregar con fondo azul claro y color de ícono blanco -->
-                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                        @click="openDialog" class="q-mr-sm" />
+                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" />
 
                     <!-- Botón de expandir con fondo azul claro y color de ícono blanco -->
-                    <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                        @click="expandAll" class="q-mr-sm" />
+                    <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
 
                     <!-- Botón de colapsar con fondo rojo y color de ícono blanco -->
-                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }"
-                        @click="collapseAll" />
+                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
                 </div>
-
             </div>
             <!-- Tabla de usuarios -->
-            <DataTable v-model:expandedRows="expandedRows" :value="requirements " dataKey="_id" responsiveLayout="scroll"
-                :paginator="true" :rows="10"
+            <DataTable
+                v-model:expandedRows="expandedRows"
+                :value="requirements"
+                dataKey="_id"
+                responsiveLayout="scroll"
+                :paginator="true"
+                :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                :rowsPerPageOptions="[5, 10, 25]">
+                :rowsPerPageOptions="[5, 10, 25]"
+            >
                 <Column field="name" header="NOMBRE" :sortable="true" style="width: 15%" />
                 <Column field="description" header="DESCRIPCIÓN" style="width: 35%" />
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
@@ -43,16 +45,18 @@
                     <template #body="slotProps">
                         <div class="button-group">
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
-                            <q-btn :icon="slotProps.data.status === true ? 'clear' : 'check'"
+                            <q-btn
+                                :icon="slotProps.data.status === true ? 'clear' : 'check'"
                                 :style="{ backgroundColor: slotProps.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
+                                @click="toggleStatus(slotProps.data)"
+                                dense
+                                round
+                                class="q-mr-xs"
+                            />
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
-                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="editRequirement(slotProps.data)" dense round />
+                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editRequirement(slotProps.data)" dense round />
                         </div>
                     </template>
-
-
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
@@ -77,27 +81,21 @@
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-form @submit.prevent.stop="saveRequirement" novalidate class="q-pa-md full-width">
                         <q-card-section>
-                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px;">
+                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
                                 {{ newRequirement._id ? 'EDITAR REQUISITO' : 'NUEVO REQUISITO' }}
                             </div>
                         </q-card-section>
 
                         <q-card-section>
-                            <div class="row full-width  q-py-lg">
+                            <div class="row full-width q-py-lg">
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Nombre del requisito requerido']"
-                                        v-model="newRequirement.name" label="Nombre del requisito" required style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre del requisito requerido']" v-model="newRequirement.name" label="Nombre del requisito" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']"
-                                        v-model="newRequirement.description" label="Descripción" required style="padding: 10px"
-                                        autogrow />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="newRequirement.description" label="Descripción" required style="padding: 10px" autogrow />
                                 </div>
                                 <div class="col-6">
-                                    <q-select v-model="newRequirement.status" :options="status" label="Estado" required
-                                        style="padding: 10px" />
+                                    <q-select v-model="newRequirement.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -105,6 +103,9 @@
                         <q-card-actions align="right">
                             <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
                             <q-btn class="q-mx-sm" outline label="Guardar" color="primary" type="submit" />
+                            <!-- Botón para seleccionar un archivo -->
+                            <input type="file" id="archivoInput" @change="seleccionarArchivo" style="display: none" />
+                            <q-btn class="q-mx-sm" outline label="Cargar Archivo" color="primary" @click="dispararInput" />
                         </q-card-actions>
                     </q-form>
                 </q-card>
@@ -114,11 +115,11 @@
     </q-dialog>
 </template>
 
-
 <script setup>
 import { ref, onBeforeMount } from 'vue';
 import { useQuasar, Notify } from 'quasar';
-import { getRequirementsApi, createRequirementApi, editRequirementApi, toggleActiveRequirementApi, /*deleteRequirementApi*/ } from '@/api/requirements'; // Importa las funciones API
+import { getRequirementsApi, createRequirementApi, editRequirementApi, toggleActiveRequirementApi /*deleteRequirementApi*/ } from '@/api/requirements'; // Importa las funciones API
+//import { fileUpload } from "";
 
 const requirements = ref([]);
 const dialog = ref(false);
@@ -126,7 +127,7 @@ const newRequirement = ref({
     id: null,
     name: '',
     description: '',
-    status: true,
+    status: true
 });
 const expandedRows = ref([]);
 const status = ref([
@@ -136,7 +137,7 @@ const status = ref([
 
 const $q = useQuasar();
 
-onBeforeMount(async() => {
+onBeforeMount(async () => {
     await fetchRequirements();
 });
 
@@ -148,7 +149,7 @@ const fetchRequirements = async () => {
         console.error('Error al obtener los requisitos:', error);
         $q.notify({
             type: 'negative',
-            message: 'Error al obtener los requisitos.',
+            message: 'Error al obtener los requisitos.'
         });
     }
 };
@@ -163,7 +164,6 @@ const hideDialog = () => {
 };
 
 async function saveRequirement() {
-
     if (newRequirement.value._id) {
         const requirementApi = {
             id: newRequirement.value._id,
@@ -174,7 +174,7 @@ async function saveRequirement() {
 
         const response = await editRequirementApi(requirementApi);
         console.log(response.status);
-        
+
         if (response.status === 200) {
             Notify.create({ message: 'Requisito actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             await fetchRequirements();
@@ -224,7 +224,7 @@ async function toggleStatus(selectedRequirement) {
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedRequirement.status === 'Activo' ? 'blue' : 'red',//rgb(4, 178, 217)
+                color: selectedRequirement.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
                 multiLine: true
             });
 
@@ -252,8 +252,58 @@ function expandAll() {
 function collapseAll() {
     expandedRows.value = [];
 }
-</script>
 
+const archivoSeleccionado = ref(null);
+
+// Función que dispara el click en el input de archivo
+const dispararInput = () => {
+  const input = document.getElementById('archivoInput');
+  input.click();
+};
+
+// Función que maneja la selección del archivo
+const seleccionarArchivo = (event) => {
+  archivoSeleccionado.value = event.target.files[0];
+  console.log('Archivo seleccionado:', archivoSeleccionado.value);
+  // Aquí puedes manejar la carga del archivo
+};
+
+/*
+// Función para seleccionar el archivo desde el input
+function seleccionarArchivo(event) {
+  archivoSeleccionado.value = event.target.files[0];
+}
+// Hook onMounted para asegurar que el DOM esté listo antes de añadir el evento
+onMounted(() => {
+  const archivoInput = document.querySelector("#archivoInput");
+  if (archivoInput) {
+    archivoInput.addEventListener("change", seleccionarArchivo);
+  }
+});
+
+async function cargarArchivo() {
+  if (!archivoSeleccionado.value) {
+    Notify.create({ message: "Hace falta seleccionar el archivo" });
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("archivo", archivoSeleccionado.value);
+
+  try {
+    const response = await fileUpload(formData); // Llamada a la API
+    if (response.status === 200) {
+      Notify.create({ message: "Archivo cargado correctamente." });
+    } else {
+      Notify.create({ message: "Error al cargar el archivo." });
+    }
+  } catch (error) {
+    Notify.create({ message: "Error al cargar el archivo." });
+    console.error("Error al cargar el archivo:", error);
+  }
+}
+*/
+</script>
 
 <style scoped>
 .button-group {

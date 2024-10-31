@@ -76,7 +76,7 @@
                     <q-form @submit.prevent.stop="savePrompt" novalidate class="q-pa-md full-width">
                         <q-card-section>
                             <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px;">
-                                {{ prompt._id ? 'EDITAR ROL' : 'NUEVO ROL' }}
+                                {{ prompt._id ? 'EDITAR PROMPT' : 'NUEVO PROMPT' }}
                             </div>
                         </q-card-section>
 
@@ -96,6 +96,12 @@
                                 <div class="col-6">
                                     <q-select v-model="prompt.status" :options="status" label="Estado" required
                                         style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules
+                                        :rules="[(val) => (val && val.length > 0) || 'Prompt necesario']"
+                                        v-model="prompt.description" label="Prompt" required style="padding: 10px"
+                                        autogrow />
                                 </div>
                             </div>
                         </q-card-section>
