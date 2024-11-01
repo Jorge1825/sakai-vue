@@ -3,6 +3,8 @@ import Norms from '@/views/pages/Norms.vue';
 import Prompts from '@/views/pages/Prompts.vue';
 import RequirementsPanel from '@/views/pages/RequirementsPanel.vue'; //Ruta a Requerimientos
 import TableNorm from '@/views/pages/TableNorm.vue';
+import Qualification from '@/views/pages/Qualification.vue'
+import Enterprises from '@/views/pages/Enterprises.vue'
 import Cookies from 'js-cookie';
 import { createRouter, createWebHistory } from 'vue-router';
 
@@ -151,6 +153,16 @@ const router = createRouter({
                     path: '/tablenorm',
                     name: 'TableNorm',
                     component: TableNorm
+                },
+                {
+                    path: '/enterprises',
+                    name: 'Enterprises',
+                    component: Enterprises
+                },
+                {
+                    path: '/qualification',
+                    name: 'Qualification',
+                    component: Qualification
                 },
                 {
                     path: '/prompts',

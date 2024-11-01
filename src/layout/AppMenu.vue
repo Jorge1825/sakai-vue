@@ -17,6 +17,8 @@ const model = ref([
             { label: 'Prompts', icon: 'pi pi-fw pi-cog', to: '/prompts'},
             { label: 'Normas', icon: 'pi pi-fw pi-cog', to: '/norms'},
             { label: 'Requerimientos', icon: 'pi pi-fw pi-cog', to: '/tablenorm'},
+            { label: 'Enterprises', icon: 'pi pi-fw pi-cog', to: '/enterprises'},
+            { label: 'Qualification', icon: 'pi pi-fw pi-cog', to: '/qualification'}
             // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },
             // { label: 'Input', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
             // { label: 'Button', icon: 'pi pi-fw pi-mobile', to: '/uikit/button', class: 'rotated-icon' },
