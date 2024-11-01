@@ -1,4 +1,4 @@
-import axiosInstance from "@/config/axios.conf";
+import axiosInstance from '@/config/axios.conf';
 
 // Obtener todos los requisitos
 export const getRequirementsApi = async () => {
@@ -40,6 +40,30 @@ export const toggleActiveRequirementApi = async (id) => {
         return response;
     } catch (error) {
         console.error('Error al activar/desactivar el requisito', error);
+        throw error;
+    }
+};
+
+export const generateRequirementFile = async (data) => {
+    try {
+        const response = await axiosInstance.post('/requirements/upload-file', data, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response;
+    } catch (error) {
+        console.error('Error al generar el archivo', error);
+        throw error;
+    }
+};
+
+export const formatDataRequirement = async (data) => {
+    try {
+        const response = await axiosInstance.post('/requirements/format-data', data);
+        return response;
+    } catch (error) {
+        console.error('Error al formatear los datos', error);
         throw error;
     }
 };

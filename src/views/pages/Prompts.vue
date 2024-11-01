@@ -70,8 +70,8 @@
     </div>
 
     <!-- Modal para agregar/editar usuario -->
-    <q-dialog v-model="promptDialog" persistent width="800px">
-        <div class="container bg-white">
+    <q-dialog v-model="promptDialog" persistent >
+        <div class="container bg-white" style="width: 700px; max-width: 80vw;min-width: 400px;">
             <div class="watermark-container justify-center flex">
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-form @submit.prevent.stop="savePrompt" novalidate class="q-pa-md full-width">
@@ -103,12 +103,6 @@
                                 <div class="col-6">
                                     <q-select v-model="prompt.status" :options="status" label="Estado" required
                                         style="padding: 10px" />
-                                </div>
-                                <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Prompt necesario']"
-                                        v-model="prompt.description" label="Prompt" required style="padding: 10px"
-                                        autogrow />
                                 </div>
                             </div>
                         </q-card-section>

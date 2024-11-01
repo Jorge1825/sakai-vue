@@ -13,10 +13,10 @@ const model = ref([
         items: [
             { label: 'Usuarios', icon: 'pi pi-fw pi-id-card', to: '/users' },
             { label: 'Roles', icon: 'pi pi-fw pi-list', to: '/roles' },
-            { label: 'Requerimientos',icon: 'pi pi-fw pi-file', to: '/requirements'},
+            // { label: 'Requerimientos',icon: 'pi pi-fw pi-file', to: '/requirements'},
             { label: 'Prompts', icon: 'pi pi-fw pi-cog', to: '/prompts'},
             { label: 'Normas', icon: 'pi pi-fw pi-cog', to: '/norms'},
-            { label: 'TableNorm', icon: 'pi pi-fw pi-cog', to: '/tablenorm'},
+            { label: 'Requerimientos', icon: 'pi pi-fw pi-cog', to: '/tablenorm'},
             // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },
             // { label: 'Input', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
             // { label: 'Button', icon: 'pi pi-fw pi-mobile', to: '/uikit/button', class: 'rotated-icon' },
