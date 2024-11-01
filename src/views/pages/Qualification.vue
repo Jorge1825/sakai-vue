@@ -29,8 +29,8 @@
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]">
                 <Column field="nameEnterprise" header="NOMBRE EMPRESA" :sortable="true" style="width: 15%" />
-                <Column field="requirements" header="REQUERIMIENTO" style="width: 35%" />
-                <Column field="norm" header="NORMA" style="width: 35%" />
+                <Column field="descriptions" header="DESCRIPCION" style="width: 35%" />
+                <Column field="norms" header="NORMA" style="width: 35%" />
                 <Column field="qualification" header="EVALUACION" style="width: 35%" />
                 <Column field="evidence" header="EVIDENCIAS"
                     style="width: 10%; text-align: left; text-transform: uppercase">
@@ -45,7 +45,6 @@
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotProps">
                         <div class="button-group">
-                            <!-- Botón que cambia color de fondo sin afectar el icono -->
 
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
                             <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
@@ -58,15 +57,11 @@
                 <template #expansion="slotProps">
                     <div class="p-4">
                         <h5>Nombre de la empresa: {{ slotProps.data.name }}</h5>
-                        <p><strong>Requerimiento:</strong> {{ slotProps.data.description }}</p>
-                        <p><strong>Norma:</strong> {{ slotProps.data.norm }}</p>
+                        <p><strong>Description:</strong> {{ slotProps.data.description }}</p>
+                        <p><strong>norms:</strong> {{ slotProps.data.norms }}</p>
                         <p><strong>Qualification:</strong> {{ slotProps.data.qualification }}</p>
                         <p><strong>Evidencias:</strong> {{ slotProps.data.evidence }}</p>
                         <p>
-                            <strong>Estado:</strong>
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
-                                {{ status.find((s) => s.value === slotProps.data.status).label }}
-                            </q-badge>
                         </p>
                     </div>
                 </template>
@@ -96,7 +91,7 @@
                                 </div>
                                 <div class="col-6">
                                     <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Requerimiento']"
-                                        v-model="qualification.requirement" label="Requerimiento" required
+                                        v-model="qualification.description" label="Requerimiento" required
                                         style="padding: 10px" autogrow />
                                 </div>
                                 <div class="col-6">
@@ -145,7 +140,7 @@ const qualificationDialog = ref(false);
 const qualification = ref({
     id: null,
     name: '',
-    requirement: '',
+    description: '',
     norms: '',
     qualification: '',
     evidences:'',
@@ -177,7 +172,7 @@ function openDialog() {
         // Reinicar el objeto usuario
         id: null,
         name: '',
-        requirement: '',
+        description: '',
         norms: '',
         qualification: '',
         evidences:'',
@@ -197,7 +192,7 @@ async function saveQualification() {
         const qualificationApi = {
             id: qualification.value._id,
             name: qualification.value.name,
-            requirement: qualification.value.requirement,
+            description: qualification.value.description,
             norms: qualification.value.norms,
             qualification: qualification.value.qualification,
             evidences: qualification.value.evidences,
@@ -217,7 +212,7 @@ async function saveQualification() {
         const qualificationApi = {
             id: qualification.value._id,
             name: qualification.value.name,
-            requirement: qualification.value.requirement,
+            description: qualification.value.description,
             norms: qualification.value.norms,
             qualification: qualification.value.qualification,
             evidences: qualification.value.evidences,
