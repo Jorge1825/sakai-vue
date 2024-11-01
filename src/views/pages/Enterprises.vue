@@ -5,7 +5,7 @@
             <div class="row q-my-md">
                 <div class="col-6">
                     <div class="text-h5" style="color: rgb(4, 178, 217); text-transform: uppercase">
-                        <strong>Prompts</strong>
+                        <strong>Empresas</strong>
                     </div>
                 </div>
                 <div class="col-12 flex justify-end">

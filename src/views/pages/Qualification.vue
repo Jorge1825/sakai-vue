@@ -24,15 +24,16 @@
 
             </div>
             <!-- Tabla de usuarios -->
-            <DataTable v-model:expandedRows="expandedRows" :value="qualifications" dataKey="_id" responsiveLayout="scroll"
-                :paginator="true" :rows="10"
+            <DataTable v-model:expandedRows="expandedRows" :value="qualifications" dataKey="_id"
+                responsiveLayout="scroll" :paginator="true" :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]">
                 <Column field="nameEnterprise" header="NOMBRE EMPRESA" :sortable="true" style="width: 15%" />
                 <Column field="requirements" header="REQUERIMIENTO" style="width: 35%" />
                 <Column field="norm" header="NORMA" style="width: 35%" />
                 <Column field="qualification" header="EVALUACION" style="width: 35%" />
-                <Column field="evidence" header="EVIDENCIAS" style="width: 10%; text-align: left; text-transform: uppercase">
+                <Column field="evidence" header="EVIDENCIAS"
+                    style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
                             <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
@@ -45,7 +46,7 @@
                     <template #body="slotProps">
                         <div class="button-group">
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
-                           
+
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
                             <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
                                 @click="editQualification(slotProps.data)" dense round />
@@ -74,7 +75,7 @@
     </div>
 
     <!-- Modal para agregar/editar usuario -->
-    <q-dialog v-model="qualificationDialog" persistent >
+    <q-dialog v-model="qualificationDialog" persistent>
         <div class="container bg-white" style="width: 700px; max-width: 80vw;min-width: 400px;">
             <div class="watermark-container justify-center flex">
                 <q-card class="justify-center flex bg-transparent full-width">
@@ -90,31 +91,29 @@
                                 <div class="col-6">
                                     <q-input lazy-rules
                                         :rules="[(val) => (val && val.length > 0) || 'Nombre del la empresa requerido']"
-                                        v-model="qualification.name" label="Nombre de la empresa" required style="padding: 10px" />
+                                        v-model="qualification.name" label="Nombre de la empresa" required
+                                        style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Requerimiento']"
-                                        v-model="qualification.description" label="Requerimiento" required style="padding: 10px"
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Requerimiento']"
+                                        v-model="qualification.requirement" label="Requerimiento" required
+                                        style="padding: 10px" autogrow />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Norma']"
+                                        v-model="qualification.norms" label="Norma" required style="padding: 10px"
                                         autogrow />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Norma']"
-                                        v-model="qualification.description" label="Norma" required style="padding: 10px"
-                                        autogrow />
-                                </div>
-                                <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Evaluacion']"
-                                        v-model="qualification.description" label="Evaluacion" required style="padding: 10px"
-                                        autogrow />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Evaluacion']"
+                                        v-model="qualification.qualification" label="Evaluacion" required
+                                        style="padding: 10px" autogrow />
                                 </div>
                                 <div class="col-6">
                                     <q-input lazy-rules
                                         :rules="[(val) => (val && val.length > 0) || 'Evidencias requerido']"
-                                        v-model="qualification.qualification" label="Evidencias" required style="padding: 10px"
-                                        autogrow />
+                                        v-model="qualification.evidences" label="Evidencias" required
+                                        style="padding: 10px" autogrow />
                                 </div>
                                 <div class="col-6">
                                     <q-select v-model="qualification.status" :options="status" label="Estado" required
@@ -146,8 +145,10 @@ const qualificationDialog = ref(false);
 const qualification = ref({
     id: null,
     name: '',
-    description: '',
+    requirement: '',
+    norms: '',
     qualification: '',
+    evidences:'',
     status: true
 });
 const expandedRows = ref([]);
@@ -176,9 +177,11 @@ function openDialog() {
         // Reinicar el objeto usuario
         id: null,
         name: '',
-        description: '',
+        requirement: '',
+        norms: '',
         qualification: '',
-        status: status.value[0]
+        evidences:'',
+        status: true
     };
     qualificationDialog.value = true;
 }
@@ -194,25 +197,30 @@ async function saveQualification() {
         const qualificationApi = {
             id: qualification.value._id,
             name: qualification.value.name,
-            description: qualification.value.description,
+            requirement: qualification.value.requirement,
+            norms: qualification.value.norms,
             qualification: qualification.value.qualification,
+            evidences: qualification.value.evidences,
             status: qualification.value.status.value
         };
 
         const response = await editQualificationApi(qualificationApi);
 
         if (response.status === 200) {
-            Notify.create({ message: 'Qualification actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            Notify.create({ message: 'calificacion actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             await getQualifications();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar el qualification.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar el calificacion.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     } else {
         const qualificationApi = {
+            id: qualification.value._id,
             name: qualification.value.name,
-            description: qualification.value.description,
-            qualification: qualification .value.qualification,
+            requirement: qualification.value.requirement,
+            norms: qualification.value.norms,
+            qualification: qualification.value.qualification,
+            evidences: qualification.value.evidences,
             status: qualification.value.status.value
         };
 
@@ -224,7 +232,7 @@ async function saveQualification() {
             await getQualifications();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear el qualification.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear el calificacion.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     }
 }
@@ -259,12 +267,12 @@ async function toggleStatus(selectedQualification) {
             // Vuelve a cargar los usuarios si es necesario
             await getQualifications();
         } else {
-            throw new Error('Error al actualizar el estado del qualification.');
+            throw new Error('Error al actualizar el estado del calificacion.');
         }
     } catch (error) {
         console.error(error);
         Notify.create({
-            message: 'Hubo un error al cambiar el estado del qualification.',
+            message: 'Hubo un error al cambiar el estado del calificacion.',
             type: 'negative',
             position: 'top',
             textColor: 'white',
