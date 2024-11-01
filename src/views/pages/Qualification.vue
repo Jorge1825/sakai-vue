@@ -32,8 +32,7 @@
                 <Column field="descriptions" header="DESCRIPCION" style="width: 35%" />
                 <Column field="norms" header="NORMA" style="width: 35%" />
                 <Column field="qualification" header="EVALUACION" style="width: 35%" />
-                <Column field="evidence" header="EVIDENCIAS"
-                    style="width: 10%; text-align: left; text-transform: uppercase">
+                <Column field="evidence" header="EVIDENCIAS" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
                             <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
@@ -57,12 +56,10 @@
                 <template #expansion="slotProps">
                     <div class="p-4">
                         <h5>Nombre de la empresa: {{ slotProps.data.name }}</h5>
-                        <p><strong>Description:</strong> {{ slotProps.data.description }}</p>
-                        <p><strong>norms:</strong> {{ slotProps.data.norms }}</p>
-                        <p><strong>Qualification:</strong> {{ slotProps.data.qualification }}</p>
-                        <p><strong>Evidencias:</strong> {{ slotProps.data.evidence }}</p>
-                        <p>
-                        </p>
+                        <p><strong>Descripcion:</strong> {{ slotProps.data.description }}</p>
+                        <p><strong>Normas:</strong> {{ slotProps.data.norms }}</p>
+                        <p><strong>Evaluacion:</strong> {{ slotProps.data.qualification }}</p>
+                        <p><strong>Evidencias:</strong> {{ slotProps.data.evidences }}</p>
                     </div>
                 </template>
             </DataTable>
@@ -240,7 +237,7 @@ function editQualification(selectedQualification) {
 }
 
 //funcion activar desactivavr usuario
-async function toggleStatus(selectedQualification) {
+/*async function toggleStatus(selectedQualification) {
     try {
         // Cambia el estado del usuario (activo/inactivo)
         const response = await toggleActiveQualificationApi(selectedQualification._id);
@@ -275,7 +272,7 @@ async function toggleStatus(selectedQualification) {
             multiLine: true
         });
     }
-}
+}*/
 
 // Funciones para expandir y colapsar
 function expandAll() {
