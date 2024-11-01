@@ -140,8 +140,8 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>{{ text.number }}</td>
-                                        <td>{{ text.title }}</td>
+                                        <td>{{ dataFormat.number }}</td>
+                                        <td>{{ dataFormat.title }}</td>
                                         <td colspan="3">
                                             <table class="tablereq">
                                                 <thead>
@@ -152,7 +152,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr v-for="req in text.requirements" :key="req.number">
+                                                    <tr v-for="req in dataFormat.requirements" :key="req.number">
                                                         <td>{{ req.number }}</td>
                                                         <td>{{ req.title }}</td>
                                                         <td>{{ req.description }}</td>
@@ -179,7 +179,7 @@
 
 <script setup>
 import { getNormsApi } from '@/api/norms';
-import { generateRequirementFile } from '@/api/requirements';
+import { formatDataRequirement, generateRequirementFile } from '@/api/requirements';
 import { createRoleApi, editRoleApi, getRolesApi, toggleActiveRoleApi } from '@/api/roles.js';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
@@ -193,7 +193,7 @@ const requis = ref([
 
 const requiDialog = ref(false);
 const responseIADialog = ref(false);
-const formatDialog = ref(true);
+const formatDialog = ref(false);
 const norm = ref(null);
 const norms = ref([]);
 const requi = ref({
@@ -209,47 +209,12 @@ const status = ref([
 ]);
 let file = ref(null);
 
-let text = ref({
-    number: '4',
-    requirements: [
-        {
-            description:
-                'La organización debe determinar las cuestiones externas e internas que son pertinentes para su propósito y que afectan su capacidad para lograr los resultados previstos de su sistema de gestión de la sostenibilidad de eventos.\nNOTA 1 El término "cuestión" en este subnumeral es sinónimo de "contexto" según se define en el numeral 3.42.\nNOTA 2 La organización es la que se describe en los numerales 4.3 y 4.4.',
-            number: '4.1',
-            title: 'Comprensión de la organización y de su contexto'
-        },
-        {
-            description:
-                'La organización debe determinar:\n- las partes interesadas que son pertinentes al sistema de gestión de la sostenibilidad de eventos, véase Tabla A.1;\n- los requisitos de esas partes interesadas (es decir, sus necesidades y expectativas, ya sean declaradas, implícitas u obligatorias).\nLa organización debe establecer, implementar y mantener un procedimiento para la identificación y compromiso de las partes interesadas en las cuestiones de desarrollo sostenible identificados y emergentes relacionados con su rol en la cadena de valor de los eventos. La organización debe documentar los resultados de su compromiso con las partes interesadas.\nLa identificación de las partes interesadas debe abarcar, cuando proceda, lo siguiente:\na) el organizador de evento;\nb) el propietario del evento;\nc) la fuerza laboral;\nd) la cadena de suministro;\ne) los participantes;\nf) los asistentes;\ng) los organismos reguladores;\nh) la comunidad.\ni) organizaciones no gubernamentales que velen por el ambiente, la cultura y el patrimonio',
-            number: '4.2',
-            title: 'Comprensión de las necesidades y expectativas de las partes interesadas'
-        },
-        {
-            description:
-                'La organización debe determinar los límites y la aplicabilidad del sistema de gestión de la sostenibilidad de eventos a fin de establecer su alcance.\nAl determinar este alcance, la organización debe considerar:\n- las cuestiones externas e internos mencionados en el numeral 4.1; y\n- los requisitos a los que se hace referencia en el numeral 4.2.\nEl alcance debe estar disponible como información documentada.',
-            number: '4.3',
-            title: 'Determinación del alcance del sistema de gestión de la sostenibilidad de eventos'
-        },
-        {
-            description:
-                'La organización debe establecer, implementar, mantener y mejorar continuamente un sistema de gestión de sostenibilidad para eventos, incluidos los procesos necesarios y sus interacciones, de acuerdo con los requisitos de la presente Norma.',
-            number: '4.4',
-            title: 'Sistema de gestión de la sostenibilidad de eventos'
-        },
-        {
-            description:
-                'La organización debe definir sus principios rectores del desarrollo sostenible en forma de una declaración de propósitos y valores. Los principios rectores del desarrollo sostenible de la organización en relación con la gestión de eventos deben incluir, como mínimo, consideraciones de compromiso, inclusión, integridad y transparencia. La organización debe definir y documentar su propósito principal y sus valores con respecto a sus actividades, productos y servicios relacionados específicamente con los eventos.\nLos principios, el propósito y los valores de la organización deben proporcionar un marco para establecer sus políticas, objetivos y metas, tal como se definen en el alcance de su sistema de gestión de la sostenibilidad de eventos.',
-            number: '4.5',
-            title: 'Principios de desarrollo sostenible, declaración de propósitos y valores'
-        }
-    ],
-    title: 'CONTEXTO DE LA ORGANIZACIÓN'
-});
+let dataFormat = ref({});
 
 onBeforeMount(async () => {
     await getRoles();
     await getNorms();
-    await formatData(text);
+    // await formatData(text);
 });
 
 // Función que dispara el click en el input de archivo
@@ -388,6 +353,7 @@ async function toggleStatus(selectedRole) {
 }
 
 async function uploadFileServer() {
+    requiDialog.value = false;
     const formData = new FormData();
     formData.append('normId', norm.value.value);
     formData.append('file', file.value);
@@ -426,33 +392,36 @@ async function uploadFileServer() {
 }
 
 async function formatData(text) {
-    // try {
-    //     const response = await formatDataRequirement(text, norm.value.value);
-    //     console.log(response);
-    //     if (response.status === 200) {
-    //         // Mostrar notificación de éxito
-    //         Notify.create({
-    //             message: `Operación exitosa.`,
-    //             type: 'positive',
-    //             position: 'top',
-    //             textColor: 'white',
-    //             color: 'blue',
-    //             multiLine: true
-    //         });
-    //     } else {
-    //         throw new Error('Error al extraer el archivo.');
-    //     }
-    // } catch (error) {
-    //     console.error(error);
-    //     Notify.create({
-    //         message: 'Hubo un error al extraer el archivo.',
-    //         type: 'negative',
-    //         position: 'top',
-    //         textColor: 'white',
-    //         color: 'red',
-    //         multiLine: true
-    //     });
-    // }
+    try {
+        const response = await formatDataRequirement({ text, normId: norm.value.value });
+        console.log(response);
+        if (response.status === 200) {
+            // Mostrar notificación de éxito
+            Notify.create({
+                message: `Operación exitosa.`,
+                type: 'positive',
+                position: 'top',
+                textColor: 'white',
+                color: 'blue',
+                multiLine: true
+            });
+
+            dataFormat.value = response.data.response;
+            formatDialog.value = true;
+        } else {
+            throw new Error('Error al formatear la información.');
+        }
+    } catch (error) {
+        console.error(error);
+        Notify.create({
+            message: 'Hubo un error al formatear la información.',
+            type: 'negative',
+            position: 'top',
+            textColor: 'white',
+            color: 'red',
+            multiLine: true
+        });
+    }
 }
 
 // Funciones para expandir y colapsar
