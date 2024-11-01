@@ -2,6 +2,7 @@ import AppLayout from '@/layout/AppLayout.vue';
 import Norms from '@/views/pages/Norms.vue';
 import Prompts from '@/views/pages/Prompts.vue';
 import RequirementsPanel from '@/views/pages/RequirementsPanel.vue'; //Ruta a Requerimientos
+import TableNorm from '@/views/pages/TableNorm.vue';
 import Cookies from 'js-cookie';
 import { createRouter, createWebHistory } from 'vue-router';
 
@@ -145,6 +146,11 @@ const router = createRouter({
                     path: '/requirements',
                     name: 'Requirements',
                     component: RequirementsPanel
+                },
+                {
+                    path: '/tablenorm',
+                    name: 'TableNorm',
+                    component: TableNorm
                 },
                 {
                     path: '/prompts',
