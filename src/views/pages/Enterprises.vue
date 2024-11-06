@@ -23,13 +23,18 @@
                 </div>
 
             </div>
-            <!-- Tabla de usuarios -->
-            <DataTable v-model:expandedRows="expandedRows" :value="prompts" dataKey="_id" responsiveLayout="scroll"
+            <!-- Tabla de empresas -->
+            <DataTable v-model:expandedRows="expandedRows" :value="enterprises" dataKey="_id" responsiveLayout="scroll"
                 :paginator="true" :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]">
-                <Column field="name" header="NOMBRE" :sortable="true" style="width: 15%" />
-                <Column field="description" header="DESCRIPCIÓN" style="width: 35%" />
+                <Column field="name" header="NOMBRE" :sortable="true" style="width: 10%" />
+                <Column field="qualification" header="CALIFICACIÓN" :sortable="true" style="width: 10%" />
+                <Column field="requirement" header="REQUERIMIENTO " :sortable="true" style="width: 10%" />
+                <Column field="norm" header="NORMA" :sortable="true" style="width: 10%" />
+                <Column field="evaluation" header="EVALUACIÓN" :sortable="true" style="width: 10%" />
+                <Column field="evidence" header="EVIDENCIA" :sortable="true" style="width: 10%" />
+                <!--<Column field="description" header="DESCRIPCIÓN" style="width: 35%" />-->
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
@@ -46,7 +51,7 @@
                            
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
                             <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="editPrompt(slotProps.data)" dense round />
+                                @click="editEnterprise(slotProps.data)" dense round />
                         </div>
                     </template>
 
@@ -56,7 +61,7 @@
                     <div class="p-4">
                         <h5>Detalles del Prompt: {{ slotProps.data.name }}</h5>
                         <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
-                        <p><strong>Prompt:</strong> {{ slotProps.data.prompt }}</p>
+                        <p><strong>Prompt:</strong> {{ slotProps.data.enterprise }}</p>
                         <p>
                             <strong>Estado:</strong>
                             <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
@@ -69,15 +74,15 @@
         </div>
     </div>
 
-    <!-- Modal para agregar/editar usuario -->
-    <q-dialog v-model="promptDialog" persistent >
+    <!-- Modal para agregar/editar empresa -->
+    <q-dialog v-model="enterpriseDialog" persistent >
         <div class="container bg-white" style="width: 700px; max-width: 80vw;min-width: 400px;">
             <div class="watermark-container justify-center flex">
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-form @submit.prevent.stop="savePrompt" novalidate class="q-pa-md full-width">
                         <q-card-section>
                             <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px;">
-                                {{ prompt._id ? 'EDITAR PROMPT' : 'NUEVO PROMPT' }}
+                                {{ enterprise._id ? 'EDITAR EMPRESA' : 'NUEVA EMPRESA' }}
                             </div>
                         </q-card-section>
 
@@ -85,10 +90,35 @@
                             <div class="row full-width q-py-lg">
                                 <div class="col-6">
                                     <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Nombre del prompt requerido']"
-                                        v-model="prompt.name" label="Nombre del prompt" required style="padding: 10px" />
+                                        :rules="[(val) => (val && val.length > 0) || 'Nombre de la empresa requerido']"
+                                        v-model="enterprise.name" label="Nombre de la empresa" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
+                                    <q-input lazy-rules
+                                        :rules="[(val) => (val && val.length > 0) || 'Calificación requerida']"
+                                        v-model="enterprise.qualification" label="Calificación" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules
+                                        :rules="[(val) => (val && val.length > 0) || 'Requisito requerido']"
+                                        v-model="enterprise.requirement" label="Requisito" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules
+                                        :rules="[(val) => (val && val.length > 0) || 'Norma requerida']"
+                                        v-model="enterprise.norm" label="Norma" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules
+                                        :rules="[(val) => (val && val.length > 0) || 'Evaluacuión requerida']"
+                                        v-model="enterprise.evaluation" label="Evaluación" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules
+                                        :rules="[(val) => (val && val.length > 0) || 'Evidencia requerida']"
+                                        v-model="enterprise.evidence" label="Evidencia" required style="padding: 10px" />
+                                </div>
+                                <!-- <div class="col-6">
                                     <q-input lazy-rules
                                         :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']"
                                         v-model="prompt.description" label="Descripción" required style="padding: 10px"
@@ -99,9 +129,9 @@
                                         :rules="[(val) => (val && val.length > 0) || 'Prompt requerido']"
                                         v-model="prompt.prompt" label="Prompt" required style="padding: 10px"
                                         autogrow />
-                                </div>
-                                <div class="col-6">
-                                    <q-select v-model="prompt.status" :options="status" label="Estado" required
+                                </div> -->
+                                <div class="col-12">
+                                    <q-select v-model="enterprise.status" :options="status" label="Estado" required
                                         style="padding: 10px" />
                                 </div>
                             </div>
@@ -121,17 +151,22 @@
 </template>
 
 <script setup>
-import { createPromptApi, editPromptApi, getPromptsApi, toggleActivePromptApi } from '@/api/prompts';
+import { createEnterpriseApi, editEnterpriseApi, getEnterprisesApi, toggleActiveEnterpriseApi } from '@/api/enterprises';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
-const prompts = ref([]);
-const promptDialog = ref(false);
-const prompt = ref({
+const enterprises = ref([]);
+const enterpriseDialog = ref(false);
+const enterprise = ref({
     id: null,
     name: '',
-    description: '',
-    prompt: '',
+    qualification: '',
+    requirement: '',
+    norm: '',
+    evaluation: '',
+    evidence: '',
+    //description: '',
+    //prompt: '',
     status: true
 });
 const expandedRows = ref([]);
@@ -141,14 +176,14 @@ const status = ref([
 ]);
 
 onBeforeMount(async () => {
-    await getPrompts();
+    await getEnterprises();
 });
 
-async function getPrompts() {
+async function getEnterprises() {
     try {
-        const { data } = await getPromptsApi();
+        const { data } = await getEnterprisesApi();
         console.log(data);
-        prompts.value = data.length ? data : [];
+        enterprises.value = data.length ? data : [];
 
     } catch (error) {
         console.error(error);
@@ -156,75 +191,90 @@ async function getPrompts() {
 }
 
 function openDialog() {
-    prompt.value = {
+    enterprise.value = {
         // Reinicar el objeto usuario
         id: null,
         name: '',
-        description: '',
-        prompt: '',
+        qualification: '',
+        requirement: '',
+        norm: '',
+        evaluation: '',
+        evidence: '',
+        //description: '',
+        //prompt: '',
         status: status.value[0]
     };
-    promptDialog.value = true;
+    enterpriseDialog.value = true;
 }
 
 function hideDialog() {
-    promptDialog.value = false;
+    enterpriseDialog.value = false;
 }
-
+//Guardar empresa
 async function savePrompt() {
-    console.log(prompt.value);
+    console.log(enterprise.value);
 
-    if (prompt.value._id) {
-        const promptApi = {
-            id: prompt.value._id,
-            name: prompt.value.name,
-            description: prompt.value.description,
-            prompt: prompt.value.prompt,
-            status: prompt.value.status.value
+    if (enterprise.value._id) {
+        const enterpriseApi = {
+            id: enterprise.value._id,
+            name: enterprise.value.name,
+            qualification: enterprise.value.qualification,
+            requirement: enterprise.value.requirement,
+            norm: enterprise.value.norm,
+            evaluation: enterprise.value.evaluation,
+            evidence: enterprise.value.evidence,
+            //description: prompt.value.description,
+            //prompt: prompt.value.prompt,
+            status: enterprise.value.status.value
         };
 
-        const response = await editPromptApi(promptApi);
+        const response = await editEnterpriseApi(enterpriseApi);
 
         if (response.status === 200) {
             Notify.create({ message: 'Prompt actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getPrompts();
+            await getEnterprises();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar el prompt.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar el empresa.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     } else {
-        const promptApi = {
-            name: prompt.value.name,
-            description: prompt.value.description,
-            prompt: prompt.value.prompt,
-            status: prompt.value.status.value
+        const enterpriseApi = {
+            name: enterprise.value.name,
+            qualification: enterprise.value.qualification,
+            requirement: enterprise.value.requirement,
+            norm: enterprise.value.norm,
+            evaluation: enterprise.value.evaluation,
+            evidence: enterprise.value.evidence,
+            //description: prompt.value.description,
+            //prompt: prompt.value.prompt,
+            status: enterprise.value.status.value
         };
 
-        const response = await createPromptApi(promptApi);
+        const response = await createEnterpriseApi(enterpriseApi);
         console.log(response);
 
         if (response.status === 200) {
             Notify.create({ message: 'Prompt creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getPrompts();
+            await getEnterprises();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear el prompt.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear el empresa.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     }
 }
 
-function editPrompt(selectedPrompt) {
-    prompt.value = { ...selectedPrompt };
-    prompt.value.status = status.value.find((s) => s.value === selectedPrompt.status);
-    promptDialog.value = true;
-    console.log(prompt.value);
+function editEnterprise(selectedPrompt) {
+    enterprise.value = { ...selectedPrompt };
+    enterprise.value.status = status.value.find((s) => s.value === selectedPrompt.status);
+    enterpriseDialog.value = true;
+    console.log(enterprise.value);
 }
 
-//funcion activar desactivavr usuario
+//funcion activar desactivar empresa 
 async function toggleStatus(selectedPrompt) {
     try {
-        // Cambia el estado del usuario (activo/inactivo)
-        const response = await toggleActivePromptApi(selectedPrompt._id);
+        // Cambia el estado de la empresa  (activo/inactivo)
+        const response = await toggleActiveEnterpriseApi(selectedPrompt._id);
 
         if (response.status === 200) {
             // Actualiza el estado localmente después de recibir respuesta del backend
@@ -241,14 +291,14 @@ async function toggleStatus(selectedPrompt) {
             });
 
             // Vuelve a cargar los usuarios si es necesario
-            await getPrompts();
+            await getEnterprises();
         } else {
-            throw new Error('Error al actualizar el estado del prompt.');
+            throw new Error('Error al actualizar el estado de la empresa.');
         }
     } catch (error) {
         console.error(error);
         Notify.create({
-            message: 'Hubo un error al cambiar el estado del prompt.',
+            message: 'Hubo un error al cambiar el estado de la empresa .',
             type: 'negative',
             position: 'top',
             textColor: 'white',
@@ -260,7 +310,7 @@ async function toggleStatus(selectedPrompt) {
 
 // Funciones para expandir y colapsar
 function expandAll() {
-    expandedRows.value = prompts.value.reduce((acc, p) => (acc[p._id] = true) && acc, {});
+    expandedRows.value = enterprises.value.reduce((acc, p) => (acc[p._id] = true) && acc, {});
 }
 
 function collapseAll() {

@@ -153,6 +153,7 @@ onBeforeMount(async () => {
     await getQualifications();
 });
 
+
 async function getQualifications() {
     try {
         const { data } = await getQualificationsApi();
