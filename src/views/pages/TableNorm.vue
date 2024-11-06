@@ -52,37 +52,31 @@
     </div>
 
     <!-- Modal para agregar/editar usuario -->
-    <q-dialog v-model="requiDialog"  width="800px">
+    <q-dialog v-model="requiDialog" width="800px">
         <div class="container bg-white">
             <div class="watermark-container justify-center flex">
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-form @submit.prevent.stop="saveNorm" novalidate class="q-pa-md full-width">
                         <q-card-section>
                             <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
-                                {{ requi._id ? 'EDITAR NORMA' : 'NUEVA NORMA' }}
+                                {{ requi._id ? 'EDITAR REQUERIMIENTO' : 'NUEVA REQUERIMIENTO' }}
                             </div>
                         </q-card-section>
 
                         <q-card-section>
-                            <div class="row full-width q-py-xs">
-                              <div class="col-12">
-                                    <q-select v-model="norm" :options="norms" label="Norma" required style="padding: 10px" lazy-rules :rules="[(val) => (val) || 'Norma requerida']" />
+                            <div class="row full-width q-pb-lg q-pt-md">
+                                <div class="col-12">
+                                    <q-select v-model="norm" :options="norms" label="Norma" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Norma requerida']" />
                                 </div>
-                                <div class="col-6 justify-center flex items-center">
+                                <div class="col-6 justify-center flex items-center q-py-lg">
                                     <input type="file" id="inputFile" @change="selectFile" style="display: none" />
                                     <q-btn :disabled="!norm" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
                                 </div>
-                                <div class="col-6 justify-center flex items-center">
-                                    <q-btn class="q-mx-sm flex" outline label="Carga Manual" color="primary"/>
+                                <div class="col-6 justify-center flex items-center q-py-lg">
+                                    <q-btn class="q-mx-sm flex" outline label="Carga Manual" color="primary" />
                                 </div>
-
                             </div>
                         </q-card-section>
-
-                        <q-card-actions align="right">
-                            <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
-                            <q-btn class="q-mx-sm" outline label="Guardar" color="primary" type="submit" />
-                        </q-card-actions>
                     </q-form>
                 </q-card>
                 <div class="watermark"></div>
@@ -102,22 +96,13 @@
                         </q-card-section>
 
                         <q-card-section>
-                            <div class="row full-width q-py-xs">
+                            <div class="row full-width q-py-lg">
                                 <div class="col-12">
                                     <q-select v-model="norm" :options="norms" label="Norma" required style="padding: 10px" lazy-rules :rules="[(val) => (val && val.length > 0) || 'Norma requerida']" />
                                 </div>
-                                <div class="col-6 justify-center flex items-center ">
+                                <div class="col-6 justify-center flex items-center">
                                     <input type="file" id="inputFile" @change="selectFile" style="display: none" />
                                     <q-btn class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
-                                </div>
-                                <div class="col-6 q-py-lg">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre del rol requerido']" v-model="requi.name" label="Nombre del Rol" required style="padding: 10px" />
-                                </div>
-                                <div class="col-6 q-py-lg">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="requi.description" label="Descripción" required style="padding: 10px" autogrow />
-                                </div>
-                                <div class="col-6">
-                                    <q-select v-model="requi.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -132,10 +117,69 @@
             </div>
         </div>
     </q-dialog>
+
+    <q-dialog v-model="formatDialog" persistent>
+        <div class="container bg-white" style="min-width: 450px; max-width: 85vw; min-height: 60vh; max-height: 90vh">
+            <div class="watermark-container justify-center flex">
+                <q-card class="justify-center flex bg-transparent full-width">
+                    <q-form @submit.prevent.stop="saveNorm" novalidate class="q-pa-md full-width">
+                        <q-card-section>
+                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
+                                {{ requi._id ? 'EDITAR NORMA' : 'NUEVA NORMA' }}
+                            </div>
+                        </q-card-section>
+
+                        <q-card-section class="overflow-auto">
+                            <table class="tablereq">
+                                <thead>
+                                    <tr>
+                                        <th>Número</th>
+                                        <th>Título</th>
+                                        <th colspan="3">Requisitos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ dataFormat.number }}</td>
+                                        <td>{{ dataFormat.title }}</td>
+                                        <td colspan="3">
+                                            <table class="tablereq">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Número de Requisito</th>
+                                                        <th>Título de Requisito</th>
+                                                        <th>Descripción de Requisito</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="req in dataFormat.requirements" :key="req.number">
+                                                        <td>{{ req.number }}</td>
+                                                        <td>{{ req.title }}</td>
+                                                        <td>{{ req.description }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </q-card-section>
+
+                        <q-card-actions align="right">
+                            <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="formatDialog = false" />
+                            <q-btn class="q-mx-sm" outline label="Guardar" color="primary" type="submit" />
+                        </q-card-actions>
+                    </q-form>
+                </q-card>
+                <div class="watermark"></div>
+            </div>
+        </div>
+    </q-dialog>
 </template>
 
 <script setup>
 import { getNormsApi } from '@/api/norms';
+import { formatDataRequirement, generateRequirementFile } from '@/api/requirements';
 import { createRoleApi, editRoleApi, getRolesApi, toggleActiveRoleApi } from '@/api/roles.js';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
@@ -149,6 +193,7 @@ const requis = ref([
 
 const requiDialog = ref(false);
 const responseIADialog = ref(false);
+const formatDialog = ref(false);
 const norm = ref(null);
 const norms = ref([]);
 const requi = ref({
@@ -164,9 +209,12 @@ const status = ref([
 ]);
 let file = ref(null);
 
+let dataFormat = ref({});
+
 onBeforeMount(async () => {
     await getRoles();
-    await getNorms()
+    await getNorms();
+    // await formatData(text);
 });
 
 // Función que dispara el click en el input de archivo
@@ -178,7 +226,7 @@ const uploadFile = () => {
 // Función que maneja la selección del archivo
 const selectFile = (event) => {
     file.value = event.target.files[0];
-    console.log('Archivo seleccionado:', archivoSeleccionado.value);
+    uploadFileServer();
 };
 
 async function getRoles() {
@@ -203,8 +251,6 @@ async function getNorms() {
         console.error(error);
     }
 }
-
-
 
 function openDialog() {
     requi.value = {
@@ -306,11 +352,78 @@ async function toggleStatus(selectedRole) {
     }
 }
 
-function uploadFileServer() {
+async function uploadFileServer() {
+    requiDialog.value = false;
     const formData = new FormData();
-
+    formData.append('normId', norm.value.value);
     formData.append('file', file.value);
+
+    try {
+        // Cambia el estado del usuario (activo/inactivo)
+        const response = await generateRequirementFile(formData);
+
+        console.log(response);
+
+        if (response.status === 200) {
+            // Mostrar notificación de éxito
+            Notify.create({
+                message: `Extracción de archivo exitosa, espere mientras se procesa la información.`,
+                type: 'positive',
+                position: 'top',
+                textColor: 'white',
+                color: 'blue',
+                multiLine: true
+            });
+            formatData(response.data.response);
+        } else {
+            throw new Error('Error al extraer el archivo.');
+        }
+    } catch (error) {
+        console.error(error);
+        Notify.create({
+            message: 'Hubo un error al extraer el archivo.',
+            type: 'negative',
+            position: 'top',
+            textColor: 'white',
+            color: 'red',
+            multiLine: true
+        });
+    }
 }
+
+async function formatData(text) {
+    try {
+        const response = await formatDataRequirement({ text, normId: norm.value.value });
+        console.log(response);
+        if (response.status === 200) {
+            // Mostrar notificación de éxito
+            Notify.create({
+                message: `Operación exitosa.`,
+                type: 'positive',
+                position: 'top',
+                textColor: 'white',
+                color: 'blue',
+                multiLine: true
+            });
+
+            dataFormat.value = response.data.response;
+            formatDialog.value = true;
+        } else {
+            throw new Error('Error al formatear la información.');
+        }
+    } catch (error) {
+        console.error(error);
+        Notify.create({
+            message: 'Hubo un error al formatear la información.',
+            type: 'negative',
+            position: 'top',
+            textColor: 'white',
+            color: 'red',
+            multiLine: true
+        });
+    }
+}
+
 // Funciones para expandir y colapsar
 function expandAll() {
     expandedRows.value = requis.value.reduce((acc, p) => (acc[p._id] = true) && acc, {});
@@ -344,5 +457,21 @@ function collapseAll() {
     background-repeat: no-repeat;
     opacity: 0.05;
     z-index: -1;
+}
+
+.tablereq {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tablereq th,
+.tablereq td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.tablereq th {
+    background-color: #f2f2f2;
+    text-align: left;
 }
 </style>
