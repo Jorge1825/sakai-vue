@@ -20,7 +20,7 @@ export const editQualificationApi = async (data) => {
         
         return response;
     } catch (error) {
-        console.error('Error al editar qualification', error); 
+        console.error('Error al editar calificación', error); 
         throw error; 
     }
     
@@ -32,7 +32,7 @@ export const createQualificationApi = async (data) => {
 
         return response;
     } catch (error) {
-        console.error('Error al crear qualification', error); 
+        console.error('Error al crear calificación', error); 
         throw error; 
     }
     
@@ -44,7 +44,7 @@ export const toggleActiveQualificationApi = async (id) => {
 
         return response;
     } catch (error) {
-        console.error('Error al activar/desactivar qualification', error); 
+        console.error('Error al activar/desactivar calificación', error); 
         throw error;
     }
 };
