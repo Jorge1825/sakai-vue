@@ -29,11 +29,10 @@
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]">
                 <Column field="name" header="NOMBRE" :sortable="true" style="width: 10%" />
-                <Column field="nit" header="NIT" :sortable="true" style="width: 10%" />
-                <Column field="address" header="DIRECCIÓN " :sortable="true" style="width: 10%" />
-                <Column field="telephone" header="TELÉFONO" :sortable="true" style="width: 10%" />
-                <Column field="mailAddress" header="CORREO" :sortable="true" style="width: 10%" />
-                <!--<Column field="description" header="DESCRIPCIÓN" style="width: 35%" />-->
+                <Column field="requirement" header="REQUISITO" :sortable="true" style="width: 10%" />
+                <Column field="norm" header="NORMA " :sortable="true" style="width: 15%" />
+                <Column field="qualificaction" header="EVALUACIÓN" :sortable="true" style="width: 15%" />
+                <Column field="evidence" header="EVIDENCIAS" :sortable="true" style="width: 15%" />
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
@@ -61,6 +60,10 @@
                         <h5>Detalles del Prompt: {{ slotProps.data.name }}</h5>
                         <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
                         <p><strong>Prompt:</strong> {{ slotProps.data.qualification }}</p>
+                        <p><strong>Requerimiento:</strong>{{ slotProps.data.requirement }}</p>
+                        <p><strong>Norma:</strong> {{ slotProps.data.norm }}</p>
+                        <p><strong>Evaluacion:</strong> {{ slotProps.data.evaluation }}</p>
+                        <p><strong>Evidencia:</strong>{{ slotProps.data.evidence }}</p>
                         <p>
                             <strong>Estado:</strong>
                             <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
