@@ -1,12 +1,21 @@
 <script setup>
-import { ref } from 'vue';
-
+import { storeAuth } from '@/store/auth.js';
+import { onBeforeMount, ref } from 'vue';
 import AppMenuItem from './AppMenuItem.vue';
+
+const useStoreAuth = storeAuth();
+
+onBeforeMount(() => {
+    const { username, email} = useStoreAuth.getUserToken();
+    const role = useStoreAuth.getRoleToken();
+    console.log(role);
+
+});
 
 const model = ref([
     {
         label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
+        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/', users: ['ADMIN', 'USER'] }]
     },  
     {
         label: 'Administración',

@@ -68,12 +68,9 @@
                                 <div class="col-12">
                                     <q-select v-model="norm" :options="norms" label="Norma" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Norma requerida']" />
                                 </div>
-                                <div class="col-6 justify-center flex items-center q-py-lg">
+                                <div class="col-12 justify-center flex items-center q-py-lg">
                                     <input type="file" id="inputFile" @change="selectFile" style="display: none" />
                                     <q-btn :disabled="!norm" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
-                                </div>
-                                <div class="col-6 justify-center flex items-center q-py-lg">
-                                    <q-btn class="q-mx-sm flex" outline label="Carga Manual" color="primary" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -90,26 +87,15 @@
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-form @submit.prevent.stop="saveNorm" novalidate class="q-pa-md full-width">
                         <q-card-section>
-                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
-                                {{ requi._id ? 'EDITAR NORMA' : 'NUEVA NORMA' }}
-                            </div>
+                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">RESPUESTA</div>
                         </q-card-section>
-
                         <q-card-section>
                             <div class="row full-width q-py-lg">
-                                <div class="col-12">
-                                    <q-select v-model="norm" :options="norms" label="Norma" required style="padding: 10px" lazy-rules :rules="[(val) => (val && val.length > 0) || 'Norma requerida']" />
-                                </div>
-                                <div class="col-6 justify-center flex items-center">
-                                    <input type="file" id="inputFile" @change="selectFile" style="display: none" />
-                                    <q-btn class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
-                                </div>
+                                {{ textResponse }}
                             </div>
                         </q-card-section>
-
                         <q-card-actions align="right">
-                            <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
-                            <q-btn class="q-mx-sm" outline label="Guardar" color="primary" type="submit" />
+                            <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="closeResponse()" />
                         </q-card-actions>
                     </q-form>
                 </q-card>
@@ -133,29 +119,41 @@
                             <table class="tablereq">
                                 <thead>
                                     <tr>
-                                        <th>Número</th>
-                                        <th>Título</th>
-                                        <th colspan="3">Requisitos</th>
+                                        <th class="col-number">Número</th>
+                                        <th class="col-title">Título</th>
+                                        <th class="col-requirements" colspan="3">Requisitos</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>{{ dataFormat.number }}</td>
-                                        <td>{{ dataFormat.title }}</td>
-                                        <td colspan="3">
+                                        <td class="col-number">{{ dataFormat.number }}</td>
+                                        <td class="col-title">{{ dataFormat.title }}</td>
+                                        <td class="col-requirements" colspan="3">
                                             <table class="tablereq">
                                                 <thead>
                                                     <tr>
-                                                        <th>Número de Requisito</th>
-                                                        <th>Título de Requisito</th>
-                                                        <th>Descripción de Requisito</th>
+                                                        <th class="col-req-number">Número de Requisito</th>
+                                                        <th class="col-req-title">Título de Requisito</th>
+                                                        <th class="col-req-description">Descripción de Requisito</th>
+                                                        <th class="col-actions">Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr v-for="req in dataFormat.requirements" :key="req.number">
-                                                        <td>{{ req.number }}</td>
-                                                        <td>{{ req.title }}</td>
-                                                        <td>{{ req.description }}</td>
+                                                        <td class="col-req-number">{{ req.number }}</td>
+                                                        <td class="col-req-title">{{ req.title }}</td>
+                                                        <td class="col-req-description">
+                                                            <template v-for="input in req.inputs" :key="input.id">
+                                                                <q-input v-model="input.description" dense autogrow>
+                                                                    <template v-slot:append>
+                                                                        <q-btn round dense flat icon="minimize" color="red" @click="removeInput(req.id, input.id)" />
+                                                                    </template>
+                                                                </q-input>
+                                                            </template>
+                                                        </td>
+                                                        <td class="col-actions">
+                                                            <q-btn icon="control_point_duplicate" :style="{ color: 'rgb(4, 178, 217)' }" @click="addInput(req.id)" dense round />
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -192,7 +190,7 @@ const requis = ref([
 ]);
 
 const requiDialog = ref(false);
-const responseIADialog = ref(false);
+const responseIADialog = ref(true);
 const formatDialog = ref(false);
 const norm = ref(null);
 const norms = ref([]);
@@ -208,8 +206,66 @@ const status = ref([
     { label: 'INACTIVO', value: false }
 ]);
 let file = ref(null);
-
-let dataFormat = ref({});
+let textResponse = ref('');
+let dataFormat = ref({
+    number: '4',
+    requirements: [
+        {
+            id: 1,
+            description:
+                'La organización debe determinar las cuestiones externas e internas que son pertinentes para su propósito y que afectan su capacidad para lograr los resultados previstos de su sistema de gestión de la sostenibilidad de eventos.\nNOTA 1 El término "cuestión" en este subnumeral es sinónimo de "contexto" según se define en el numeral 3.42.\nNOTA 2 La organización es la que se describe en los numerales 4.3 y 4.4.',
+            number: '4.1',
+            title: 'Comprensión de la organización y de su contexto',
+            inputs: [{ id: 1, description: 'Requisito 1' }]
+        },
+        {
+            id: 2,
+            description:
+                'La organización debe determinar:\n- las partes interesadas que son pertinentes al sistema de gestión de la sostenibilidad de eventos, véase Tabla A.1;\n- los requisitos de esas partes interesadas (es decir, sus necesidades y expectativas, ya sean declaradas, implícitas u obligatorias).\nLa organización debe establecer, implementar y mantener un procedimiento para la identificación y compromiso de las partes interesadas en las cuestiones de desarrollo sostenible identificados y emergentes relacionados con su rol en la cadena de valor de los eventos. La organización debe documentar los resultados de su compromiso con las partes interesadas.\nLa identificación de las partes interesadas debe abarcar, cuando proceda, lo siguiente:\na) el organizador de evento;\nb) el propietario del evento;\nc) la fuerza laboral;\nd) la cadena de suministro;\ne) los participantes;\nf) los asistentes;\ng) los organismos reguladores;\nh) la comunidad.\ni) organizaciones no gubernamentales que velen por el ambiente, la cultura y el patrimonio',
+            number: '4.2',
+            title: 'Comprensión de las necesidades y expectativas de las partes interesadas',
+            inputs: [
+                { id: 1, description: 'Requisito 1' },
+                { id: 2, description: 'Requisito 2' },
+                { id: 3, description: 'Requisito 3' }
+            ]
+        },
+        {
+            id: 3,
+            description:
+                'La organización debe determinar los límites y la aplicabilidad del sistema de gestión de la sostenibilidad de eventos a fin de establecer su alcance.\nAl determinar este alcance, la organización debe considerar:\n- las cuestiones externas e internos mencionados en el numeral 4.1; y\n- los requisitos a los que se hace referencia en el numeral 4.2.\nEl alcance debe estar disponible como información documentada.',
+            number: '4.3',
+            title: 'Determinación del alcance del sistema de gestión de la sostenibilidad de eventos',
+            inputs: [
+                { id: 1, description: 'Requisito 1' },
+                { id: 2, description: 'Requisito 2' }
+            ]
+        },
+        {
+            id: 4,
+            description:
+                'La organización debe establecer, implementar, mantener y mejorar continuamente un sistema de gestión de sostenibilidad para eventos, incluidos los procesos necesarios y sus interacciones, de acuerdo con los requisitos de la presente Norma.',
+            number: '4.4',
+            title: 'Sistema de gestión de la sostenibilidad de eventos',
+            inputs: [
+                { id: 1, description: 'Requisito 1' },
+                { id: 2, description: 'Requisito 2' }
+            ]
+        },
+        {
+            id: 5,
+            description:
+                'La organización debe definir sus principios rectores del desarrollo sostenible en forma de una declaración de propósitos y valores. Los principios rectores del desarrollo sostenible de la organización en relación con la gestión de eventos deben incluir, como mínimo, consideraciones de compromiso, inclusión, integridad y transparencia. La organización debe definir y documentar su propósito principal y sus valores con respecto a sus actividades, productos y servicios relacionados específicamente con los eventos.\nLos principios, el propósito y los valores de la organización deben proporcionar un marco para establecer sus políticas, objetivos y metas, tal como se definen en el alcance de su sistema de gestión de la sostenibilidad de eventos.',
+            number: '4.5',
+            title: 'Principios de desarrollo sostenible, declaración de propósitos y valores',
+            inputs: [
+                { id: 1, description: 'Requisito 1' },
+                { id: 2, description: 'Requisito 2' }
+            ]
+        }
+    ],
+    title: 'CONTEXTO DE LA ORGANIZACIÓN'
+});
 
 onBeforeMount(async () => {
     await getRoles();
@@ -232,10 +288,7 @@ const selectFile = (event) => {
 async function getRoles() {
     try {
         const { data } = await getRolesApi();
-        console.log(data);
         requis.value = data.length ? data : [];
-
-        console.log(requis.value);
     } catch (error) {
         console.error(error);
     }
@@ -243,10 +296,7 @@ async function getRoles() {
 async function getNorms() {
     try {
         const { data } = await getNormsApi();
-        console.log(data);
         norms.value = data.length ? data?.map((r) => ({ label: r.name, value: r._id })) : [];
-
-        console.log(norms.value);
     } catch (error) {
         console.error(error);
     }
@@ -374,6 +424,8 @@ async function uploadFileServer() {
                 color: 'blue',
                 multiLine: true
             });
+            textResponse.value = response.data.response;
+            responseIADialog.value = true;
             formatData(response.data.response);
         } else {
             throw new Error('Error al extraer el archivo.');
@@ -407,7 +459,6 @@ async function formatData(text) {
             });
 
             dataFormat.value = response.data.response;
-            formatDialog.value = true;
         } else {
             throw new Error('Error al formatear la información.');
         }
@@ -431,6 +482,27 @@ function expandAll() {
 
 function collapseAll() {
     expandedRows.value = [];
+}
+
+function closeResponse() {
+    responseIADialog.value = false;
+    formatDialog.value = true;
+}
+
+function addInput(id) {
+    const req = dataFormat.value.requirements.find((r) => r.id === id);
+    req.inputs.push({ id: req.inputs.length + 1, description: '' });
+}
+
+function removeInput(reqId, inputId) {
+    const req = dataFormat.value.requirements.find((r) => r.id === reqId);
+    //no remover el ultimo input
+    if (req.inputs.length > 1) {
+        const inputToRemove = req.inputs.findIndex((i) => i.id === inputId);
+        //mover el contenido del input a remover al input anterior
+        req.inputs[inputToRemove - 1].description += req.inputs[inputToRemove].description;
+        req.inputs.splice(inputToRemove, 1);
+    }
 }
 </script>
 
@@ -473,5 +545,55 @@ function collapseAll() {
 .tablereq th {
     background-color: #f2f2f2;
     text-align: left;
+}
+
+/* Limitar el tamaño máximo de cada columna */
+.col-number {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.col-title {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.col-requirements {
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.col-req-number {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.col-req-title {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.col-req-description {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.col-actions {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 </style>
