@@ -1,14 +1,16 @@
 <script setup>
 import { storeAuth } from '@/store/auth.js';
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, ref, onMounted } from 'vue';
 import AppMenuItem from './AppMenuItem.vue';
+import { getUserData } from '@/service/userService';
 
 const useStoreAuth = storeAuth();
 
+const role = ref();
 onBeforeMount(() => {
     const { username, email} = useStoreAuth.getUserToken();
-    const role = useStoreAuth.getRoleToken();
-    console.log(role);
+    role.value =  useStoreAuth.getRoleToken();
+    console.log(role.value);
 
 });
 
@@ -154,6 +156,11 @@ const model = ref([
         // ]
     // }
 ]);
+const empresaIds = ref([]); 
+onMounted(async () => { 
+    empresaIds.value = await getUserData(); 
+    }
+    );
 </script>
 
 <template>
@@ -162,6 +169,12 @@ const model = ref([
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
             <li v-if="item.separator" class="menu-separator"></li>
         </template>
+        <div v-if="role?.type === 'USER'"> 
+            <h1>Bienvenido, usuario</h1> 
+            <div v-for="empresa in empresaIds" :key="empresa"> 
+                <p>Empresa ID: {{ empresa }}</p> 
+            </div> 
+        </div>
     </ul>
     <ul class="q-mt-lg ">
         <router-link to="/" class="flex justify-center items-center gap-1 q-mr-md ani_heartBeat aniUtil_onMouse aniUtil_active aniUtil_onMouseRepeat">

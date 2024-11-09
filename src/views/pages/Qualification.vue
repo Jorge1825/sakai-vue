@@ -97,11 +97,6 @@
                                 </div>
                                 <div class="col-6">
                                     <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Calificación requerida']"
-                                        v-model="qualification.qualification" label="Calificación" required style="padding: 10px" />
-                                </div>
-                                <div class="col-6">
-                                    <q-input lazy-rules
                                         :rules="[(val) => (val && val.length > 0) || 'Requisito requerido']"
                                         v-model="qualification.requirement" label="Requisito" required style="padding: 10px" />
                                 </div>
