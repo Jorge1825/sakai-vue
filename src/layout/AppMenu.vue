@@ -1,36 +1,43 @@
 <script setup>
 import { storeAuth } from '@/store/auth.js';
-import { onBeforeMount, ref, onMounted } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import AppMenuItem from './AppMenuItem.vue';
-import { getUserData } from '@/service/userService';
 
 const useStoreAuth = storeAuth();
 
 const role = ref();
+const user = ref();
+const enterprises = ref();
+const enterprise = ref();
 onBeforeMount(() => {
-    const { username, email} = useStoreAuth.getUserToken();
-    role.value =  useStoreAuth.getRoleToken();
+    user.value = useStoreAuth.getUserToken();
+    role.value = useStoreAuth.getRoleToken();
+    enterprises.value = useStoreAuth.getCompanyIds()?.map((enterprise) => {
+        return { label: enterprise.name, value: enterprise.id };
+    });
+    enterprise.value = enterprises.value[0] || null;
     console.log(role.value);
-
+    console.log(enterprises.value);
 });
 
 const model = ref([
     {
         label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/', users: ['ADMIN', 'USER'] }]
-    },  
+        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/', users: ['ADMIN', 'USER'] }],
+        users: ['ADMIN', 'USER']
+    },
     {
         label: 'Administración',
         items: [
-            { label: 'Usuarios', icon: 'pi pi-fw pi-id-card', to: '/users' },
-            { label: 'Roles', icon: 'pi pi-fw pi-list', to: '/roles' },
-            // { label: 'Requerimientos',icon: 'pi pi-fw pi-file', to: '/requirements'},
-            { label: 'Prompts', icon: 'pi pi-fw pi-cog', to: '/prompts'},
-            { label: 'Normas', icon: 'pi pi-fw pi-cog', to: '/norms'},
-            { label: 'Requerimientos', icon: 'pi pi-fw pi-cog', to: '/tablenorm'},
-            { label: 'Empresas ', icon: 'pi pi-fw pi-cog', to: '/enterprises'},
-            { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification'}
-            // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },
+            { label: 'Usuarios', icon: 'pi pi-fw pi-id-card', to: '/users', users: ['ADMIN'] },
+            { label: 'Roles', icon: 'pi pi-fw pi-list', to: '/roles', users: ['ADMIN'] },
+            // { label: 'Requerimientos',icon: 'pi pi-fw pi-file', to: '/requirements, users: ['ADMIN']'},
+            { label: 'Prompts', icon: 'pi pi-fw pi-cog', to: '/prompts', users: ['ADMIN'] },
+            { label: 'Normas', icon: 'pi pi-fw pi-cog', to: '/norms', users: ['ADMIN'] },
+            { label: 'Requerimientos', icon: 'pi pi-fw pi-cog', to: '/tablenorm', users: ['ADMIN'] },
+            { label: 'Empresas ', icon: 'pi pi-fw pi-cog', to: '/enterprises', users: ['ADMIN'] },
+            { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification', users: ['ADMIN'] }
+            // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout', users: ['ADMIN'] },
             // { label: 'Input', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
             // { label: 'Button', icon: 'pi pi-fw pi-mobile', to: '/uikit/button', class: 'rotated-icon' },
             // { label: 'Table', icon: 'pi pi-fw pi-table', to: '/uikit/table' },
@@ -45,7 +52,8 @@ const model = ref([
             // { label: 'Chart', icon: 'pi pi-fw pi-chart-bar', to: '/uikit/charts' },
             // { label: 'Timeline', icon: 'pi pi-fw pi-calendar', to: '/uikit/timeline' },
             // { label: 'Misc', icon: 'pi pi-fw pi-circle', to: '/uikit/misc' }
-        ]
+        ],
+        users: ['ADMIN']
     },
     {
         label: 'Pages',
@@ -53,9 +61,9 @@ const model = ref([
         to: '/pages',
         items: [
             // {
-                // label: 'Landing',
-                // icon: 'pi pi-fw pi-globe',
-                // to: '/landing'
+            // label: 'Landing',
+            // icon: 'pi pi-fw pi-globe',
+            // to: '/landing'
             // },
             {
                 label: 'Auth',
@@ -64,124 +72,63 @@ const model = ref([
                     {
                         label: 'Login',
                         icon: 'pi pi-fw pi-sign-in',
-                        to: '/auth/login'
-                    },
+                        to: '/auth/login',
+                        users: ['ADMIN', 'USER']
+                    }
                     // {
-                        // label: 'Error',
-                        // icon: 'pi pi-fw pi-times-circle',
-                        // to: '/auth/error'
+                    // label: 'Error',
+                    // icon: 'pi pi-fw pi-times-circle',
+                    // to: '/auth/error'
                     // },
                     // {
-                        // label: 'Access Denied',
-                        // icon: 'pi pi-fw pi-lock',
-                        // to: '/auth/access'
+                    // label: 'Access Denied',
+                    // icon: 'pi pi-fw pi-lock',
+                    // to: '/auth/access'
                     // }
-                ]
-            },
+                ],
+                users: ['ADMIN']
+            }
             // {
-                // label: 'Crud',
-                // icon: 'pi pi-fw pi-pencil',
-                // to: '/pages/crud'
+            // label: 'Crud',
+            // icon: 'pi pi-fw pi-pencil',
+            // to: '/pages/crud'
             // },
             // {
-                // label: 'Not Found',
-                // icon: 'pi pi-fw pi-exclamation-circle',
-                // to: '/pages/notfound'
+            // label: 'Not Found',
+            // icon: 'pi pi-fw pi-exclamation-circle',
+            // to: '/pages/notfound'
             // },
             // {
-                // label: 'Empty',
-                // icon: 'pi pi-fw pi-circle-off',
-                // to: '/pages/empty'
+            // label: 'Empty',
+            // icon: 'pi pi-fw pi-circle-off',
+            // to: '/pages/empty'
             // }
-        ]
-    },
-    // {
-        // label: 'Hierarchy',
-        // items: [
-            // {
-                // label: 'Submenu 1',
-                // icon: 'pi pi-fw pi-bookmark',
-                // items: [
-                    // {
-                        // label: 'Submenu 1.1',
-                        // icon: 'pi pi-fw pi-bookmark',
-                        // items: [
-                            // { label: 'Submenu 1.1.1', icon: 'pi pi-fw pi-bookmark' },
-                            // { label: 'Submenu 1.1.2', icon: 'pi pi-fw pi-bookmark' },
-                            // { label: 'Submenu 1.1.3', icon: 'pi pi-fw pi-bookmark' }
-                        // ]
-                    // },
-                    // {
-                        // label: 'Submenu 1.2',
-                        // icon: 'pi pi-fw pi-bookmark',
-                        // items: [{ label: 'Submenu 1.2.1', icon: 'pi pi-fw pi-bookmark' }]
-                    // }
-                // ]
-            // },
-            // {
-                // label: 'Submenu 2',
-                // icon: 'pi pi-fw pi-bookmark',
-                // items: [
-                    // {
-                        // label: 'Submenu 2.1',
-                        // icon: 'pi pi-fw pi-bookmark',
-                        // items: [
-                            // { label: 'Submenu 2.1.1', icon: 'pi pi-fw pi-bookmark' },
-                            // { label: 'Submenu 2.1.2', icon: 'pi pi-fw pi-bookmark' }
-                        // ]
-                    // },
-                    // {
-                        // label: 'Submenu 2.2',
-                        // icon: 'pi pi-fw pi-bookmark',
-                        // items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
-                    // }
-                // ]
-            // }
-        // ]
-    // },
-    // {
-        // label: 'Get Started',
-        // items: [
-            // {
-                // label: 'Documentation',
-                // icon: 'pi pi-fw pi-book',
-                // to: '/documentation'
-            // },
-            // {
-                // label: 'View Source',
-                // icon: 'pi pi-fw pi-github',
-                // url: 'https://github.com/primefaces/SOSTENIWEB-vue',
-                // target: '_blank'
-            // }
-        // ]
-    // }
-]);
-const empresaIds = ref([]); 
-onMounted(async () => { 
-    empresaIds.value = await getUserData(); 
+        ],
+        users: ['ADMIN']
     }
-    );
+]);
 </script>
 
 <template>
     <ul class="layout-menu">
         <template v-for="(item, i) in model" :key="item">
-            <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
-            <li v-if="item.separator" class="menu-separator"></li>
+            <template v-if="item.users.includes(role?.type)">
+                <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
+                <li v-if="item.separator" class="menu-separator"></li>
+            </template>
         </template>
-        <div v-if="role?.type === 'USER'"> 
-            <h1>Bienvenido, usuario</h1> 
-            <div v-for="empresa in empresaIds" :key="empresa"> 
-                <p>Empresa ID: {{ empresa }}</p> 
-            </div> 
+        <div v-if="role?.type === 'USER'">
+            <h1 class="text-center">Bienvenido {{ user.username }}</h1>
+            <p class="text-xs text-center">Empresa:</p>
+            <q-select borderless v-model="enterprise" :options="enterprises" />
         </div>
     </ul>
-    <ul class="q-mt-lg ">
+    <ul class="q-mt-lg">
         <router-link to="/" class="flex justify-center items-center gap-1 q-mr-md ani_heartBeat aniUtil_onMouse aniUtil_active aniUtil_onMouseRepeat">
-                <img src="/public/demo/images/LogoSosteniweb/sosteniweb manual-23.png" alt="Logo Sosteniweb" width="30" />
+            <img src="/public/demo/images/LogoSosteniweb/sosteniweb manual-23.png" alt="Logo Sosteniweb" width="30" />
 
-                <span>SOSTENIWEB</span>
-            </router-link>
+            <span>SOSTENIWEB</span>
+        </router-link>
     </ul>
 </template>
 

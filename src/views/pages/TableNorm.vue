@@ -190,8 +190,8 @@ const requis = ref([
 ]);
 
 const requiDialog = ref(false);
-const responseIADialog = ref(true);
-const formatDialog = ref(false);
+const responseIADialog = ref(false);
+const formatDialog = ref(true);
 const norm = ref(null);
 const norms = ref([]);
 const requi = ref({
@@ -458,6 +458,12 @@ async function formatData(text) {
                 multiLine: true
             });
 
+            //agregar id a cada requisito y agregar un input por requisito donde se pueda agregar la descripción
+            response.data.response.requirements.forEach((r, i) => {
+                r.id = i + 1;
+                r.inputs = [{ id: 1, description: r.description }];
+            });
+
             dataFormat.value = response.data.response;
         } else {
             throw new Error('Error al formatear la información.');
@@ -549,17 +555,17 @@ function removeInput(reqId, inputId) {
 
 /* Limitar el tamaño máximo de cada columna */
 .col-number {
-    max-width: 100px;
+    max-width: 25px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-align: center
 }
 
 .col-title {
-    max-width: 200px;
+    max-width: 40px;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    text-align: center
 }
 
 .col-requirements {
@@ -570,17 +576,17 @@ function removeInput(reqId, inputId) {
 }
 
 .col-req-number {
-    max-width: 100px;
+    max-width: 35px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-align: center
 }
 
 .col-req-title {
-    max-width: 200px;
+    max-width: 60px;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: wrap;
 }
 
 .col-req-description {
@@ -591,9 +597,10 @@ function removeInput(reqId, inputId) {
 }
 
 .col-actions {
-    max-width: 100px;
+    max-width: 20px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-align: center;
 }
 </style>

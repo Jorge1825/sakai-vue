@@ -28,6 +28,7 @@ async function signIn() {
     if (data.token && status === 200) {
       errorMessage.value = ''; // Limpiar el mensaje de error si es exitoso
       router.push({ name: 'dashboard' }); // Redirigir al dashboard
+      window.reload(); // Recargar la página para actualizar la barra de navegación
     }
 
     if (status === 401) {
