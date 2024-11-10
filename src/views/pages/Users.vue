@@ -7,23 +7,24 @@
                     <div class="text-h5" style="color: rgb(4, 178, 217); text-transform: uppercase">
                         <strong>Usuarios</strong>
                     </div>
-
                 </div>
                 <div class="col-12 flex justify-end">
-                    <q-btn icon="add" style="background-color: rgb(4, 178, 217); color: white;" @click="openDialog"
-                        class="q-mr-sm" />
-                    <q-btn icon="expand_more" style="background-color: rgb(4, 178, 217); color: white;"
-                        @click="expandAll" class="q-mr-sm" />
+                    <q-btn icon="add" style="background-color: rgb(4, 178, 217); color: white" @click="openDialog" class="q-mr-sm" />
+                    <q-btn icon="expand_more" style="background-color: rgb(4, 178, 217); color: white" @click="expandAll" class="q-mr-sm" />
                     <q-btn icon="expand_less" color="red" @click="collapseAll" />
                 </div>
-
-
             </div>
             <!-- Tabla de usuarios -->
-            <DataTable v-model:expandedRows="expandedRows" :value="users" dataKey="_id" responsiveLayout="scroll"
-                :paginator="true" :rows="10"
+            <DataTable
+                v-model:expandedRows="expandedRows"
+                :value="users"
+                dataKey="_id"
+                responsiveLayout="scroll"
+                :paginator="true"
+                :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                :rowsPerPageOptions="[5, 10, 25]">
+                :rowsPerPageOptions="[5, 10, 25]"
+            >
                 <Column field="username" header="NOMBRE DE USUARIO" style="width: 20%" />
                 <Column field="email" header="EMAIL" :sortable="true" style="width: 30%" />
                 <Column field="phone" header="TELÉFONO" :sortable="true" style="width: 15%" />
@@ -43,12 +44,10 @@
                         </div>
                     </template>
                 </Column>
-                <Column field="subscription" header="Suscripción"
-                    style="width: 10%; text-align: center; text-transform: uppercase">
+                <Column field="subscription" header="Suscripción" style="width: 10%; text-align: center; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: center">
-                            <q-badge :color="slotProps.data.subscription === 'Suscrito' ? 'blue' : 'grey'"
-                                class="q-ml-xs">
+                            <q-badge :color="slotProps.data.subscription === 'Suscrito' ? 'blue' : 'grey'" class="q-ml-xs">
                                 {{ slotProps.data.subscription }}
                             </q-badge>
                         </div>
@@ -58,19 +57,22 @@
                     <template #body="slotProps">
                         <div class="button-group">
                             <!-- Botón que cambia de estado con colores según el estado -->
-                            <q-btn :icon="slotProps.data.status === true ? 'clear' : 'check'"
+                            <q-btn
+                                :icon="slotProps.data.status === true ? 'clear' : 'check'"
                                 :style="{ backgroundColor: slotProps.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
+                                @click="toggleStatus(slotProps.data)"
+                                dense
+                                round
+                                class="q-mr-xs"
+                            />
 
                             <!-- Botón de edición con fondo azul claro y color de ícono blanco -->
-                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="editUser(slotProps.data)" dense round />
+                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editUser(slotProps.data)" dense round />
 
                             <!-- Comentado el botón de eliminar -->
                             <!-- <q-btn icon="delete" color="negative" @click="deleteUser(slotProps.data)" dense /> -->
                         </div>
                     </template>
-
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
@@ -111,35 +113,26 @@
                         <q-card-section>
                             <div class="row">
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Nombre de usuario requerido']"
-                                        v-model="user.username" label="Nombre de Usuario" required
-                                        style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre de usuario requerido']" v-model="user.username" label="Nombre de Usuario" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
                                     <q-input v-model="user.email" label="Email" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input v-model="user.phone" label="Teléfono" type="number" required
-                                        style="padding: 10px" />
+                                    <q-input v-model="user.phone" label="Teléfono" type="number" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-select v-model="user.role" :options="roles" label="Rol" required
-                                        style="padding: 10px" />
+                                    <q-select v-model="user.role" :options="roles" label="Rol" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-select v-model="user.status" :options="status" label="Estado" required
-                                        style="padding: 10px" />
+                                    <q-select v-model="user.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-select v-model="user.subscription" :options="['Suscrito', 'No Suscrito']"
-                                        label="Suscripción" required style="padding: 10px" />
+                                    <q-select v-model="user.subscription" :options="['Suscrito', 'No Suscrito']" label="Suscripción" required style="padding: 10px" />
                                 </div>
 
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'password requerida']"
-                                        v-model="user.password" label="Contraseña" required style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'password requerida']" v-model="user.password" label="Contraseña" required style="padding: 10px" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -254,14 +247,15 @@ async function saveUser() {
         const response = await editUserApi(userApi);
         console.log(response);
 
-        if (response.status === 200) {
-            Notify.create({ 
-                message: 'Usuario actualizado correctamente.', 
-                type: 'positive', 
-                position: 'top', 
-                textColor: 'white', 
+        if (response.status <= 300) {
+            Notify.create({
+                message: 'Usuario actualizado correctamente.',
+                type: 'positive',
+                position: 'top',
+                textColor: 'white',
                 color: 'blue', //rgb(4, 178, 217)
-                multiLine: true });
+                multiLine: true
+            });
             await getUsers();
             hideDialog();
         } else {
@@ -280,7 +274,7 @@ async function saveUser() {
         const response = await createUserApi(userApi);
         console.log(response);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             Notify.create({ message: 'Usuario creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             await getUsers();
             hideDialog();
@@ -353,7 +347,7 @@ async function toggleStatus(selectedUser) {
         console.log('selectedUser', selectedUser);
         const response = await toggleActiveUserApi(selectedUser._id);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             // Actualiza el estado localmente después de recibir respuesta del backend
             selectedUser.status = selectedUser.status === 'Activo' ? 'Inactivo' : 'Activo';
 

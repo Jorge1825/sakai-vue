@@ -65,12 +65,11 @@
                         <p><strong>Descripción:</strong> {{ slotNorms.data.description }}</p>
                         <p>
                             <strong>Prompt de extracción:</strong>
-                            {{selectPrompt(slotNorms.data.promptExtraction?._id)}}
+                            {{ selectPrompt(slotNorms.data.promptExtraction?._id) }}
                         </p>
                         <p>
                             <strong>Prompt de formato:</strong>
-                            {{selectPrompt(slotNorms.data.promptFormat?._id)}}
-            
+                            {{ selectPrompt(slotNorms.data.promptFormat?._id) }}
                         </p>
                         <p>
                             <strong>Estado:</strong>
@@ -105,10 +104,10 @@
                                     <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="norm.description" label="Descripción" required style="padding: 10px" autogrow />
                                 </div>
                                 <div class="col-6">
-                                    <q-select v-model="norm.promptExtraction" :options="prompts" label="Prompt de extracción" required style="padding: 10px" lazy-rules :rules="[(val) => (val) || 'Prompt de extracción requerido']" />
+                                    <q-select v-model="norm.promptExtraction" :options="prompts" label="Prompt de extracción" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Prompt de extracción requerido']" />
                                 </div>
                                 <div class="col-6">
-                                    <q-select v-model="norm.promptFormat" :options="prompts" label="Prompt de formato" required style="padding: 10px" lazy-rules :rules="[(val) => (val) || 'Prompt de formato requerido']" />
+                                    <q-select v-model="norm.promptFormat" :options="prompts" label="Prompt de formato" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Prompt de formato requerido']" />
                                 </div>
                                 <div class="col-6">
                                     <q-select v-model="norm.status" :options="status" label="Estado" required style="padding: 10px" />
@@ -215,7 +214,7 @@ async function saveNorm() {
 
         const response = await editNormApi(normApi);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             notifySuccess({ message: 'Norma actualizada correctamente.' });
             await getNorms();
             hideDialog();
@@ -234,7 +233,7 @@ async function saveNorm() {
         const response = await createNormApi(normApi);
         console.log(response);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             notifySuccess({ message: 'Norma creada correctamente.' });
             await getNorms();
             hideDialog();
@@ -260,7 +259,7 @@ async function toggleStatus(selectedNorm) {
         // Cambia el estado del usuario (activo/inactivo)
         const response = await toggleActiveNormApi(selectedNorm._id);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             // Actualiza el estado localmente después de recibir respuesta del backend
             selectedNorm.status = selectedNorm.status === 'Activo' ? 'Inactivo' : 'Activo';
 

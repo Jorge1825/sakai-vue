@@ -12,9 +12,9 @@
                     <!-- Botón de agregar -->
                     <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" />
                     <!-- Botón de expandir -->
-                    <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
+                    <!-- <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" /> -->
                     <!-- Botón de colapsar -->
-                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
+                    <!-- <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" /> -->
                 </div>
             </div>
             <!-- Tabla de requias -->
@@ -28,13 +28,9 @@
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
             >
-                <Column field="name" header="NUMBER" :sortable="true" style="width: 5%" />
-                <Column field="description" header="TITULO" style="width: 20%" />
-                <Column field="requirements" header="REQUISITOS" style="width: 60%">
-                    <template #body="slotNorms">
-                        {{ slotNorms.data.requirements }}
-                    </template>
-                </Column>
+                <Column field="number" header="NUMBERO" :sortable="true" style="width: 5%" />
+                <Column field="title" header="TITULO" style="width: 80%" />
+          
                 <!-- Columna de calificaciones (para números) -->
                 <!-- <Column field="score" header="CALIFICACIONES" style="width: 5%">
           <template #body="slotNorms">
@@ -44,7 +40,7 @@
                 <!-- Columna para el botón "ojo" en cada fila -->
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotNorms">
-                        <q-btn icon="visibility" :style="{ color: 'rgb(4, 178, 217)' }" @click="botonMostrarDelOjo(slotNorms.data)" dense round />
+                        <q-btn icon="visibility" :style="{ color: 'rgb(4, 178, 217)' }" @click="editRequirement(slotNorms.data?._id)" dense round />
                     </template>
                 </Column>
             </DataTable>
@@ -59,7 +55,7 @@
                     <q-form @submit.prevent.stop="saveNorm" novalidate class="q-pa-md full-width">
                         <q-card-section>
                             <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
-                                {{ requi._id ? 'EDITAR REQUERIMIENTO' : 'NUEVA REQUERIMIENTO' }}
+                                {{ dataFormat._id ? 'EDITAR REQUERIMIENTO' : 'NUEVA REQUERIMIENTO' }}
                             </div>
                         </q-card-section>
 
@@ -111,7 +107,7 @@
                     <q-form @submit.prevent.stop="saveNorm" novalidate class="q-pa-md full-width">
                         <q-card-section>
                             <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
-                                {{ requi._id ? 'EDITAR NORMA' : 'NUEVA NORMA' }}
+                                {{ dataFormat._id ? `EDITAR REQUISITOS - ${norm?.label}` : `NUEVOS REQUISITOS - ${norm?.label}` }}
                             </div>
                         </q-card-section>
 
@@ -127,7 +123,9 @@
                                 <tbody>
                                     <tr>
                                         <td class="col-number">{{ dataFormat.number }}</td>
-                                        <td class="col-title">{{ dataFormat.title }}</td>
+                                        <td class="col-title">
+                                            <q-input v-model="dataFormat.title" dense autogrow />
+                                        </td>
                                         <td class="col-requirements" colspan="3">
                                             <table class="tablereq">
                                                 <thead>
@@ -135,24 +133,36 @@
                                                         <th class="col-req-number">Número de Requisito</th>
                                                         <th class="col-req-title">Título de Requisito</th>
                                                         <th class="col-req-description">Descripción de Requisito</th>
+                                                        <th class="col-value">Valor</th>
                                                         <th class="col-actions">Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr v-for="req in dataFormat.requirements" :key="req.number">
-                                                        <td class="col-req-number">{{ req.number }}</td>
-                                                        <td class="col-req-title">{{ req.title }}</td>
+                                                        <td class="col-req-number">
+                                                            <q-input v-model="req.number" dense autogrow />
+                                                        </td>
+                                                        <td class="col-req-title">
+                                                            <q-input v-model="req.title" dense autogrow />
+                                                        </td>
                                                         <td class="col-req-description">
-                                                            <template v-for="input in req.inputs" :key="input.id">
+                                                            <template v-for="input in req.inputs" :key="input._id">
                                                                 <q-input v-model="input.description" dense autogrow>
                                                                     <template v-slot:append>
-                                                                        <q-btn round dense flat icon="minimize" color="red" @click="removeInput(req.id, input.id)" />
+                                                                        <q-btn round dense flat icon="minimize" color="red" @click="removeInput(req._id, input._id)" />
                                                                     </template>
                                                                 </q-input>
                                                             </template>
                                                         </td>
+                                                        <td class="col-value">
+                                                            <template v-for="input in req.inputs" :key="input._id">
+                                                                <q-input v-model="input.value" type="number" dense autogrow />
+                                                            </template>
+                                                        </td>
                                                         <td class="col-actions">
-                                                            <q-btn icon="control_point_duplicate" :style="{ color: 'rgb(4, 178, 217)' }" @click="addInput(req.id)" dense round />
+                                                            <q-btn icon="control_point_duplicate" :style="{ color: 'rgb(4, 178, 217)' }" @click="addInput(req._id)" dense round />
+
+                                                            <q-btn class="q-mx-sm" icon="add_circle" :style="{ color: '#32a600' }" @click="addReq(req._id)" dense round />
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -177,8 +187,7 @@
 
 <script setup>
 import { getNormsApi } from '@/api/norms';
-import { formatDataRequirement, generateRequirementFile } from '@/api/requirements';
-import { createRoleApi, editRoleApi, getRolesApi, toggleActiveRoleApi } from '@/api/roles.js';
+import { createRequirementApi, editRequirementApi, formatDataRequirement, generateRequirementFile, getRequirementsApi } from '@/api/requirements';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
@@ -194,12 +203,6 @@ const responseIADialog = ref(false);
 const formatDialog = ref(true);
 const norm = ref(null);
 const norms = ref([]);
-const requi = ref({
-    id: null,
-    name: '',
-    description: '',
-    status: true
-});
 const expandedRows = ref([]);
 const status = ref([
     { label: 'ACTIVO', value: true },
@@ -211,56 +214,56 @@ let dataFormat = ref({
     number: '4',
     requirements: [
         {
-            id: 1,
+            _id: 1,
             description:
                 'La organización debe determinar las cuestiones externas e internas que son pertinentes para su propósito y que afectan su capacidad para lograr los resultados previstos de su sistema de gestión de la sostenibilidad de eventos.\nNOTA 1 El término "cuestión" en este subnumeral es sinónimo de "contexto" según se define en el numeral 3.42.\nNOTA 2 La organización es la que se describe en los numerales 4.3 y 4.4.',
             number: '4.1',
             title: 'Comprensión de la organización y de su contexto',
-            inputs: [{ id: 1, description: 'Requisito 1' }]
+            inputs: [{ _id: 1, description: 'Requisito 1' }]
         },
         {
-            id: 2,
+            _id: 2,
             description:
                 'La organización debe determinar:\n- las partes interesadas que son pertinentes al sistema de gestión de la sostenibilidad de eventos, véase Tabla A.1;\n- los requisitos de esas partes interesadas (es decir, sus necesidades y expectativas, ya sean declaradas, implícitas u obligatorias).\nLa organización debe establecer, implementar y mantener un procedimiento para la identificación y compromiso de las partes interesadas en las cuestiones de desarrollo sostenible identificados y emergentes relacionados con su rol en la cadena de valor de los eventos. La organización debe documentar los resultados de su compromiso con las partes interesadas.\nLa identificación de las partes interesadas debe abarcar, cuando proceda, lo siguiente:\na) el organizador de evento;\nb) el propietario del evento;\nc) la fuerza laboral;\nd) la cadena de suministro;\ne) los participantes;\nf) los asistentes;\ng) los organismos reguladores;\nh) la comunidad.\ni) organizaciones no gubernamentales que velen por el ambiente, la cultura y el patrimonio',
             number: '4.2',
             title: 'Comprensión de las necesidades y expectativas de las partes interesadas',
             inputs: [
-                { id: 1, description: 'Requisito 1' },
-                { id: 2, description: 'Requisito 2' },
-                { id: 3, description: 'Requisito 3' }
+                { _id: 1, description: 'Requisito 1', value: 1 },
+                { _id: 2, description: 'Requisito 2', value: 1 },
+                { _id: 3, description: 'Requisito 3' }
             ]
         },
         {
-            id: 3,
+            _id: 3,
             description:
                 'La organización debe determinar los límites y la aplicabilidad del sistema de gestión de la sostenibilidad de eventos a fin de establecer su alcance.\nAl determinar este alcance, la organización debe considerar:\n- las cuestiones externas e internos mencionados en el numeral 4.1; y\n- los requisitos a los que se hace referencia en el numeral 4.2.\nEl alcance debe estar disponible como información documentada.',
             number: '4.3',
             title: 'Determinación del alcance del sistema de gestión de la sostenibilidad de eventos',
             inputs: [
-                { id: 1, description: 'Requisito 1' },
-                { id: 2, description: 'Requisito 2' }
+                { _id: 1, description: 'Requisito 1' },
+                { _id: 2, description: 'Requisito 2' }
             ]
         },
         {
-            id: 4,
+            _id: 4,
             description:
                 'La organización debe establecer, implementar, mantener y mejorar continuamente un sistema de gestión de sostenibilidad para eventos, incluidos los procesos necesarios y sus interacciones, de acuerdo con los requisitos de la presente Norma.',
             number: '4.4',
             title: 'Sistema de gestión de la sostenibilidad de eventos',
             inputs: [
-                { id: 1, description: 'Requisito 1' },
-                { id: 2, description: 'Requisito 2' }
+                { _id: 1, description: 'Requisito 1' },
+                { _id: 2, description: 'Requisito 2' }
             ]
         },
         {
-            id: 5,
+            _id: 5,
             description:
                 'La organización debe definir sus principios rectores del desarrollo sostenible en forma de una declaración de propósitos y valores. Los principios rectores del desarrollo sostenible de la organización en relación con la gestión de eventos deben incluir, como mínimo, consideraciones de compromiso, inclusión, integridad y transparencia. La organización debe definir y documentar su propósito principal y sus valores con respecto a sus actividades, productos y servicios relacionados específicamente con los eventos.\nLos principios, el propósito y los valores de la organización deben proporcionar un marco para establecer sus políticas, objetivos y metas, tal como se definen en el alcance de su sistema de gestión de la sostenibilidad de eventos.',
             number: '4.5',
             title: 'Principios de desarrollo sostenible, declaración de propósitos y valores',
             inputs: [
-                { id: 1, description: 'Requisito 1' },
-                { id: 2, description: 'Requisito 2' }
+                { _id: 1, description: 'Requisito 1' },
+                { _id: 2, description: 'Requisito 2' }
             ]
         }
     ],
@@ -268,7 +271,7 @@ let dataFormat = ref({
 });
 
 onBeforeMount(async () => {
-    await getRoles();
+    await getRequirements();
     await getNorms();
     // await formatData(text);
 });
@@ -285,9 +288,10 @@ const selectFile = (event) => {
     uploadFileServer();
 };
 
-async function getRoles() {
+async function getRequirements() {
     try {
-        const { data } = await getRolesApi();
+        const { data } = await getRequirementsApi();
+        console.log(data);
         requis.value = data.length ? data : [];
     } catch (error) {
         console.error(error);
@@ -297,95 +301,74 @@ async function getNorms() {
     try {
         const { data } = await getNormsApi();
         norms.value = data.length ? data?.map((r) => ({ label: r.name, value: r._id })) : [];
+        norm.value = norms.value[0];
     } catch (error) {
         console.error(error);
     }
 }
 
 function openDialog() {
-    requi.value = {
-        // Reinicar el objeto usuario
-        id: null,
-        name: '',
-        description: '',
-        status: status.value[0]
-    };
+    norm.value = null;
     requiDialog.value = true;
 }
 
 function hideDialog() {
-    requiDialog.value = false;
+    formatDialog.value = false;
 }
 
 async function saveNorm() {
-    console.log(requi.value);
+    if (dataFormat.value?._id) {
+        const response = await editRequirementApi(dataFormat.value);
 
-    if (requi.value._id) {
-        const requiApi = {
-            id: requi.value._id,
-            name: requi.value.name,
-            description: requi.value.description,
-            status: requi.value.status.value
-        };
-
-        const response = await editRoleApi(requiApi);
-
-        if (response.status === 200) {
-            Notify.create({ message: 'Rol actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getRoles();
+        if (response.status <= 300) {
+            Notify.create({ message: 'Norma actualizada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            await getRequirements();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar el rol.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar las Norma.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     } else {
-        const requiApi = {
-            name: requi.value.name,
-            description: requi.value.description,
-            status: requi.value.status.value
-        };
-
-        const response = await createRoleApi(requiApi);
+        const response = await createRequirementApi({ norm: norm.value.value, ...dataFormat.value });
         console.log(response);
-
-        if (response.status === 200) {
-            Notify.create({ message: 'Rol creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getRoles();
+        if (response.status <= 300) {
+            Notify.create({ message: 'Norma creada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            await getRequirements();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear el rol.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear la norma.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     }
 }
 
-function editRole(selectedRole) {
-    requi.value = { ...selectedRole };
-    requi.value.status = status.value.find((s) => s.value === selectedRole.status);
-    requiDialog.value = true;
-    console.log(requi.value);
+function editRequirement(isReq) {
+    dataFormat.value = requis.value.find((r) => r._id === isReq);
+    norm.value = norms.value.find((n) => n.value === dataFormat.value.norm);
+    formatDialog.value = true;
+
 }
 
 //funcion activar desactivavr usuario
-async function toggleStatus(selectedRole) {
+async function toggleStatus(selectedRequeremet) {
     try {
         // Cambia el estado del usuario (activo/inactivo)
-        const response = await toggleActiveRoleApi(selectedRole._id);
+        const response = await toggleActiveRequeremetApi(selectedRequeremet._id);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             // Actualiza el estado localmente después de recibir respuesta del backend
-            selectedRole.status = selectedRole.status === 'Activo' ? 'Inactivo' : 'Activo';
+            selectedRequeremet.status = selectedRequeremet.status === 'Activo' ? 'Inactivo' : 'Activo';
 
             // Mostrar notificación de éxito
             Notify.create({
-                message: `Rol ${selectedRole.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
+                message: `Requeremet${selectedRequeremet.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedRole.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
+                color: selectedRequeremet.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
                 multiLine: true
             });
 
             // Vuelve a cargar los usuarios si es necesario
-            await getRoles();
+            await getRequirements();
         } else {
             throw new Error('Error al actualizar el estado del rol.');
         }
@@ -414,7 +397,7 @@ async function uploadFileServer() {
 
         console.log(response);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             // Mostrar notificación de éxito
             Notify.create({
                 message: `Extracción de archivo exitosa, espere mientras se procesa la información.`,
@@ -447,7 +430,7 @@ async function formatData(text) {
     try {
         const response = await formatDataRequirement({ text, normId: norm.value.value });
         console.log(response);
-        if (response.status === 200) {
+        if (response.status <= 300) {
             // Mostrar notificación de éxito
             Notify.create({
                 message: `Operación exitosa.`,
@@ -460,8 +443,8 @@ async function formatData(text) {
 
             //agregar id a cada requisito y agregar un input por requisito donde se pueda agregar la descripción
             response.data.response.requirements.forEach((r, i) => {
-                r.id = i + 1;
-                r.inputs = [{ id: 1, description: r.description }];
+                r._id = i + 1;
+                r.inputs = [{ _id: 1, description: r.description, value: null }];
             });
 
             dataFormat.value = response.data.response;
@@ -496,19 +479,34 @@ function closeResponse() {
 }
 
 function addInput(id) {
-    const req = dataFormat.value.requirements.find((r) => r.id === id);
-    req.inputs.push({ id: req.inputs.length + 1, description: '' });
+    const req = dataFormat.value.requirements.find((r) => r._id === id);
+    req.inputs.push({ _id: req.inputs.length + 1, description: '' });
 }
 
 function removeInput(reqId, inputId) {
-    const req = dataFormat.value.requirements.find((r) => r.id === reqId);
+    const req = dataFormat.value.requirements.find((r) => r._id === reqId);
     //no remover el ultimo input
     if (req.inputs.length > 1) {
-        const inputToRemove = req.inputs.findIndex((i) => i.id === inputId);
+        const inputToRemove = req.inputs.findIndex((i) => i._id === inputId);
         //mover el contenido del input a remover al input anterior
         req.inputs[inputToRemove - 1].description += req.inputs[inputToRemove].description;
         req.inputs.splice(inputToRemove, 1);
+    } else {
+        //eliminar todo el requisito
+        dataFormat.value.requirements = dataFormat.value.requirements.filter((r) => r._id !== reqId);
     }
+}
+
+function addReq(idCurrentReq) {
+    //agrergar un nuevo requisito despues del requisito actual
+    const index = dataFormat.value.requirements.findIndex((r) => r._id === idCurrentReq);
+    dataFormat.value.requirements.splice(index + 1, 0, {
+        _id: dataFormat.value.requirements.length + 1,
+        description: '',
+        number: '',
+        title: '',
+        inputs: [{ _id: 1, description: '' }]
+    });
 }
 </script>
 
@@ -559,13 +557,13 @@ function removeInput(reqId, inputId) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    text-align: center
+    text-align: center;
 }
 
 .col-title {
     max-width: 40px;
     overflow: hidden;
-    text-align: center
+    text-align: center;
 }
 
 .col-requirements {
@@ -580,7 +578,7 @@ function removeInput(reqId, inputId) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    text-align: center
+    text-align: center;
 }
 
 .col-req-title {
@@ -596,8 +594,15 @@ function removeInput(reqId, inputId) {
     white-space: nowrap;
 }
 
+.col-value {
+    max-width: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+}
 .col-actions {
-    max-width: 20px;
+    max-width: 25px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

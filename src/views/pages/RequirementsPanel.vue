@@ -116,9 +116,9 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount } from 'vue';
-import { useQuasar, Notify } from 'quasar';
-import { getRequirementsApi, createRequirementApi, editRequirementApi, toggleActiveRequirementApi /*deleteRequirementApi*/ } from '@/api/requirements'; // Importa las funciones API
+import { createRequirementApi, editRequirementApi, getRequirementsApi, toggleActiveRequirementApi /*deleteRequirementApi*/ } from '@/api/requirements'; // Importa las funciones API
+import { Notify, useQuasar } from 'quasar';
+import { onBeforeMount, ref } from 'vue';
 //import { fileUpload } from "";
 
 const requirements = ref([]);
@@ -175,7 +175,7 @@ async function saveRequirement() {
         const response = await editRequirementApi(requirementApi);
         console.log(response.status);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             Notify.create({ message: 'Requisito actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             await fetchRequirements();
             hideDialog();
@@ -192,7 +192,7 @@ async function saveRequirement() {
         const response = await createRequirementApi(requirementApi);
         console.log(response);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             Notify.create({ message: 'Requerimiento creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             await fetchRequirements();
             hideDialog();
@@ -214,7 +214,7 @@ async function toggleStatus(selectedRequirement) {
         // Cambia el estado del usuario (activo/inactivo)
         const response = await toggleActiveRequirementApi(selectedRequirement._id);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             // Actualiza el estado localmente después de recibir respuesta del backend
             selectedRequirement.status = selectedRequirement.status === 'Activo' ? 'Inactivo' : 'Activo';
 
@@ -257,15 +257,15 @@ const archivoSeleccionado = ref(null);
 
 // Función que dispara el click en el input de archivo
 const dispararInput = () => {
-  const input = document.getElementById('archivoInput');
-  input.click();
+    const input = document.getElementById('archivoInput');
+    input.click();
 };
 
 // Función que maneja la selección del archivo
 const seleccionarArchivo = (event) => {
-  archivoSeleccionado.value = event.target.files[0];
-  console.log('Archivo seleccionado:', archivoSeleccionado.value);
-  // Aquí puedes manejar la carga del archivo
+    archivoSeleccionado.value = event.target.files[0];
+    console.log('Archivo seleccionado:', archivoSeleccionado.value);
+    // Aquí puedes manejar la carga del archivo
 };
 
 /*
@@ -292,7 +292,7 @@ async function cargarArchivo() {
 
   try {
     const response = await fileUpload(formData); // Llamada a la API
-    if (response.status === 200) {
+    if (response.status <= 300) {
       Notify.create({ message: "Archivo cargado correctamente." });
     } else {
       Notify.create({ message: "Error al cargar el archivo." });

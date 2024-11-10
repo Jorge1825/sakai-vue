@@ -10,24 +10,26 @@
                 </div>
                 <div class="col-12 flex justify-end">
                     <!-- Botón de agregar con fondo azul claro y color de ícono blanco -->
-                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                        @click="openDialog" class="q-mr-sm" />
+                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" />
 
                     <!-- Botón de expandir con fondo azul claro y color de ícono blanco -->
-                    <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                        @click="expandAll" class="q-mr-sm" />
+                    <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
 
                     <!-- Botón de colapsar con fondo rojo y color de ícono blanco -->
-                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }"
-                        @click="collapseAll" />
+                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
                 </div>
-
             </div>
             <!-- Tabla de usuarios -->
-            <DataTable v-model:expandedRows="expandedRows" :value="roles" dataKey="_id" responsiveLayout="scroll"
-                :paginator="true" :rows="10"
+            <DataTable
+                v-model:expandedRows="expandedRows"
+                :value="roles"
+                dataKey="_id"
+                responsiveLayout="scroll"
+                :paginator="true"
+                :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                :rowsPerPageOptions="[5, 10, 25]">
+                :rowsPerPageOptions="[5, 10, 25]"
+            >
                 <Column field="name" header="NOMBRE" :sortable="true" style="width: 15%" />
                 <Column field="description" header="DESCRIPCIÓN" style="width: 35%" />
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
@@ -43,16 +45,18 @@
                     <template #body="slotProps">
                         <div class="button-group">
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
-                            <q-btn :icon="slotProps.data.status === true ? 'clear' : 'check'"
+                            <q-btn
+                                :icon="slotProps.data.status === true ? 'clear' : 'check'"
                                 :style="{ backgroundColor: slotProps.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="toggleStatus(slotProps.data)" dense round class="q-mr-xs" />
+                                @click="toggleStatus(slotProps.data)"
+                                dense
+                                round
+                                class="q-mr-xs"
+                            />
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
-                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="editRole(slotProps.data)" dense round />
+                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editRole(slotProps.data)" dense round />
                         </div>
                     </template>
-
-
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
@@ -77,7 +81,7 @@
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-form @submit.prevent.stop="saveRole" novalidate class="q-pa-md full-width">
                         <q-card-section>
-                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px;">
+                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
                                 {{ role._id ? 'EDITAR ROL' : 'NUEVO ROL' }}
                             </div>
                         </q-card-section>
@@ -85,19 +89,13 @@
                         <q-card-section>
                             <div class="row full-width q-py-lg">
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Nombre del rol requerido']"
-                                        v-model="role.name" label="Nombre del Rol" required style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre del rol requerido']" v-model="role.name" label="Nombre del Rol" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']"
-                                        v-model="role.description" label="Descripción" required style="padding: 10px"
-                                        autogrow />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="role.description" label="Descripción" required style="padding: 10px" autogrow />
                                 </div>
                                 <div class="col-6">
-                                    <q-select v-model="role.status" :options="status" label="Estado" required
-                                        style="padding: 10px" />
+                                    <q-select v-model="role.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -112,7 +110,6 @@
             </div>
         </div>
     </q-dialog>
-
 </template>
 
 <script setup>
@@ -178,7 +175,7 @@ async function saveRole() {
 
         const response = await editRoleApi(roleApi);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             Notify.create({ message: 'Rol actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             await getRoles();
             hideDialog();
@@ -195,7 +192,7 @@ async function saveRole() {
         const response = await createRoleApi(roleApi);
         console.log(response);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             Notify.create({ message: 'Rol creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             await getRoles();
             hideDialog();
@@ -218,7 +215,7 @@ async function toggleStatus(selectedRole) {
         // Cambia el estado del usuario (activo/inactivo)
         const response = await toggleActiveRoleApi(selectedRole._id);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             // Actualiza el estado localmente después de recibir respuesta del backend
             selectedRole.status = selectedRole.status === 'Activo' ? 'Inactivo' : 'Activo';
 
@@ -228,7 +225,7 @@ async function toggleStatus(selectedRole) {
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedRole.status === 'Activo' ? 'blue' : 'red',//rgb(4, 178, 217)
+                color: selectedRole.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
                 multiLine: true
             });
 

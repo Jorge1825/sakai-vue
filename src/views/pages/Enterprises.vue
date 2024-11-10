@@ -10,31 +10,33 @@
                 </div>
                 <div class="col-12 flex justify-end">
                     <!-- Botón de agregar con fondo azul claro y color de ícono blanco -->
-                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                        @click="openDialog" class="q-mr-sm" />
+                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" />
 
                     <!-- Botón de expandir con fondo azul claro y color de ícono blanco -->
-                    <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                        @click="expandAll" class="q-mr-sm" />
+                    <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
 
                     <!-- Botón de colapsar con fondo rojo y color de ícono blanco -->
-                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }"
-                        @click="collapseAll" />
+                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
                 </div>
-
             </div>
-            
+
             <!-- Tabla de empresas -->
-            <DataTable v-model:expandedRows="expandedRows" :value="Entreprise" dataKey="_id" responsiveLayout="scroll"
-                :paginator="true" :rows="10"
+            <DataTable
+                v-model:expandedRows="expandedRows"
+                :value="enterprises"
+                dataKey="_id"
+                responsiveLayout="scroll"
+                :paginator="true"
+                :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                :rowsPerPageOptions="[5, 10, 25]">
+                :rowsPerPageOptions="[5, 10, 25]"
+            >
                 <Column field="name" header="NOMBRE" :sortable="true" style="width: 10%" />
                 <Column field="nit" header="NIT" :sortable="true" style="width: 10%" />
                 <Column field="address" header="DIRECCIÓN " :sortable="true" style="width: 10%" />
-                <Column field="telephone" header="TELÉFONO" :sortable="true" style="width: 10%" />
-                <Column field="mailAddress" header="CORREO" :sortable="true" style="width: 10%" />
-                <!--<Column field="description" header="DESCRIPCIÓN" style="width: 35%" />-->
+                <Column field="phone" header="TELÉFONO" :sortable="true" style="width: 10%" />
+                <Column field="email" header="CORREO" :sortable="true" style="width: 10%" />
+                <!--<Column field="nit" header="DESCRIPCIÓN" style="width: 35%" />-->
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
@@ -48,20 +50,19 @@
                     <template #body="slotProps">
                         <div class="button-group">
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
-                           
+
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
-                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="editEnterprise(slotProps.data)" dense round />
+                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editEnterprise(slotProps.data)" dense round />
                         </div>
                     </template>
-
-
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
-                        <h5>Detalles del Prompt: {{ slotProps.data.name }}</h5>
-                        <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
-                        <p><strong>Prompt:</strong> {{ slotProps.data.enterprise }}</p>
+                        <h5>Detalles de la empresa {{ slotProps.data.name }}</h5>
+                        <p><strong>Nit:</strong> {{ slotProps.data.nit }}</p>
+                        <p><strong>Dirección:</strong> {{ slotProps.data.address }}</p>
+                        <p><strong>Teléfono:</strong> {{ slotProps.data.phone }}</p>
+                        <p><strong>Correo:</strong> {{ slotProps.data.email }}</p>
                         <p>
                             <strong>Estado:</strong>
                             <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
@@ -75,49 +76,53 @@
     </div>
 
     <!-- Modal para agregar/editar usuario -->
-    <q-dialog v-model="enterprisesDialog" persistent>
-        <div class="container bg-white" style="width: 700px; max-width: 80vw;min-width: 400px;">
+    <q-dialog v-model="enterpriseDialog" persistent>
+        <div class="container bg-white" style="width: 700px; max-width: 80vw; min-width: 400px">
             <div class="watermark-container justify-center flex">
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-form @submit.prevent.stop="saveEnterprise" novalidate class="q-pa-md full-width">
                         <q-card-section>
-                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px;">
-                                {{ enterprises._id ? 'EDITAR PROMPT' : 'NUEVO PROMPT' }}
+                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
+                                {{ enterprises._id ? 'EDITAR EMPRESA' : 'NUEVA EMPRESA' }}
                             </div>
                         </q-card-section>
 
                         <q-card-section>
                             <div class="row full-width q-py-lg">
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Nombre del la empresa requerido']"
-                                        v-model="enterprise.name" label="Nombre de la empresa" required
-                                        style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre del la empresa requerido']" v-model="enterprise.name" label="Nombre de la empresa" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Requerimiento']"
-                                        v-model="enterprise.description" label="Requerimiento" required
-                                        style="padding: 10px" autogrow />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nit requerido']" v-model="enterprise.nit" label="Nit" required style="padding: 10px" autogrow />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Norma']"
-                                        v-model="enterprise.norms" label="Norma" required style="padding: 10px"
-                                        autogrow />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Dirección requerida']" v-model="enterprise.address" label="Dirección" required style="padding: 10px" autogrow />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Evaluacion']"
-                                        v-model="enterprise.enterprise" label="Evaluacion" required
-                                        style="padding: 10px" autogrow />
+                                    <q-input
+                                        lazy-rules
+                                        v-model="enterprise.phone"
+                                        label="Teléfono"
+                                        type="number"
+                                        required
+                                        style="padding: 10px"
+                                        :rules="[(val) => (val && val?.toString().length > 0) || 'Teléfono requerido', (val) => (val && val?.toString().length === 10) || 'Teléfono inválido']"
+                                    />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Evidencias requerido']"
-                                        v-model="enterprise.evidences" label="Evidencias" required
-                                        style="padding: 10px" autogrow />
+                                    <q-input
+                                        lazy-rules
+                                        :rules="[(val) => (val && val.length > 0) || 'Correo electrónico requerido', (val) => /.+@.+\..+/.test(val) || 'Correo electrónico inválido']"
+                                        v-model="enterprise.email"
+                                        label="Correo"
+                                        type="email"
+                                        required
+                                        style="padding: 10px"
+                                        autogrow
+                                    />
                                 </div>
                                 <div class="col-6">
-                                    <q-select v-model="enterprise.status" :options="status" label="Estado" required
-                                        style="padding: 10px" />
+                                    <q-select v-model="enterprise.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -132,7 +137,6 @@
             </div>
         </div>
     </q-dialog>
-
 </template>
 
 <script setup>
@@ -142,32 +146,30 @@ import { onBeforeMount, ref } from 'vue';
 
 const enterprises = ref([]);
 const enterpriseDialog = ref(false);
-const enterprise = ref({
-    id: null,
-    name: '',
-    nit:'',
-    address: '',
-    mailAddress: '',
-    telephone: '',
-    status: true
-});
-const expandedRows = ref([]);
 const status = ref([
     { label: 'ACTIVO', value: true },
     { label: 'INACTIVO', value: false }
 ]);
+const enterprise = ref({
+    id: null,
+    name: '',
+    nit: '',
+    address: '',
+    email: '',
+    phone: '',
+    status: status.value[0]
+});
+const expandedRows = ref([]);
 
 onBeforeMount(async () => {
     await getEnterprises();
 });
-
 
 async function getEnterprises() {
     try {
         const { data } = await getEnterprisesApi();
         console.log(data);
         enterprises.value = data.length ? data : [];
-
     } catch (error) {
         console.error(error);
     }
@@ -175,14 +177,13 @@ async function getEnterprises() {
 
 function openDialog() {
     enterprise.value = {
-        // Reinicar el objeto usuario
         id: null,
         name: '',
         nit: '',
         address: '',
-        mailAddress: '',
-        telephone: '',
-        status: true
+        email: '',
+        phone: '',
+        status: status.value[0]
     };
     enterpriseDialog.value = true;
 }
@@ -200,14 +201,14 @@ async function saveEnterprise() {
             name: enterprise.value.name,
             nit: enterprise.value.nit,
             address: enterprise.value.address,
-            mailAddress: enterprise.value.mailAddress,
-            telephone: enterprise.value.telephone,
+            email: enterprise.value.email,
+            phone: enterprise.value.phone,
             status: enterprise.value.status.value
         };
 
         const response = await editEnterpriseApi(enterpriseApi);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             Notify.create({ message: 'Empresa actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             await getEnterprises();
             hideDialog();
@@ -220,15 +221,15 @@ async function saveEnterprise() {
             name: enterprise.value.name,
             nit: enterprise.value.nit,
             address: enterprise.value.address,
-            mailAddress: enterprise.value.mailAddress,
-            telephone: enterprise.value.telephone,
+            email: enterprise.value.email,
+            phone: enterprise.value.phone,
             status: enterprise.value.status.value
         };
 
         const response = await createEnterpriseApi(enterpriseApi);
         console.log(response);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             Notify.create({ message: 'Calificacion creada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             await getEnterprises();
             hideDialog();
@@ -241,8 +242,7 @@ async function saveEnterprise() {
 function editEnterprise(selectedEnterprise) {
     enterprise.value = { ...selectedEnterprise };
     enterprise.value.status = status.value.find((s) => s.value === selectedEnterprise.status);
-    enterprise.value = true;
-    console.log(enterprise.value);
+    enterpriseDialog.value = true;
 }
 
 //funcion activar desactivavr usuario
@@ -251,7 +251,7 @@ async function toggleStatus(selectedEnterprise) {
         // Cambia el estado del usuario (activo/inactivo)
         const response = await toggleActiveEnterpriseApi(selectedEnterprise._id);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             // Actualiza el estado localmente después de recibir respuesta del backend
             selectedEnterprise.status = selectedEnterprise.status === 'Activo' ? 'Inactivo' : 'Activo';
 
@@ -261,7 +261,7 @@ async function toggleStatus(selectedEnterprise) {
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedEnterprise.status === 'Activo' ? 'blue' : 'red',//rgb(4, 178, 217)
+                color: selectedEnterprise.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
                 multiLine: true
             });
 

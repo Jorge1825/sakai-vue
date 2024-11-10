@@ -10,24 +10,26 @@
                 </div>
                 <div class="col-12 flex justify-end">
                     <!-- Botón de agregar con fondo azul claro y color de ícono blanco -->
-                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                        @click="openDialog" class="q-mr-sm" />
+                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" />
 
                     <!-- Botón de expandir con fondo azul claro y color de ícono blanco -->
-                    <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                        @click="expandAll" class="q-mr-sm" />
+                    <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
 
                     <!-- Botón de colapsar con fondo rojo y color de ícono blanco -->
-                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }"
-                        @click="collapseAll" />
+                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
                 </div>
-
             </div>
             <!-- Tabla de empresas -->
-            <DataTable v-model:expandedRows="expandedRows" :value="Qualification" dataKey="_id" responsiveLayout="scroll"
-                :paginator="true" :rows="10"
+            <DataTable
+                v-model:expandedRows="expandedRows"
+                :value="Qualification"
+                dataKey="_id"
+                responsiveLayout="scroll"
+                :paginator="true"
+                :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                :rowsPerPageOptions="[5, 10, 25]">
+                :rowsPerPageOptions="[5, 10, 25]"
+            >
                 <Column field="name" header="NOMBRE" :sortable="true" style="width: 10%" />
                 <Column field="requirement" header="REQUISITO" :sortable="true" style="width: 10%" />
                 <Column field="norm" header="NORMA " :sortable="true" style="width: 15%" />
@@ -46,14 +48,11 @@
                     <template #body="slotProps">
                         <div class="button-group">
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
-                           
+
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
-                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="editQualification(slotProps.data)" dense round />
+                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editQualification(slotProps.data)" dense round />
                         </div>
                     </template>
-
-
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
@@ -77,13 +76,13 @@
     </div>
 
     <!-- Modal para agregar/editar empresa -->
-    <q-dialog v-model="qualificationDialog" persistent >
-        <div class="container bg-white" style="width: 700px; max-width: 80vw;min-width: 400px;">
+    <q-dialog v-model="qualificationDialog" persistent>
+        <div class="container bg-white" style="width: 700px; max-width: 80vw; min-width: 400px">
             <div class="watermark-container justify-center flex">
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-form @submit.prevent.stop="savePrompt" novalidate class="q-pa-md full-width">
                         <q-card-section>
-                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px;">
+                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
                                 {{ qualification._id ? 'EDITAR EMPRESA' : 'NUEVA EMPRESA' }}
                             </div>
                         </q-card-section>
@@ -91,29 +90,19 @@
                         <q-card-section>
                             <div class="row full-width q-py-lg">
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Nombre de la empresa requerido']"
-                                        v-model="qualification.name" label="Nombre de la empresa" required style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre de la empresa requerido']" v-model="qualification.name" label="Nombre de la empresa" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Requisito requerido']"
-                                        v-model="qualification.requirement" label="Requisito" required style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Requisito requerido']" v-model="qualification.requirement" label="Requisito" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Norma requerida']"
-                                        v-model="qualification.norm" label="Norma" required style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Norma requerida']" v-model="qualification.norm" label="Norma" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Evaluacuión requerida']"
-                                        v-model="qualification.evaluation" label="Evaluación" required style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Evaluacuión requerida']" v-model="qualification.evaluation" label="Evaluación" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules
-                                        :rules="[(val) => (val && val.length > 0) || 'Evidencia requerida']"
-                                        v-model="qualification.evidence" label="Evidencia" required style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Evidencia requerida']" v-model="qualification.evidence" label="Evidencia" required style="padding: 10px" />
                                 </div>
                                 <!-- <div class="col-6">
                                     <q-input lazy-rules
@@ -128,8 +117,7 @@
                                         autogrow />
                                 </div> -->
                                 <div class="col-12">
-                                    <q-select v-model="qualification.status" :options="status" label="Estado" required
-                                        style="padding: 10px" />
+                                    <q-select v-model="qualification.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -180,7 +168,6 @@ async function getQualifications() {
         const { data } = await getQualificationsApi();
         console.log(data);
         qualifications.value = data.length ? data : [];
-
     } catch (error) {
         console.error(error);
     }
@@ -226,7 +213,7 @@ async function savePrompt() {
 
         const response = await editQualificationApi(qualificationApi);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             Notify.create({ message: 'Prompt actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             await getQualifications();
             hideDialog();
@@ -249,7 +236,7 @@ async function savePrompt() {
         const response = await createQualificationApi(qualificationApi);
         console.log(response);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             Notify.create({ message: 'Prompt creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             await getQualifications();
             hideDialog();
@@ -266,13 +253,13 @@ function editQualification(selectedPrompt) {
     console.log(qualification.value);
 }
 
-//funcion activar desactivar empresa 
+//funcion activar desactivar empresa
 async function toggleStatus(selectedPrompt) {
     try {
         // Cambia el estado de la empresa  (activo/inactivo)
         const response = await toggleActiveQualificationApi(selectedPrompt._id);
 
-        if (response.status === 200) {
+        if (response.status <= 300) {
             // Actualiza el estado localmente después de recibir respuesta del backend
             selectedPrompt.status = selectedPrompt.status === 'Activo' ? 'Inactivo' : 'Activo';
 
@@ -282,7 +269,7 @@ async function toggleStatus(selectedPrompt) {
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedPrompt.status === 'Activo' ? 'blue' : 'red',//rgb(4, 178, 217)
+                color: selectedPrompt.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
                 multiLine: true
             });
 
