@@ -10,7 +10,7 @@ export const storeAuth = defineStore(
         // State
         let token = ref('');
         let dataToken = ref(null);
-        let companies = ref([]);
+        let enterprises = ref([]);
         let selectedCompany = ref(null);
 
         // Functions
@@ -26,15 +26,13 @@ export const storeAuth = defineStore(
         const decodeToken = () => {
             if (token.value) {
                 dataToken.value = jwtDecode(token.value);
-                // Yotas ya que el token tiene las propiedades `role` y `companies` nagregadas por washintong 
-                companies.value = dataToken.value.companies || [];
+                console.log(dataToken.value);
+                enterprises.value = dataToken.value.enterprises || [];
             }
             return dataToken.value;
         };
 
         const getUserToken = () => {
-            console.log(dataToken.value);
-            
             return{
                 username: dataToken.value.username,
                 email: dataToken.value.email,
@@ -55,13 +53,18 @@ export const storeAuth = defineStore(
         const setCompany = (data) => {
             selectedCompany.value = data;
         };
+        
+        const getSelectedCompany = () => {
+            return selectedCompany.value;
+        };
+
         const addCompanyId = (id) => {
-            if (!companies.value.includes(id)) {
-                companies.value.push(id); 
+            if (!enterprises.value.includes(id)) {
+                enterprises.value.push(id); 
             }
         };
         const getCompanyIds = () => {
-            return companies.value;
+            return enterprises.value;
         };
 
         return {
@@ -73,10 +76,11 @@ export const storeAuth = defineStore(
             setCompany,
             addCompanyId,
             getCompanyIds,
+            getSelectedCompany,
             hasRole,
         };
     },
     {
-        persist: true
+        persist: true,
     }
 );

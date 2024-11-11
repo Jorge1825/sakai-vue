@@ -13,11 +13,12 @@ onBeforeMount(() => {
     user.value = useStoreAuth.getUserToken();
     role.value = useStoreAuth.getRoleToken();
     enterprises.value = useStoreAuth.getCompanyIds()?.map((enterprise) => {
-        return { label: enterprise.name, value: enterprise.id };
+        return { label: enterprise.name, value: enterprise._id };
     });
-    enterprise.value = enterprises.value[0] || null;
-    console.log(role.value);
     console.log(enterprises.value);
+
+    enterprise.value = enterprises.value[0] || null;
+    useStoreAuth.setCompany(enterprise.value);
 });
 
 const model = ref([
@@ -33,10 +34,11 @@ const model = ref([
             { label: 'Roles', icon: 'pi pi-fw pi-list', to: '/roles', users: ['ADMIN'] },
             // { label: 'Requerimientos',icon: 'pi pi-fw pi-file', to: '/requirements, users: ['ADMIN']'},
             { label: 'Prompts', icon: 'pi pi-fw pi-cog', to: '/prompts', users: ['ADMIN'] },
-            { label: 'Normas', icon: 'pi pi-fw pi-cog', to: '/norms', users: ['ADMIN'] },
+            { label: 'Normas', icon: 'pi pi-fw pi-cog', to: '/norms', users: ['ADMIN', 'USER'] },
             { label: 'Requerimientos', icon: 'pi pi-fw pi-cog', to: '/tablenorm', users: ['ADMIN'] },
             { label: 'Empresas ', icon: 'pi pi-fw pi-cog', to: '/enterprises', users: ['ADMIN'] },
-            { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification', users: ['ADMIN'] }
+            { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification', users: ['ADMIN'] },
+            { label: 'Calificar Requerimientos', icon: 'pi pi-fw pi-cog', to: 'qualificationClient', users: ['USER'] }
             // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout', users: ['ADMIN'] },
             // { label: 'Input', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
             // { label: 'Button', icon: 'pi pi-fw pi-mobile', to: '/uikit/button', class: 'rotated-icon' },
@@ -53,7 +55,7 @@ const model = ref([
             // { label: 'Timeline', icon: 'pi pi-fw pi-calendar', to: '/uikit/timeline' },
             // { label: 'Misc', icon: 'pi pi-fw pi-circle', to: '/uikit/misc' }
         ],
-        users: ['ADMIN']
+        users: ['ADMIN', 'USER']
     },
     {
         label: 'Pages',
@@ -107,6 +109,10 @@ const model = ref([
         users: ['ADMIN']
     }
 ]);
+
+const changeEnterprise = (value) => {
+    useStoreAuth.setCompany(value);
+};
 </script>
 
 <template>
@@ -117,10 +123,10 @@ const model = ref([
                 <li v-if="item.separator" class="menu-separator"></li>
             </template>
         </template>
-        <div v-if="role?.type === 'USER'">
+        <div class="q-py-md" v-if="role?.type === 'USER'">
             <h1 class="text-center">Bienvenido {{ user.username }}</h1>
-            <p class="text-xs text-center">Empresa:</p>
-            <q-select borderless v-model="enterprise" :options="enterprises" />
+            <p class="text-xs text-center q-my-sm">Empresa:</p>
+            <q-select rounded outlined bottom-slots dense borderless v-model="enterprise" :options="enterprises" @input="changeEnterprise" />
         </div>
     </ul>
     <ul class="q-mt-lg">

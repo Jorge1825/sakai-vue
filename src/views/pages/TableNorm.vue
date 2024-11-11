@@ -441,10 +441,10 @@ async function formatData(text) {
                 multiLine: true
             });
 
-            //agregar id a cada requisito y agregar un input por requisito donde se pueda agregar la descripción
-            response.data.response.requirements.forEach((r, i) => {
+            //hacer la descripcion un array separando su contenido por cada \n
+            response.data.response.requirements.forEach((r) => {
                 r._id = i + 1;
-                r.inputs = [{ _id: 1, description: r.description, value: null }];
+                r.inputs = r.description.split('\n').map((d, i) => ({ _id: i + 1, description: d, value: null }));
             });
 
             dataFormat.value = response.data.response;

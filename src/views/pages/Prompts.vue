@@ -41,13 +41,16 @@
                         </div>
                     </template>
                 </Column>
-                <Column header="ACCIONES" style="width: 10%">
+                <Column header="ACCIONES" style="width: 5%">
                     <template #body="slotProps">
-                        <div class="button-group">
+                        <div class="button-group flex justify-center">
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
 
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
                             <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editPrompt(slotProps.data)" dense round />
+                            <!-- Restablecer el valor del prompt -->
+                            <q-btn icon="restore" color="secondary" @click="restore(slotProps.data?._id)" dense round />
+
                         </div>
                     </template>
                 </Column>
@@ -110,7 +113,8 @@
 </template>
 
 <script setup>
-import { createPromptApi, editPromptApi, getPromptsApi, toggleActivePromptApi } from '@/api/prompts';
+import { createPromptApi, editPromptApi, getPromptsApi, responsePromptApi, toggleActivePromptApi } from '@/api/prompts';
+import { notifyError, notifySuccess } from '@/config/notifications';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
@@ -243,6 +247,20 @@ async function toggleStatus(selectedPrompt) {
             color: 'red',
             multiLine: true
         });
+    }
+}
+
+async function restore(idPrompt) {
+    try{
+        const response = await responsePromptApi(idPrompt);
+        if(response.status <= 300){
+            notifySuccess({message:"Prompt restablecido correctamente"});
+            await getPrompts();
+        }else{
+            throw new Error('Error al restablecer el prompt');
+        }
+    }catch{
+        notifyError({message:"No se logro restablecer el prompt"})
     }
 }
 

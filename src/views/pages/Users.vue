@@ -35,6 +35,13 @@
                         </div>
                     </template>
                 </Column>
+                <Column field="enterprises" header="EMPRESAS" :sortable="true" style="width: 10%">
+                    <template #body="slotProps">
+                        <div style="text-align: center">
+                            {{ slotProps.data.enterprises?.map((e) => e.name).join(', ') }}
+                        </div>
+                    </template>
+                </Column>
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
@@ -125,6 +132,9 @@
                                     <q-select v-model="user.role" :options="roles" label="Rol" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
+                                    <q-select use-chips multiple stack-label v-model="user.enterprises" :options="enterprises" label="Empresas" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
                                     <q-select v-model="user.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
@@ -150,6 +160,7 @@
 </template>
 
 <script setup>
+import { getEnterprisesApi } from '@/api/enterprises';
 import { getRolesApi } from '@/api/roles';
 import { createUserApi, editUserApi, getUsersApi, toggleActiveUserApi } from '@/api/users';
 import { Notify } from 'quasar';
@@ -165,8 +176,10 @@ const user = ref({
     role: null,
     status: null,
     subscription: null,
+    enterprises: [],
     password: ''
 });
+const enterprises = ref([]);
 const expandedRows = ref([]);
 const status = ref([
     { label: 'ACTIVO', value: true },
@@ -187,6 +200,7 @@ const exampleUsers = [
 onBeforeMount(async () => {
     await getUsers();
     await getRoles();
+    await getEnterprises();
 });
 
 async function getUsers() {
@@ -209,6 +223,16 @@ async function getRoles() {
     }
 }
 
+async function getEnterprises() {
+    try {
+        const { data } = await getEnterprisesApi();
+        enterprises.value = data.map((e) => ({ label: e.name, value: e._id }));
+    } catch (error) {
+        console.error(error);
+        users.value = exampleUsers;
+    }
+}
+
 function openDialog() {
     user.value = {
         // Reinicar el objeto usuario
@@ -219,7 +243,8 @@ function openDialog() {
         role: null,
         status: null,
         subscription: null,
-        password: ''
+        password: '',
+        enterprises: []
     };
     userDialog.value = true;
 }
@@ -241,7 +266,8 @@ async function saveUser() {
             phone: user.value.phone,
             role: user.value.role.value,
             status: user.value.status.value,
-            password: user.value.password
+            password: user.value.password,
+            enterprises: user.value.enterprises?.map((e) => e.value)
         };
 
         const response = await editUserApi(userApi);
@@ -268,7 +294,8 @@ async function saveUser() {
             phone: user.value.phone,
             role: user.value.role.value,
             status: user.value.status.value,
-            password: user.value.password
+            password: user.value.password,
+            enterprises: user.value.enterprises?.map((e) => e.value)
         };
 
         const response = await createUserApi(userApi);
@@ -325,8 +352,9 @@ function validateUser() {
 }
 
 function editUser(selectedUser) {
+    console.log('selectedUser', selectedUser);
     user.value = { ...selectedUser };
-    user.value.role = roles.value.find((r) => r.value === selectedUser.role);
+    user.value.role = roles.value.find((r) => r.value === selectedUser.role._id);
     user.value.status = status.value.find((s) => s.value === selectedUser.status);
     userDialog.value = true;
     console.log(user.value);

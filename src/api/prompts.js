@@ -49,3 +49,14 @@ export const toggleActivePromptApi = async (id) => {
     }
 };
 
+
+export const responsePromptApi = async (id) => {
+    try{
+        const response = await axiosInstance.put(`/prompts/restore/${id}`);
+        return response;
+
+    }catch (error) {
+        console.error('Error al responder prompt', error); 
+        throw error;
+    }
+}

@@ -35,17 +35,18 @@
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotNorms">
                         <div style="text-align: left">
-                            <q-badge :color="slotNorms.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
-                                {{ status.find((s) => s.value === slotNorms.data.status).label }}
+                            <q-badge :color="existEnterprise(slotNorms.data) ? 'blue' : 'red'" class="q-ml-xs">
+                                {{ existEnterprise(slotNorms.data) ? 'ACTIVA' : 'INACTIVA' }}
                             </q-badge>
                         </div>
                     </template>
                 </Column>
-                <Column header="ACCIONES" style="width: 10%">
+                <Column header="ACCIONES" style="width: 4%">
                     <template #body="slotNorms">
                         <div class="button-group">
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
                             <q-btn
+                                v-if="role.type == 'ADMIN'"
                                 :icon="slotNorms.data.status === true ? 'clear' : 'check'"
                                 :style="{ backgroundColor: slotNorms.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
                                 @click="toggleStatus(slotNorms.data)"
@@ -54,8 +55,18 @@
                                 class="q-mr-xs"
                             />
 
+                            <q-btn
+                                v-if="role.type == 'USER'"
+                                :icon="existEnterprise(slotNorms.data) ? 'check' : 'clear'"
+                                :style="{ backgroundColor: !existEnterprise(slotNorms.data) ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
+                                @click="toggleEnterprise(slotNorms.data)"
+                                dense
+                                round
+                                class="q-mr-xs"
+                            />
+
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
-                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editNorm(slotNorms.data)" dense round />
+                            <q-btn v-if="role.type == 'ADMIN'" icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editNorm(slotNorms.data)" dense round />
                         </div>
                     </template>
                 </Column>
@@ -131,8 +142,12 @@
 import { createNormApi, editNormApi, getNormsApi, toggleActiveNormApi } from '@/api/norms';
 import { getPromptsApi } from '@/api/prompts';
 import { notifyError, notifySuccess } from '@/config/notifications';
+import { storeAuth } from '@/store/auth';
 import { computed, onBeforeMount, ref } from 'vue';
 
+const useStoreAuth = storeAuth();
+const role = ref(null);
+const enterprise = ref(null);
 const norms = ref([]);
 const normDialog = ref(false);
 const norm = ref({
@@ -152,6 +167,9 @@ const status = ref([
 const prompts = ref([]);
 
 onBeforeMount(async () => {
+    role.value = useStoreAuth.getRoleToken();
+    enterprise.value = useStoreAuth.getSelectedCompany();
+    console.log(enterprise.value);
     await getNorms();
     await getPrompts();
 });
@@ -278,6 +296,31 @@ async function toggleStatus(selectedNorm) {
         notifyError({ message: 'Error al actualizar el estado del norma.' });
     }
 }
+//funcion activar desactivavr usuario
+async function toggleEnterprise(selectedNorm) {
+    try {
+        // Cambia el estado del usuario (activo/inactivo)
+        const response = await toggleActiveNormApi(selectedNorm._id);
+
+        if (response.status <= 300) {
+            // Actualiza el estado localmente después de recibir respuesta del backend
+            selectedNorm.status = selectedNorm.status === 'Activo' ? 'Inactivo' : 'Activo';
+
+            notifySuccess({
+                message: `Norma ${selectedNorm.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
+                color: selectedNorm.status === 'Activo' ? 'blue' : 'red'
+            });
+
+            // Vuelve a cargar los usuarios si es necesario
+            await getNorms();
+        } else {
+            throw new Error('Error al actualizar el estado del norma.');
+        }
+    } catch (error) {
+        console.error(error);
+        notifyError({ message: 'Error al actualizar el estado del norma.' });
+    }
+}
 
 // Funciones para expandir y colapsar
 function expandAll() {
@@ -286,6 +329,11 @@ function expandAll() {
 
 function collapseAll() {
     expandedRows.value = [];
+}
+
+function existEnterprise(data) {
+    const exist = data.enterprise?.find((e) => e._id == enterprise.value.value);
+    return exist ? true : false;
 }
 </script>
 

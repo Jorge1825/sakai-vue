@@ -49,3 +49,13 @@ export const toggleActiveQualificationApi = async (id) => {
     }
 };
 
+export const qualificationNormApi = async (data) => {
+    try {
+        const response = await axiosInstance.post('/qualifications/evaluate',data);
+
+        return response;
+    } catch (error) {
+        console.error('Error al crear norma', error); 
+        throw error; 
+    }
+}

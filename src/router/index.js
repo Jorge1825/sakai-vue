@@ -7,10 +7,14 @@ import Enterprises from '@/views/pages/Enterprises.vue'
 import Qualification from '@/views/pages/Qualification.vue'
 import Cookies from 'js-cookie';
 import { createRouter, createWebHistory } from 'vue-router';
+import QualificationClient from '@/views/pages/QualificationClient.vue';
+import { storeAuth } from '@/store/auth';
 
 const checkAuth = () => {
     const cookie = Cookies.get('access_token');
-    console.log(cookie);
+    const useStoreAuth = storeAuth();
+    useStoreAuth.loadToken();
+    useStoreAuth.decodeToken();
     if (!cookie) return false;
     return true;
 };
@@ -163,6 +167,11 @@ const router = createRouter({
                     path: '/qualification',
                     name: 'Qualification',
                     component: Qualification
+                },
+                {
+                    path: '/qualificationClient',
+                    name: 'QualificationClient',
+                    component: QualificationClient
                 },
                 {
                     path: '/prompts',
