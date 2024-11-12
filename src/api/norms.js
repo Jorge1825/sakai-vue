@@ -37,10 +37,10 @@ export const createNormApi = async (data) => {
     }
     
 };
-export const toggleActiveNormApi = async (id) => {
+export const toggleActiveNormApi = async (data) => {
     try {
         // Hacer la petición PUT al endpoint de activar/desactivar prompt
-        const response = await axiosInstance.put(`/norms/toggle-active/${id}`);
+        const response = await axiosInstance.patch(`/norms/toggleEnterprise`, data);
 
         return response;
     } catch (error) {

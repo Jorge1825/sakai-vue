@@ -300,7 +300,7 @@ async function toggleStatus(selectedNorm) {
 async function toggleEnterprise(selectedNorm) {
     try {
         // Cambia el estado del usuario (activo/inactivo)
-        const response = await toggleActiveNormApi(selectedNorm._id);
+        const response = await toggleActiveNormApi({ id: selectedNorm._id, enterprise: enterprise.value.value });
 
         if (response.status <= 300) {
             // Actualiza el estado localmente después de recibir respuesta del backend
@@ -332,7 +332,7 @@ function collapseAll() {
 }
 
 function existEnterprise(data) {
-    const exist = data.enterprise?.find((e) => e._id == enterprise.value.value);
+    const exist = data.enterprise?.find((e) => e == enterprise.value.value);
     return exist ? true : false;
 }
 </script>
