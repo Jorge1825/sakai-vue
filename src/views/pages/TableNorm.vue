@@ -10,7 +10,8 @@
                 </div>
                 <div class="col-12 flex justify-end">
                     <!-- Botón de agregar -->
-                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" />
+                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }"
+                        @click="openDialog" class="q-mr-sm" />
                     <!-- Botón de expandir -->
                     <!-- <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" /> -->
                     <!-- Botón de colapsar -->
@@ -18,19 +19,24 @@
                 </div>
             </div>
             <!-- Tabla de requias -->
-            <DataTable
-                v-model:expandedRows="expandedRows"
-                :value="requis"
-                dataKey="_id"
-                responsiveLayout="scroll"
-                :paginator="true"
-                :rows="10"
+            <DataTable v-model:expandedRows="expandedRows" :value="requis" dataKey="_id" responsiveLayout="scroll"
+                :paginator="true" :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                :rowsPerPageOptions="[5, 10, 25]"
-            >
+                :rowsPerPageOptions="[5, 10, 25]">
                 <Column field="number" header="NUMBERO" :sortable="true" style="width: 5%" />
-                <Column field="title" header="TITULO" style="width: 80%" />
-          
+                <Column field="title" header="TITULO" style="width: 90%" />
+                <!-- Columna de descripción donde se seleccionara los archivos-->
+                <Column header="REQUISITO" style="width: 5%">
+                    <template #body="slotProps">
+                        <!-- Input de archivo oculto con referencia dinámica en la lista -->
+                        <input type="file" :ref="el => archivoRefs[slotProps.index] = el"
+                            @change="(event) => seleccionarArchivo(event, slotProps.index)" style="display: none" />
+                        <!-- Botón para abrir el selector de archivos -->
+                        <q-btn class="q-mx-sm" outline label="Cargar Archivo" color="primary"
+                            @click="() => dispararInput(slotProps.index)" />
+                    </template>
+                </Column>
+
                 <!-- Columna de calificaciones (para números) -->
                 <!-- <Column field="score" header="CALIFICACIONES" style="width: 5%">
           <template #body="slotNorms">
@@ -40,7 +46,8 @@
                 <!-- Columna para el botón "ojo" en cada fila -->
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotNorms">
-                        <q-btn icon="visibility" :style="{ color: 'rgb(4, 178, 217)' }" @click="editRequirement(slotNorms.data?._id)" dense round />
+                        <q-btn icon="visibility" :style="{ color: 'rgb(4, 178, 217)' }"
+                            @click="editRequirement(slotNorms.data?._id)" dense round />
                     </template>
                 </Column>
             </DataTable>
@@ -62,11 +69,13 @@
                         <q-card-section>
                             <div class="row full-width q-pb-lg q-pt-md">
                                 <div class="col-12">
-                                    <q-select v-model="norm" :options="norms" label="Norma" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Norma requerida']" />
+                                    <q-select v-model="norm" :options="norms" label="Norma" required
+                                        style="padding: 10px" lazy-rules :rules="[(val) => val || 'Norma requerida']" />
                                 </div>
                                 <div class="col-12 justify-center flex items-center q-py-lg">
                                     <input type="file" id="inputFile" @change="selectFile" style="display: none" />
-                                    <q-btn :disabled="!norm" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
+                                    <q-btn :disabled="!norm" class="q-mx-sm flex" filled label="Cargar Archivo"
+                                        color="primary" @click="uploadFile" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -83,7 +92,8 @@
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-form @submit.prevent.stop="saveNorm" novalidate class="q-pa-md full-width">
                         <q-card-section>
-                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">RESPUESTA</div>
+                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
+                                RESPUESTA</div>
                         </q-card-section>
                         <q-card-section>
                             <div class="row full-width q-py-lg">
@@ -107,7 +117,8 @@
                     <q-form @submit.prevent.stop="saveNorm" novalidate class="q-pa-md full-width">
                         <q-card-section>
                             <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
-                                {{ dataFormat._id ? `EDITAR REQUISITOS - ${norm?.label}` : `NUEVOS REQUISITOS - ${norm?.label}` }}
+                                {{ dataFormat._id ? `EDITAR REQUISITOS - ${norm?.label}` : `NUEVOS REQUISITOS -
+                                ${norm?.label}` }}
                             </div>
                         </q-card-section>
 
@@ -149,20 +160,27 @@
                                                             <template v-for="input in req.inputs" :key="input._id">
                                                                 <q-input v-model="input.description" dense autogrow>
                                                                     <template v-slot:append>
-                                                                        <q-btn round dense flat icon="minimize" color="red" @click="removeInput(req._id, input._id)" />
+                                                                        <q-btn round dense flat icon="minimize"
+                                                                            color="red"
+                                                                            @click="removeInput(req._id, input._id)" />
                                                                     </template>
                                                                 </q-input>
                                                             </template>
                                                         </td>
                                                         <td class="col-value">
                                                             <template v-for="input in req.inputs" :key="input._id">
-                                                                <q-input v-model="input.value" type="number" dense autogrow />
+                                                                <q-input v-model="input.value" type="number" dense
+                                                                    autogrow />
                                                             </template>
                                                         </td>
                                                         <td class="col-actions">
-                                                            <q-btn icon="control_point_duplicate" :style="{ color: 'rgb(4, 178, 217)' }" @click="addInput(req._id)" dense round />
+                                                            <q-btn icon="control_point_duplicate"
+                                                                :style="{ color: 'rgb(4, 178, 217)' }"
+                                                                @click="addInput(req._id)" dense round />
 
-                                                            <q-btn class="q-mx-sm" icon="add_circle" :style="{ color: '#32a600' }" @click="addReq(req._id)" dense round />
+                                                            <q-btn class="q-mx-sm" icon="add_circle"
+                                                                :style="{ color: '#32a600' }" @click="addReq(req._id)"
+                                                                dense round />
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -174,7 +192,8 @@
                         </q-card-section>
 
                         <q-card-actions align="right">
-                            <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="formatDialog = false" />
+                            <q-btn class="q-mx-sm" outline label="Cancelar" color="negative"
+                                @click="formatDialog = false" />
                             <q-btn class="q-mx-sm" outline label="Guardar" color="primary" type="submit" />
                         </q-card-actions>
                     </q-form>
@@ -190,6 +209,7 @@ import { getNormsApi } from '@/api/norms';
 import { createRequirementApi, editRequirementApi, formatDataRequirement, generateRequirementFile, getRequirementsApi } from '@/api/requirements';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
+import { Axios } from 'axios';
 
 const requis = ref([
     // Datos de ejemplo
@@ -204,6 +224,7 @@ const formatDialog = ref(true);
 const norm = ref(null);
 const norms = ref([]);
 const expandedRows = ref([]);
+const fileRequirements = ref([]);
 const status = ref([
     { label: 'ACTIVO', value: true },
     { label: 'INACTIVO', value: false }
@@ -508,6 +529,33 @@ function addReq(idCurrentReq) {
         inputs: [{ _id: 1, description: '' }]
     });
 }
+// Array para almacenar referencias a cada input de archivo en cada fila
+const archivoRefs = ref([]);
+
+// Variable para almacenar el archivo seleccionado
+const archivoSeleccionado = ref(null);
+
+// Función para disparar el clic en el input de archivo específico
+const dispararInput = (index) => {
+    const input = archivoRefs.value[index];
+    if (input) {
+        input.click();
+    }
+};
+// Función para manejar la selección de archivo
+const seleccionarArchivo = (event) => {
+    const archivo = event.target.files[0];
+    console.log('Archivo seleccionado:', archivo);
+
+    // Llamar a la API para subir el archivo
+    generateRequirementFile(archivo)
+        .then(response => {
+            console.log('Archivo subido con éxito:', response.data);
+        })
+        .catch(error => {
+            console.error('Error al subir el archivo:', error);
+        });
+};
 </script>
 
 <style scoped>
@@ -601,11 +649,38 @@ function addReq(idCurrentReq) {
     white-space: nowrap;
     text-align: center;
 }
+
 .col-actions {
     max-width: 25px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     text-align: center;
+}
+
+.file-input {
+    display: inline-block;
+    padding: 6px 12px;
+    color: white;
+    background-color: #07b6e7;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.file-input::-webkit-file-upload-button {
+    visibility: hidden;
+}
+
+.file-input::before {
+    content: 'Subir Archivo';
+    display: inline-block;
+    background-color: #07b6e7;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
 }
 </style>
