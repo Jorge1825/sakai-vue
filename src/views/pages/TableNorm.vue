@@ -205,12 +205,10 @@
 </template>
 
 <script setup>
-import { getNormsApi } from '@/api/norms';
-import { createRequirementApi, editRequirementApi, formatDataRequirement, generateRequirementFile, getRequirementsApi } from '@/api/requirements';
+import { getNormsApi, generateRequirementFile } from '@/api/norms';
+import { createRequirementApi, editRequirementApi, formatDataRequirement, getRequirementsApi } from '@/api/requirements';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
-import { Axios } from 'axios';
-
 const requis = ref([
     // Datos de ejemplo
     { _id: 1, name: '001/6503', description: 'Norma de seguridad', requirements: 'La requia de seguridad dicta que.....', score: 0 },
@@ -529,33 +527,43 @@ function addReq(idCurrentReq) {
         inputs: [{ _id: 1, description: '' }]
     });
 }
+
 // Array para almacenar referencias a cada input de archivo en cada fila
 const archivoRefs = ref([]);
 
-// Variable para almacenar el archivo seleccionado
-const archivoSeleccionado = ref(null);
-
 // Función para disparar el clic en el input de archivo específico
 const dispararInput = (index) => {
-    const input = archivoRefs.value[index];
-    if (input) {
-        input.click();
-    }
+  const input = archivoRefs.value[index];
+  if (input) {
+    input.click();
+  }
 };
-// Función para manejar la selección de archivo
-const seleccionarArchivo = (event) => {
-    const archivo = event.target.files[0];
-    console.log('Archivo seleccionado:', archivo);
 
-    // Llamar a la API para subir el archivo
-    generateRequirementFile(archivo)
-        .then(response => {
-            console.log('Archivo subido con éxito:', response.data);
-        })
-        .catch(error => {
-            console.error('Error al subir el archivo:', error);
-        });
+// Función para manejar la selección de archivo
+const seleccionarArchivo = (event, index) => {
+  const archivo = event.target.files[0];
+  console.log('Archivo seleccionado:', archivo);
+
+  // Llamar a la API para subir el archivo
+  uploadRequirementFile(archivo)
+    .then(response => {
+      console.log('Archivo subido con éxito:', response.data);
+    })
+    .catch(error => {
+      console.error('Error al subir el archivo:', error);
+    });
 };
+/** 
+// Función para subir el archivo al servidor
+const uploadRequirementFile = async (archivo) => {
+  try {
+    const response = await generateRequirementFile(archivo);
+    return response;
+  } catch (error) {
+    console.error('Error al subir el archivo:', error);
+    throw error;
+  }
+};*/
 </script>
 
 <style scoped>

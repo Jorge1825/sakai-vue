@@ -55,7 +55,8 @@ export const generateRequirementFile = async (file) => {
         // Crear el objeto FormData y añadir el archivo
         const formData = new FormData();
         formData.append('file', file);  // 'file' debe coincidir con el nombre esperado en el backend
-
+        console.log("crear");
+        
         // Enviar el FormData a la API
         const response = await axiosInstance.post('/norms/uploadFile', formData, {
             headers: {
