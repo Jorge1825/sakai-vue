@@ -48,25 +48,3 @@ export const toggleActiveNormApi = async (data) => {
         throw error;
     }
 };
-
-// Enviar un archivo para un requisito
-export const generateRequirementFile = async (file) => {
-    try {
-        // Crear el objeto FormData y añadir el archivo
-        const formData = new FormData();
-        formData.append('file', file);  // 'file' debe coincidir con el nombre esperado en el backend
-        console.log("crear");
-        
-        // Enviar el FormData a la API
-        const response = await axiosInstance.post('/norms/uploadFile', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-
-        return response;
-    } catch (error) {
-        console.error('Error al subir el archivo', error);
-        throw error;
-    }
-};

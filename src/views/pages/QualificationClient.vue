@@ -100,6 +100,7 @@
                         </q-card-section>
                         <q-card-actions align="right">
                             <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
+                            <q-btn class="q-mx-sm" outline label="Cargar" color="primary" @click="uploadFile" />
                         </q-card-actions>
                     </q-form>
                 </q-card>
@@ -111,7 +112,7 @@
 
 <script setup>
 import { getNormsApi } from '@/api/norms';
-import { createQualificationApi, editQualificationApi, getQualificationsApi, qualificationNormApi, toggleActiveQualificationApi } from '@/api/qualifications';
+import { createQualificationApi, editQualificationApi, getQualificationsApi, qualificationNormApi, toggleActiveQualificationApi, processRequirementsApi } from '@/api/qualifications';
 import { notifyError, notifySuccess } from '@/config/notifications';
 import { storeAuth } from '@/store/auth';
 import { Notify } from 'quasar';
@@ -121,8 +122,12 @@ const qualifications = ref([]);
 const qualificationDialog = ref(false);
 const file = ref(null);
 const norm = ref(null);
-const norms = ref([]);
+const norms = ref([null]);
 const expandedRows = ref([]);
+
+const normId = ref('');
+const response = ref(null);
+
 const status = ref([
     { label: 'ACTIVO', value: true },
     { label: 'INACTIVO', value: false }
@@ -137,10 +142,10 @@ onBeforeMount(async () => {
 async function getQualifications() {
     try {
         const { data } = await getQualificationsApi();
-        console.log(data);
-        qualifications.value = data.length ? data : [];
+        qualifications.value = Array.isArray(data) ? data : [];
     } catch (error) {
-        console.error(error);
+        console.error("Error al obtener datos de qualifications:", error);
+        qualifications.value = []; // Asigna un array vacío para evitar futuros errores
     }
 }
 
@@ -167,12 +172,11 @@ function openDialog() {
 function hideDialog() {
     qualificationDialog.value = false;
 }
-
 // Función que dispara el click en el input de archivo
-const uploadFile = () => {
-    const input = document.getElementById('inputFile');
-    input.click();
-};
+const uploadFile = () => { 
+    const input = document.getElementById('inputFile'); 
+    input.click(); 
+}; 
 
 async function uploadFileServer() {
     try {
@@ -180,11 +184,14 @@ async function uploadFileServer() {
         formData.append('file', file.value);
         formData.append('normId', norm.value.value);
         formData.append('enterpriseId', '6730ea062850ba386d4dfa75');
-        const response = await qualificationNormApi(formData);
+        console.log('Archivo:', file.value);
+        console.log('Norma:', norm.value);
+
+        const response = await processRequirementsApi(file.value, norm.value.value);
 
         if (response.status <= 300) {
             Notify.create({ message: 'Norma evaluada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getRequirements();
+            await getQualifications();
             hideDialog();
         } else {
             notifySuccess({ message: 'Error al evaluar la norma.' });
@@ -204,6 +211,7 @@ function expandAll() {
 function collapseAll() {
     expandedRows.value = [];
 }
+
 </script>
 
 <style scoped>

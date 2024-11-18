@@ -25,18 +25,6 @@
                 :rowsPerPageOptions="[5, 10, 25]">
                 <Column field="number" header="NUMBERO" :sortable="true" style="width: 5%" />
                 <Column field="title" header="TITULO" style="width: 90%" />
-                <!-- Columna de descripción donde se seleccionara los archivos-->
-                <Column header="REQUISITO" style="width: 5%">
-                    <template #body="slotProps">
-                        <!-- Input de archivo oculto con referencia dinámica en la lista -->
-                        <input type="file" :ref="el => archivoRefs[slotProps.index] = el"
-                            @change="(event) => seleccionarArchivo(event, slotProps.index)" style="display: none" />
-                        <!-- Botón para abrir el selector de archivos -->
-                        <q-btn class="q-mx-sm" outline label="Cargar Archivo" color="primary"
-                            @click="() => dispararInput(slotProps.index)" />
-                    </template>
-                </Column>
-
                 <!-- Columna de calificaciones (para números) -->
                 <!-- <Column field="score" header="CALIFICACIONES" style="width: 5%">
           <template #body="slotNorms">
@@ -205,7 +193,7 @@
 </template>
 
 <script setup>
-import { getNormsApi, generateRequirementFile } from '@/api/norms';
+import { getNormsApi } from '@/api/norms';
 import { createRequirementApi, editRequirementApi, formatDataRequirement, getRequirementsApi } from '@/api/requirements';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
@@ -222,7 +210,6 @@ const formatDialog = ref(true);
 const norm = ref(null);
 const norms = ref([]);
 const expandedRows = ref([]);
-const fileRequirements = ref([]);
 const status = ref([
     { label: 'ACTIVO', value: true },
     { label: 'INACTIVO', value: false }
@@ -527,43 +514,6 @@ function addReq(idCurrentReq) {
         inputs: [{ _id: 1, description: '' }]
     });
 }
-
-// Array para almacenar referencias a cada input de archivo en cada fila
-const archivoRefs = ref([]);
-
-// Función para disparar el clic en el input de archivo específico
-const dispararInput = (index) => {
-  const input = archivoRefs.value[index];
-  if (input) {
-    input.click();
-  }
-};
-
-// Función para manejar la selección de archivo
-const seleccionarArchivo = (event, index) => {
-  const archivo = event.target.files[0];
-  console.log('Archivo seleccionado:', archivo);
-
-  // Llamar a la API para subir el archivo
-  uploadRequirementFile(archivo)
-    .then(response => {
-      console.log('Archivo subido con éxito:', response.data);
-    })
-    .catch(error => {
-      console.error('Error al subir el archivo:', error);
-    });
-};
-/** 
-// Función para subir el archivo al servidor
-const uploadRequirementFile = async (archivo) => {
-  try {
-    const response = await generateRequirementFile(archivo);
-    return response;
-  } catch (error) {
-    console.error('Error al subir el archivo:', error);
-    throw error;
-  }
-};*/
 </script>
 
 <style scoped>
@@ -664,31 +614,5 @@ const uploadRequirementFile = async (archivo) => {
     text-overflow: ellipsis;
     white-space: nowrap;
     text-align: center;
-}
-
-.file-input {
-    display: inline-block;
-    padding: 6px 12px;
-    color: white;
-    background-color: #07b6e7;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-.file-input::-webkit-file-upload-button {
-    visibility: hidden;
-}
-
-.file-input::before {
-    content: 'Subir Archivo';
-    display: inline-block;
-    background-color: #07b6e7;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
 }
 </style>

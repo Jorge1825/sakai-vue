@@ -44,7 +44,7 @@ export const toggleActiveQualificationApi = async (id) => {
 
         return response;
     } catch (error) {
-        console.error('Error al activar/desactivar calificación', error); 
+        console.error('Error al activar/desactivar calificación', error);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
         throw error;
     }
 };
@@ -59,3 +59,21 @@ export const qualificationNormApi = async (data) => {
         throw error; 
     }
 }
+// Nueva función para procesar requisitos
+export const processRequirementsApi = async (file, normId) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('normId', normId);
+
+    try {
+        const response = await axiosInstance.post('/qualifications/process-requirements', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response;
+    } catch (error) {
+        console.error('Error al procesar los requisitos', error);
+        throw error;
+    }
+};
