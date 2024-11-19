@@ -189,6 +189,11 @@ const router = createRouter({
                     path: '/documents',
                     name: 'documents',
                     component: Documents
+                },
+                {
+                    path: '/activities',
+                    name: 'activities',
+                    component: Activities
                 }
             ],
             beforeEnter: auth

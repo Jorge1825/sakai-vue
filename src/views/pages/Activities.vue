@@ -34,6 +34,7 @@
                 <Column field="description" header="DESCRIPCIÓN" style="width: 20%" />
                 <Column field="norm" header="NORMA" style="width: 20%" />
                 <Column field="requirement" header="REQUERIMIENTO" style="width: 20%" />
+                <Column field="fieldvalue" header="VALOR" style="width: 10%" />
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
@@ -66,6 +67,7 @@
                         <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
                         <p><strong>Norma:</strong> {{ slotProps.data.norm }}</p>
                         <p><strong>Requerimiento:</strong> {{ slotProps.data.requirement }}</p>
+                        <p><strong>Valor:</strong> {{ slotProps.data.fieldvalue }}</p>
                         <p>
                             <strong>Estado:</strong>
                             <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
@@ -105,6 +107,11 @@
                                     <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Requerimiento']" v-model="activity.requirement" label="Requerimiento" required style="padding: 10px" autogrow />
                                 </div>
                                 <div class="col-6">
+                                    <q-input type="number" lazy-rules :rules="[(val) => (!isNaN(val) && val !== null && val !== '') || 'Debe ser un número decimal válido']" v-model.number="activity.fieldvalue" label="Valor" required style="padding: 10px" autogrow
+                                    />
+                                </div>
+
+                                <div class="col-6">
                                     <q-select v-model="activity.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
                             </div>
@@ -123,7 +130,7 @@
 </template>
 
 <script setup>
-import { createActivityApi, editActivityApi, getActivityApi, toggleActiveActivityApi } from '@/api/activities';//ROLES
+import { createActivityApi, editActivityApi, getActivityApi, toggleActiveActivityApi } from '@/api/activities'; //ROLES
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
@@ -135,6 +142,7 @@ const activity = ref({
     description: '',
     norm: '',
     requirement: '',
+    fieldvalue: 0,
     status: true
 });
 const expandedRows = ref([]);
@@ -167,6 +175,7 @@ function openDialog() {
         description: '',
         norm: '',
         requirement: '',
+        fieldvalue: 0,
         status: status.value[0]
     };
     activityDialog.value = true;
@@ -186,6 +195,7 @@ async function saveActivity() {
             description: activity.value.description,
             norm: activity.value.norm,
             requirement: activity.value.requirement,
+            fieldvalue: activity.value.fieldvalue,
             status: activity.value.status.value
         };
 
@@ -204,6 +214,7 @@ async function saveActivity() {
             description: activity.value.description,
             norm: activity.value.norm,
             requirement: activity.value.requirement,
+            fieldvalue: activity.value.fieldvalue,
             status: activity.value.status.value
         };
 
