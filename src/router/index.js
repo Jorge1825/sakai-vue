@@ -10,6 +10,7 @@ import Cookies from 'js-cookie';
 import { createRouter, createWebHistory } from 'vue-router';
 import QualificationClient from '@/views/pages/QualificationClient.vue';
 import { storeAuth } from '@/store/auth';
+import Documents from '@/views/pages/Documents.vue';
 
 const checkAuth = () => {
     const cookie = Cookies.get('access_token');
@@ -185,9 +186,9 @@ const router = createRouter({
                     component: Norms
                 },
                 {
-                    path: '/activities',
-                    name: 'Activities',
-                    component: Activities
+                    path: '/documents',
+                    name: 'documents',
+                    component: Documents
                 }
             ],
             beforeEnter: auth

@@ -15,7 +15,6 @@ onBeforeMount(() => {
     enterprises.value = useStoreAuth.getCompanyIds()?.map((enterprise) => {
         return { label: enterprise.name, value: enterprise._id };
     });
-    console.log(enterprises.value);
 
     enterprise.value = enterprises.value[0] || null;
     useStoreAuth.setCompany(enterprise.value);
@@ -39,7 +38,7 @@ const model = ref([
             { label: 'Empresas ', icon: 'pi pi-fw pi-cog', to: '/enterprises', users: ['ADMIN'] },
             { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification', users: ['ADMIN'] },
             { label: 'Calificar Requerimientos', icon: 'pi pi-fw pi-cog', to: 'qualificationClient', users: ['USER'] },
-            { label: 'Actividades', icon: 'pi pi-fw pi-cog', to: '/activities', users: ['ADMIN','USER'] },
+            { label: 'Documentos', icon: 'pi pi-fw pi-cog', to: '/documents', users: ['USER','ADMIN'] }
             // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout', users: ['ADMIN'] },
             // { label: 'Input', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
             // { label: 'Button', icon: 'pi pi-fw pi-mobile', to: '/uikit/button', class: 'rotated-icon' },
