@@ -6,6 +6,7 @@ import TableNorm from '@/views/pages/TableNorm.vue';
 import Enterprises from '@/views/pages/Enterprises.vue'
 import Qualification from '@/views/pages/Qualification.vue'
 import Activities from '@/views/pages/Activities.vue'
+import Programs from '@/views/pages/Programs.vue';
 import Cookies from 'js-cookie';
 import { createRouter, createWebHistory } from 'vue-router';
 import QualificationClient from '@/views/pages/QualificationClient.vue';
@@ -194,6 +195,11 @@ const router = createRouter({
                     path: '/activities',
                     name: 'activities',
                     component: Activities
+                }, 
+                {
+                    path: '/programs',
+                    name: 'programs',
+                    component: Programs
                 }
             ],
             beforeEnter: auth
