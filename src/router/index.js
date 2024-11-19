@@ -5,6 +5,7 @@ import RequirementsPanel from '@/views/pages/RequirementsPanel.vue'; //Ruta a Re
 import TableNorm from '@/views/pages/TableNorm.vue';
 import Enterprises from '@/views/pages/Enterprises.vue'
 import Qualification from '@/views/pages/Qualification.vue'
+import Activities from '@/views/pages/Activities.vue'
 import Cookies from 'js-cookie';
 import { createRouter, createWebHistory } from 'vue-router';
 import QualificationClient from '@/views/pages/QualificationClient.vue';
@@ -182,6 +183,11 @@ const router = createRouter({
                     path: '/norms',
                     name: 'norms',
                     component: Norms
+                },
+                {
+                    path: '/activities',
+                    name: 'Activities',
+                    component: Activities
                 }
             ],
             beforeEnter: auth
