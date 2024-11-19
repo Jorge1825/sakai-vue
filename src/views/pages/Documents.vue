@@ -1,5 +1,5 @@
 <template>
-    <q-splitter v-model="splitterModel" class="bg-white rounded">
+    <q-splitter v-model="splitterModel" class="bg-white rounded " style="height: 85vh;">
         <template v-slot:before>
             <div class="q-pa-md">
                 <q-tree :nodes="simple" node-key="label" selected-color="primary" v-model:selected="selected" default-expand-all />
@@ -42,6 +42,78 @@ let splitterModel = ref(20);
 let selected = ref('Food');
 
 let simple = ref([
+    {
+        label: 'Relax Hotel',
+        children: [
+            {
+                label: 'Food',
+                icon: 'restaurant_menu'
+            },
+            {
+                label: 'Room service',
+                icon: 'room_service'
+            },
+            {
+                label: 'Room view',
+                icon: 'photo'
+            },
+            {
+                label: 'Good service (disabled node with icon)',
+                icon: 'room_service',
+                children: [
+                    {
+                        label: 'test',
+                        icon: 'room_service',
+                        children: [
+                            {
+                                label: 'gfdgfdgfdg',
+                                icon: 'room_service',
+                                children: [{ label: 'ggggg', icon: 'room_service' }, { label: 'Professional d' }]
+                            },
+                            { label: 'Professional f' }
+                        ]
+                    },
+                    { label: 'Professional 2q' }
+                ]
+            }
+        ]
+    },
+    {
+        label: 'Relax Hotel',
+        children: [
+            {
+                label: 'Food',
+                icon: 'restaurant_menu'
+            },
+            {
+                label: 'Room service',
+                icon: 'room_service'
+            },
+            {
+                label: 'Room view',
+                icon: 'photo'
+            },
+            {
+                label: 'Good service (disabled node with icon)',
+                icon: 'room_service',
+                children: [
+                    {
+                        label: 'test',
+                        icon: 'room_service',
+                        children: [
+                            {
+                                label: 'gfdgfdgfdg',
+                                icon: 'room_service',
+                                children: [{ label: 'ggggg', icon: 'room_service' }, { label: 'Professional d' }]
+                            },
+                            { label: 'Professional f' }
+                        ]
+                    },
+                    { label: 'Professional 2q' }
+                ]
+            }
+        ]
+    },
     {
         label: 'Relax Hotel',
         children: [
