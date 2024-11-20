@@ -224,8 +224,8 @@ let dataFormat = ref({
             description:
                 'La organización debe determinar las cuestiones externas e internas que son pertinentes para su propósito y que afectan su capacidad para lograr los resultados previstos de su sistema de gestión de la sostenibilidad de eventos.\nNOTA 1 El término "cuestión" en este subnumeral es sinónimo de "contexto" según se define en el numeral 3.42.\nNOTA 2 La organización es la que se describe en los numerales 4.3 y 4.4.',
             number: '4.1',
-            title: 'Comprensión de la organización y de su contexto',
-            inputs: [{ _id: 1, description: 'Requisito 1' }]
+            title: 'Cumplimiento de la legislación',
+            inputs: [{ _id: 1, description: 'La organización debe cumplir la legislación vigente que le sea aplicable atendiendo los requisitos nacionales y particularidades regionales o locales en las dimensiones de la sostenibilidad (ambiental, social y económico), entre las que se encuentran las siguientes: - la operación del establecimiento - los planes de ordenamiento territorial - la accesibilidad de instalaciones; - la protección de datos personales; - la prevención de la explotación sexual comercial de niños, niñas y adolescentes (ESCNNA) y de la trata de personas. - las zonas de carga y descarga; - uso de recursos naturales - disposición de Residuos y Vertimientos Si se realiza alguna otra actividad que requiera una licencia o autorización adicional a la de la actividad habitual del establecimiento, ésta debe estar en posesión del establecimiento.' }]
         },
         {
             _id: 2,
@@ -244,10 +244,10 @@ let dataFormat = ref({
             description:
                 'La organización debe determinar los límites y la aplicabilidad del sistema de gestión de la sostenibilidad de eventos a fin de establecer su alcance.\nAl determinar este alcance, la organización debe considerar:\n- las cuestiones externas e internos mencionados en el numeral 4.1; y\n- los requisitos a los que se hace referencia en el numeral 4.2.\nEl alcance debe estar disponible como información documentada.',
             number: '4.3',
-            title: 'Determinación del alcance del sistema de gestión de la sostenibilidad de eventos',
+            title: 'Comprensión de las necesidades y expectativas de las partes interesadas',
             inputs: [
-                { _id: 1, description: 'Requisito 1' },
-                { _id: 2, description: 'Requisito 2' }
+                { _id: 1, description: 'La organización debe determinar: Las partes interesadas que son pertinentes al sistema de gestión de la sostenibilidad de eventos, véase Tabla A.1;' },
+                { _id: 2, description: 'Los requisitos de esas partes interesadas (es decir, sus necesidades y expectativas, ya sean declaradas, implícitas u obligatorias).' }
             ]
         },
         {
@@ -265,7 +265,7 @@ let dataFormat = ref({
             _id: 5,
             description:
                 'La organización debe definir sus principios rectores del desarrollo sostenible en forma de una declaración de propósitos y valores. Los principios rectores del desarrollo sostenible de la organización en relación con la gestión de eventos deben incluir, como mínimo, consideraciones de compromiso, inclusión, integridad y transparencia. La organización debe definir y documentar su propósito principal y sus valores con respecto a sus actividades, productos y servicios relacionados específicamente con los eventos.\nLos principios, el propósito y los valores de la organización deben proporcionar un marco para establecer sus políticas, objetivos y metas, tal como se definen en el alcance de su sistema de gestión de la sostenibilidad de eventos.',
-            number: '4.5',
+            number: '4.5.1',
             title: 'Principios de desarrollo sostenible, declaración de propósitos y valores',
             inputs: [
                 { _id: 1, description: 'Requisito 1' },
@@ -334,6 +334,14 @@ async function saveNorm() {
             Notify.create({ message: 'Error al actualizar las Norma.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     } else {
+        //eliminar el _id de los inputs
+        dataFormat.value.requirements.forEach((r) => {
+            delete r._id;
+            r.inputs.forEach((i) => delete i._id);
+        });
+
+
+
         const response = await createRequirementApi({ norm: norm.value.value, ...dataFormat.value });
         console.log(response);
         if (response.status <= 300) {
