@@ -61,7 +61,7 @@
                         <p><strong>Prompt:</strong> {{ slotProps.data.qualification }}</p>
                         <p><strong>Requerimiento:</strong>{{ slotProps.data.requirement }}</p>
                         <p><strong>Norma:</strong> {{ slotProps.data.norm }}</p>
-                        <p><strong>Evaluacion:</strong> {{ slotProps.data.evaluation }}</p>
+                        <p><strong>Evaluacion:</strong> {{ slotProps.data.qualification }}</p>
                         <p><strong>Evidencia:</strong>{{ slotProps.data.evidence }}</p>
                         <p>
                             <strong>Estado:</strong>
@@ -83,7 +83,7 @@
                     <q-form @submit.prevent.stop="savePrompt" novalidate class="q-pa-md full-width">
                         <q-card-section>
                             <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
-                                {{ qualification._id ? 'EDITAR EMPRESA' : 'NUEVA EMPRESA' }}
+                                {{ qualification._id ? 'EDITAR EMPRESA' : 'AGREGAR NUEVA EMPRESA' }}
                             </div>
                         </q-card-section>
 
@@ -99,7 +99,7 @@
                                     <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Norma requerida']" v-model="qualification.norm" label="Norma" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Evaluacuión requerida']" v-model="qualification.evaluation" label="Evaluación" required style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Evaluacuión requerida']" v-model="qualification.qualification" label="Evaluación" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
                                     <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Evidencia requerida']" v-model="qualification.evidence" label="Evidencia" required style="padding: 10px" />
@@ -116,7 +116,7 @@
                                         v-model="prompt.prompt" label="Prompt" required style="padding: 10px"
                                         autogrow />
                                 </div> -->
-                                <div class="col-12">
+                                <div class="col-6">
                                     <q-select v-model="qualification.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
                             </div>
@@ -238,6 +238,7 @@ async function savePrompt() {
 
         if (response.status <= 300) {
             Notify.create({ message: 'Prompt creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            await sendToOpenAI(qualificationApi); // Envía la calificación a la IA
             await getQualifications();
             hideDialog();
         } else {
@@ -299,6 +300,39 @@ function expandAll() {
 function collapseAll() {
     expandedRows.value = [];
 }
+// Funcion para enviar la calificación a la IA
+async function sendToOpenAI(prompt) {
+    try {
+        const response = await fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: ` `, // clave API
+            },
+            body: JSON.stringify({
+                model: '', // Agregar modelo que se est utilizando
+                prompt: prompt,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error en la API: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('Respuesta de IA:', data); 
+        return data.choices[0].text.trim(); // Devuelve la respuesta generada
+    } catch (error) {
+        console.error('Error al enviar la solicitud a OpenAI:', error);
+        Notify.create({
+            message: 'Error al obtener respuesta de OpenAI.',
+            type: 'negative',
+            position: 'top',
+        });
+        return null;
+    }
+}
+
 </script>
 
 <style scoped>

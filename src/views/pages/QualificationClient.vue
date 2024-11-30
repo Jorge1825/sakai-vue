@@ -111,7 +111,7 @@
 </template>
 
 <script setup>
-import { getNormsApi } from '@/api/norms';
+import { getNormApi } from '@/api/norms';
 import { createQualificationApi, editQualificationApi, getQualificationsApi, qualificationNormApi, toggleActiveQualificationApi, processRequirementsApi } from '@/api/qualifications';
 import { notifyError, notifySuccess } from '@/config/notifications';
 import { storeAuth } from '@/store/auth';
@@ -151,7 +151,7 @@ async function getQualifications() {
 
 async function getNorms() {
     try {
-        const { data } = await getNormsApi();
+        const { data } = await getNormApi();
         norms.value = data.length ? data?.map((r) => ({ label: r.name, value: r._id })) : [];
         norm.value = norms.value[0];
     } catch (error) {

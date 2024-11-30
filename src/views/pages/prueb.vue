@@ -1,4 +1,3 @@
-
 import axiosInstance from "@/config/axios.conf";
 
 export const getNormApi = async () => {
@@ -20,7 +19,7 @@ export const editNormApi = async (data) => {
         
         return response;
     } catch (error) {
-        console.error('Error al editar la norma', error); 
+        console.error('Error al editar normas', error); 
         throw error; 
     }
     
@@ -32,19 +31,19 @@ export const createNormApi = async (data) => {
 
         return response;
     } catch (error) {
-        console.error('Error al crear la norma', error); 
+        console.error('Error al crear norma', error); 
         throw error; 
     }
     
 };
-export const toggleActiveNormApi = async (data) => {
+export const toggleActiveNormApi = async (id) => {
     try {
-        // Hacer la petición PUT al endpoint de activar/desactivar prompt
-        const response = await axiosInstance.patch(`/norms/toggleEnterprise`, data);
+        // Hacer la petición PUT al endpoint de activar/desactivar norma
+        const response = await axiosInstance.put(`/norms/toggle-active/${id}`);
 
         return response;
     } catch (error) {
-        console.error('Error al activar/desactivar la norma', error); 
+        console.error('Error al activar/desactivar norma', error); 
         throw error;
     }
 };
