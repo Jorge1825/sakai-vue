@@ -1,8 +1,11 @@
 <script setup>
 import { login } from '@/api/auth.js';
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
-import { ref } from 'vue';
+import { storeAuth } from '@/store/auth';
+import { onBeforeMount, ref } from 'vue';
 import { useRouter } from 'vue-router'; // Importar el router para redirección
+
+const useAuth = storeAuth();
 
 const email = ref('');
 const password = ref('');
@@ -15,6 +18,17 @@ const router = useRouter(); // Inicializar el router para redirigir después del
 const showRecoverPasswordModal = ref(false);
 const recoverEmail = ref('');
 
+onBeforeMount(() => {
+    const userData = useAuth.getUser();
+
+    if (userData) {
+        email.value = userData?.email;
+        password.value = userData?.password;
+        checked.value = userData?.checked;
+    }
+
+});
+
 // Regla de validación: campo de correo requerido
 const emailRequired = (val) => !!val || 'El campo de correo es obligatorio';
 
@@ -26,13 +40,22 @@ async function signIn() {
 
         // Si el login es exitoso
         if (data.token && status <= 300) {
+            if(checked.value) {
+                useAuth.saveUser({
+                    email: email.value,
+                    password: password.value,
+                    checked: checked.value
+                });
+            } else {
+                useAuth.removeUser();
+            }
+
             errorMessage.value = ''; // Limpiar el mensaje de error si es exitoso
             router.push({ name: 'dashboard' }); // Redirigir al dashboard
-            window.reload(); // Recargar la página para actualizar la barra de navegación
         }
 
-        if (status === 401) {
-            errorMessage.value = 'Correo o contraseña incorrectos. Inténtalo de nuevo.';
+        else if (status === 401) {
+            errorMessage.value = '2 v3131c2Correo o contraseña incorrectos. Inténtalo de nuevo.';
         }
     } catch (error) {
         errorMessage.value = 'Correo o contraseña incorrectos. Inténtalo de nuevo.';

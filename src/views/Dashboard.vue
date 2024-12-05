@@ -1,6 +1,8 @@
 <script setup>
+import FormDiagnostic from '@/components/FormDiagnostic.vue';
 import { useLayout } from '@/layout/composables/layout';
 import { ProductService } from '@/service/ProductService';
+import { storeAuth } from '@/store/auth';
 import { onMounted, ref, watch } from 'vue';
 
 const { getPrimary, getSurface, isDarkTheme } = useLayout();
@@ -8,6 +10,8 @@ const { getPrimary, getSurface, isDarkTheme } = useLayout();
 const products = ref(null);
 const chartData = ref(null);
 const chartOptions = ref(null);
+const user = ref(null);
+const dialog = ref(false);
 
 const items = ref([
     { label: 'Add New', icon: 'pi pi-fw pi-plus' },
@@ -15,6 +19,9 @@ const items = ref([
 ]);
 
 onMounted(() => {
+    const useStoreAuth = storeAuth();
+    user.value = useStoreAuth.getUserToken();
+
     ProductService.getProductsSmall().then((data) => (products.value = data));
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
@@ -98,8 +105,8 @@ watch([getPrimary, getSurface, isDarkTheme], () => {
 </script>
 
 <template>
-    <div class="grid grid-cols-12 gap-8">
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+    <!-- <div class="grid grid-cols-12 gap-8 justify-center">
+         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
@@ -336,6 +343,23 @@ watch([getPrimary, getSurface, isDarkTheme], () => {
                     </li>
                 </ul>
             </div>
+        </div> 
+
+    </div> -->
+    <div class="justify-center flex items-center" style="height: 80vh">
+        <div class="justify-center flex row">
+            <div class="col-12 justify-center flex">
+                <q-img src="../assets/sosteniweb/logo_negro.png" class="col-span-12" width="30rem" />
+            </div>
+            <div class="col-12 text-7xl text-bold text-center">Bienvenid@</div>
+            <div class="col-12 text-2xl text-center q-mt-sm">{{ user?.username }}</div>
         </div>
+        <q-dialog v-model="dialog" persistent>
+            <div class="container bg-white" style="min-width: 450px; max-width: 50vw; min-height: 30vh; max-height: 90vh">
+                <div class="watermark-container justify-center flex">
+                    <FormDiagnostic />
+                </div>
+            </div>
+        </q-dialog>
     </div>
 </template>

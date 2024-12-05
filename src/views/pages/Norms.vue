@@ -35,8 +35,11 @@
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
-                                {{ status.find((s) => s.value === slotProps.data.status).label }}
+                            <q-badge v-if="role.type == 'ADMIN'" :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
+                                {{ status.find((s) => s.value === slotProps.data.status)?.label }}
+                            </q-badge>
+                            <q-badge v-else :color="existEnterprise(slotProps.data) ? 'blue' : 'red'" class="q-ml-xs">
+                                {{ existEnterprise(slotProps.data) ? 'ACTIVO' : 'INACTIVO' }}
                             </q-badge>
                         </div>
                     </template>
@@ -46,7 +49,7 @@
                         <div class="button-group">
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
                             <q-btn
-                                v-if="Roles.type == 'ADMIN'"
+                                v-if="role.type == 'ADMIN'"
                                 :icon="slotProps.data.status === true ? 'clear' : 'check'"
                                 :style="{ backgroundColor: slotProps.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
                                 @click="toggleStatus(slotProps.data)"
@@ -56,9 +59,9 @@
                             />
                             <q-btn
                                 v-if="role.type == 'USER'"
-                                :icon="existEnterprise(slotNorms.data) ? 'check' : 'clear'"
-                                :style="{ backgroundColor: !existEnterprise(slotNorms.data) ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="toggleEnterprise(slotNorms.data)"
+                                :icon="existEnterprise(slotProps.data) ? 'check' : 'clear'"
+                                :style="{ backgroundColor: !existEnterprise(slotProps.data) ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
+                                @click="toggleEnterprise(slotProps.data)"
                                 dense
                                 round
                                 class="q-mr-xs"
@@ -138,9 +141,9 @@
 <script setup>
 import { createNormApi, editNormApi, getNormApi, toggleActiveNormApi } from '@/api/norms';
 import { getPromptsApi } from '@/api/prompts';
-import { storeAuth } from '@/store/auth';
 import { notifyError, notifySuccess } from '@/config/notifications';
-import { onBeforeMount, ref, computed } from 'vue'; // Asegúrate de importar computed
+import { storeAuth } from '@/store/auth';
+import { computed, onBeforeMount, ref } from 'vue'; // Asegúrate de importar computed
 
 const norms = ref([]);
 const normDialog = ref(false);
@@ -150,39 +153,38 @@ const norm = ref({
     description: '',
     status: true
 });
+const role = ref({ type: '' });
 const expandedRows = ref([]);
 const status = ref([
     { label: 'ACTIVO', value: true },
     { label: 'INACTIVO', value: false }
 ]);
 
-const { Roles } = storeAuth; // Asegúrate de que Roles esté definido correctamente
-const enterprise = ref({ value: '' }); // Asegúrate de que enterprise esté definido correctamente
+const useAuth = storeAuth();
+const enterprise = ref({ value: '' });
 
 onBeforeMount(async () => {
+    role.value = useAuth.getRoleToken();
     await getNorm();
+    enterprise.value = useAuth.getSelectedCompany();
 });
 
 async function getNorm() {
     try {
         const { data } = await getNormApi();
-        console.log(data);
         norms.value = data.length ? data : [];
-
+        if (norms.value.length && role.value.type === 'USER') {
+            norms.value = norms.value.filter((n) => n.status === true);
+        }
         console.log(norms.value);
     } catch (error) {
         console.error(error);
     }
 }
 
-async function getPrompts() {
-    try {
-        const { data } = await getPromptsApi();
-        console.log(data);
-        prompts.value = data.map((p) => ({ label: p.name, value: p._id, description: p.description }));
-    } catch (error) {
-        console.error(error);
-    }
+function existEnterprise(selectedNorm) {
+    const exist = selectedNorm.enterprise?.find((e) => e === enterprise.value.value);
+    return exist ? true : false;
 }
 
 //crear computed para seleccionar prompt
@@ -191,16 +193,6 @@ const selectPrompt = computed(() => (id) => {
     const prompt = prompts.value.find((p) => p.value === id);
     return prompt ? `${prompt.label} - ${prompt.description}` : '';
 });
-
-async function getNorms() {
-    try {
-        const { data } = await getNormsApi();
-        console.log(data);
-        norms.value = data.length ? data : [];
-    } catch (error) {
-        console.error(error);
-    }
-}
 
 function openDialog() {
     norm.value = {
@@ -306,7 +298,8 @@ async function toggleStatus(selectedNorm) {
 async function toggleEnterprise(selectedNorm) {
     try {
         // Cambia el estado del usuario (activo/inactivo)
-        const response = await toggleActiveNormApi({ id: selectedNorm._id, enterprise: enterprise.value });
+        console.log(enterprise.value);
+        const response = await toggleActiveNormApi({ id: selectedNorm._id, enterprise: enterprise.value.value });
 
         if (response.status <= 300) {
             // Actualiza el estado localmente después de recibir respuesta del backend
@@ -318,7 +311,7 @@ async function toggleEnterprise(selectedNorm) {
             });
 
             // Vuelve a cargar los usuarios si es necesario
-            await getNorms();
+            await getNorm();
         } else {
             throw new Error('Error al actualizar el estado de la norma.');
         }
@@ -336,7 +329,6 @@ function expandAll() {
 function collapseAll() {
     expandedRows.value = [];
 }
-
 </script>
 
 <style scoped>
