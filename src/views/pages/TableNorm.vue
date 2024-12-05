@@ -25,6 +25,12 @@
                 :rowsPerPageOptions="[5, 10, 25]">
                 <Column field="number" header="NUMBERO" :sortable="true" style="width: 5%" />
                 <Column field="title" header="TITULO" style="width: 90%" />
+                <Column field="renovation" header="RENOVACIÓN" style="width: 10%"/>
+                <template #body="slotProps">
+                <div style="text-align: left">
+                    {{ renovationOptions.find((r) => r.value === slotProps.data.renovation).label }}
+                </div>
+                </template>
                 <!-- Columna de calificaciones (para números) -->
                 <!-- <Column field="score" header="CALIFICACIONES" style="width: 5%">
           <template #body="slotNorms">
@@ -133,6 +139,7 @@
                                                         <th class="col-req-title">Título de Requisito</th>
                                                         <th class="col-req-description">Descripción de Requisito</th>
                                                         <th class="col-value">Valor</th>
+                                                        <th class="col-renovation">Renovación</th>
                                                         <th class="col-actions">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -160,6 +167,9 @@
                                                                 <q-input v-model="input.value" type="number" dense
                                                                     autogrow />
                                                             </template>
+                                                        </td>
+                                                        <td class="col-renovation">
+                                                            <q-select v-model="req.renovation" :options="renovationOptions" dense />
                                                         </td>
                                                         <td class="col-actions">
                                                             <q-btn icon="control_point_duplicate"
@@ -213,6 +223,11 @@ const expandedRows = ref([]);
 const status = ref([
     { label: 'ACTIVO', value: true },
     { label: 'INACTIVO', value: false }
+]);
+const renovationOptions = ref([
+    { label: 'Anual', value: 1 },
+    { label: 'Bienal', value: 2 },
+    { label: 'Trienal', value: 3 }
 ]);
 let file = ref(null);
 let textResponse = ref('');

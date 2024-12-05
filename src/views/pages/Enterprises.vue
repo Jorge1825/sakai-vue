@@ -36,6 +36,12 @@
                 <Column field="address" header="DIRECCIÓN " :sortable="true" style="width: 10%" />
                 <Column field="phone" header="TELÉFONO" :sortable="true" style="width: 10%" />
                 <Column field="email" header="CORREO" :sortable="true" style="width: 10%" />
+                <Column field="riskLevel" header="NIVEL DE RIESGO" style="width: 10%"/>
+                <template #body="slotProps">
+                <div style="text-align: left">
+                    {{ riskLevels.find((r) => r.value === slotProps.data.riskLevel).label }}
+                </div>
+                </template>
                 <!--<Column field="nit" header="DESCRIPCIÓN" style="width: 35%" />-->
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
@@ -120,6 +126,9 @@
                                         style="padding: 10px"
                                         autogrow
                                     />
+                                    <div class="col-6">
+                                    <q-select v-model="enterprise.riskLevel" :options="riskLevels" label="Nivel de Riesgo" required style="padding: 10px" />
+                                </div>
                                 </div>
                                 <div class="col-6">
                                     <q-select v-model="enterprise.status" :options="status" label="Estado" required style="padding: 10px" />
@@ -150,6 +159,11 @@ const status = ref([
     { label: 'ACTIVO', value: true },
     { label: 'INACTIVO', value: false }
 ]);
+const riskLevels = ref([
+    { label: 'ALTO', value: 2 },
+    { label: 'MEDIO', value: 1 },
+    { label: 'BAJO', value: 0 }
+]);
 const enterprise = ref({
     id: null,
     name: '',
@@ -157,6 +171,7 @@ const enterprise = ref({
     address: '',
     email: '',
     phone: '',
+    riskLevel: riskLevels.value[0],
     status: status.value[0]
 });
 const expandedRows = ref([]);
@@ -183,6 +198,7 @@ function openDialog() {
         address: '',
         email: '',
         phone: '',
+        riskLevel: riskLevels.value[0],
         status: status.value[0]
     };
     enterpriseDialog.value = true;
@@ -203,6 +219,7 @@ async function saveEnterprise() {
             address: enterprise.value.address,
             email: enterprise.value.email,
             phone: enterprise.value.phone,
+            riskLevel: enterprise.value.riskLevel.value,
             status: enterprise.value.status.value
         };
 
@@ -241,6 +258,7 @@ async function saveEnterprise() {
 
 function editEnterprise(selectedEnterprise) {
     enterprise.value = { ...selectedEnterprise };
+    enterprise.value.riskLevel = riskLevels.value.find((r) => r.value === selectedEnterprise.riskLevel);
     enterprise.value.status = status.value.find((s) => s.value === selectedEnterprise.status);
     enterpriseDialog.value = true;
 }

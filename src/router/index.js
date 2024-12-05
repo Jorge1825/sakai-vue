@@ -12,6 +12,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import QualificationClient from '@/views/pages/QualificationClient.vue';
 import { storeAuth } from '@/store/auth';
 import Documents from '@/views/pages/Documents.vue';
+import Diagnostics from '@/views/pages/Diagnostics.vue';
+import SuggestedEvidences from '@/views/pages/SuggestedEvidences.vue';
 
 const checkAuth = () => {
     const cookie = Cookies.get('access_token');
@@ -200,6 +202,15 @@ const router = createRouter({
                     path: '/programs',
                     name: 'programs',
                     component: Programs
+                },
+                {
+                    path: '/diagnostic',
+                    name: 'diagnostic',
+                    component: Diagnostics
+                },{
+                    path: '/suggestedEvidences',
+                    name: 'suggestedEvidences',
+                    component: SuggestedEvidences
                 }
             ],
             beforeEnter: auth
