@@ -67,6 +67,18 @@ export const storeAuth = defineStore(
             return enterprises.value;
         };
 
+        const saveUser = (user) => {
+            localStorage.setItem('user', JSON.stringify(user));
+        }
+
+        const removeUser = () => {
+            localStorage.removeItem('user');
+        }
+
+        const getUser = () => {
+            return JSON.parse(localStorage.getItem('user'));
+        }
+
         return {
             loadToken,
             decodeToken,
@@ -78,6 +90,9 @@ export const storeAuth = defineStore(
             getCompanyIds,
             getSelectedCompany,
             hasRole,
+            saveUser,
+            removeUser,
+            getUser,
         };
     },
     {

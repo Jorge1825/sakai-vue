@@ -13,6 +13,18 @@ export const getNormApi = async () => {
     }
     
 };
+export const getNormEnterpriseApi = async (id) => {
+    try {
+
+        const response = await axiosInstance.get(`/norms/enterprise/${id}`);
+
+        return response;
+    } catch (error) {
+        console.error('Error al obtener las normas', error); 
+        throw error; 
+    }
+    
+};
 export const editNormApi = async (data) => {
     try {
         console.log(data);
