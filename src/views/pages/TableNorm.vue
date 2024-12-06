@@ -24,8 +24,8 @@
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]">
                 <Column field="number" header="NUMBERO" :sortable="true" style="width: 5%" />
-                <Column field="title" header="TITULO" style="width: 90%" />
-                <Column field="renovation" header="RENOVACIÓN" style="width: 10%"/>
+                <Column field="title" header="TITULO" style="width: 80%" />
+                <Column field="renovation" header="RENOVACIÓN" style="width: 5%"/>
                 <template #body="slotProps">
                 <div style="text-align: left">
                     {{ renovationOptions.find((r) => r.value === slotProps.data.renovation).label }}

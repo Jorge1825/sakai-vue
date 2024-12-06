@@ -89,7 +89,7 @@
                         <q-card-section>
                             <div class="row full-width q-py-lg">
                                 <div class="col-6">
-                                    <q-select v-model="selectedNorm" :options="norms" label="Norma" @change="loadRequirements" required style="padding: 10px" />
+                                    <q-select v-model="selectedNorm" :options="normOptions" label="Norma" @change="loadRequirements" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
                                     <q-input v-model="selectedRequirement" label="Requerimiento" disabled style="padding: 10px" />
@@ -143,6 +143,14 @@ const norms = ref([]);
 const requirements = ref([]);
 const selectedNorm = ref(null);
 const selectedRequirement = ref('');
+
+const normOptions = [
+    { label: 'Mensual', value: 'mensual' },
+    { label: 'Bimestral', value: 'bimestral' },
+    { label: 'Trimestral', value: 'trimestral' },
+    { label: 'Semestral', value: 'semestral' },
+    { label: 'Anual', value: 'anual' },
+];
 
 onBeforeMount(async () => {
     await getSuggestedEvidence();

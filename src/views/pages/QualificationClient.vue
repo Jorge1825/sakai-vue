@@ -92,9 +92,17 @@
                                 </div>
 
                                 <div class="col-6">
-                                    <q-select :disabled="!norm" v-model="requirement" :options="requirements" label="Requisito" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Requerimiento']" 
-                                        @update:model-value="listRequirements()" />
-                                    
+                                    <q-select
+                                        :disabled="!norm"
+                                        v-model="requirement"
+                                        :options="requirements"
+                                        label="Requisito"
+                                        required
+                                        style="padding: 10px"
+                                        lazy-rules
+                                        :rules="[(val) => val || 'Requerimiento']"
+                                        @update:model-value="listRequirements()"
+                                    />
                                 </div>
 
                                 <div class="col-10 q-mt-md">
@@ -102,19 +110,11 @@
                                         <q-item-label header>Descripción de los Requisitos</q-item-label>
 
                                         <q-item tag="label" v-ripple>
-                                            <q-item-section side top>
-                                                Selección
-                                            </q-item-section>
+                                            <q-item-section side top> Selección </q-item-section>
 
-                                            <q-item-section top class="text-center">
-                                                
-                                                Descripción
-                                            </q-item-section>
+                                            <q-item-section top class="text-center"> Descripción </q-item-section>
 
-                                            <q-item-section side top>
-                                                 Evidencias sugerencias 
-                                            </q-item-section>
-
+                                            <q-item-section side top> Evidencias sugerencias </q-item-section>
                                         </q-item>
                                         <q-item tag="label" v-ripple v-for="input in inputs" :key="input._id">
                                             <q-item-section side top>
@@ -122,11 +122,11 @@
                                             </q-item-section>
 
                                             <q-item-section>
-                                                <q-item-label > {{input.description}} </q-item-label>
+                                                <q-item-label> {{ input.description }} </q-item-label>
                                             </q-item-section>
 
                                             <q-item-section side class="text-lg">
-                                                <q-item-label > Cartas, cursos, ceritificaciones </q-item-label>
+                                                <q-item-label> Cartas, cursos, ceritificaciones </q-item-label>
                                             </q-item-section>
                                         </q-item>
 
@@ -136,14 +136,12 @@
                                             </q-item-section>
 
                                             <q-item-section>
-                                                
                                                 <q-item-label > Notify me about updates to apps or games that I downloaded </q-item-label>
                                             </q-item-section>
 
                                             <q-item-section side class="text-lg">
                                                 <q-item-label > Cartas, cursos, ceritificaciones </q-item-label>
                                             </q-item-section>
-                                            
                                         </q-item>
 
                                         <q-item tag="label" v-ripple>
@@ -152,7 +150,6 @@
                                             </q-item-section>
 
                                             <q-item-section>
-                                               
                                                 <q-item-label > Auto-update apps at anytime. Data charges may apply </q-item-label>
                                             </q-item-section>
                                         </q-item>
@@ -167,9 +164,57 @@
                                                 <q-item-label > Automatically add home screen widgets </q-item-label>
                                             </q-item-section>
                                         </q-item> -->
-
-                                        
                                     </q-list>
+                                </div>
+
+                                <!-- Nueva sección de preguntas -->
+                                <div class="col-12 q-mt-md">
+                                    <div class="row">
+                                        <!-- Primera columna con 3 filas -->
+                                        <div class="col-4">
+                                            <div class="q-pa-sm">
+                                                <p>¿La pregunta 1 se cumple?</p>
+                                                <q-checkbox v-model="pregunta1" true-label="Cumple" false-label="No cumple" />
+                                                <span>{{ pregunta1 ? 'Cumple' : 'No cumple' }}</span>
+                                            </div>
+                                            <div class="q-pa-sm">
+                                                <p>¿La pregunta 2 se cumple?</p>
+                                                <q-checkbox v-model="pregunta2" true-label="Cumple" false-label="No cumple" />
+                                                <span>{{ pregunta2 ? 'Cumple' : 'No cumple' }}</span>
+                                            </div>
+                                            <div class="q-pa-sm">
+                                                <p>¿La pregunta 3 se cumple?</p>
+                                                <q-checkbox v-model="pregunta3" true-label="Cumple" false-label="No cumple" />
+                                                <span>{{ pregunta3 ? 'Cumple' : 'No cumple' }}</span>
+                                            </div>
+                                        </div>
+                                        <!-- Segunda columna con 3 filas -->
+                                        <div class="col-4">
+                                            <div class="q-pa-sm">
+                                                <p>¿La pregunta central 1 se cumple?</p>
+                                                <q-checkbox v-model="preguntaCentral1" true-label="Cumple" false-label="No cumple" />
+                                                <span>{{ preguntaCentral1 ? 'Cumple' : 'No cumple' }}</span>
+                                            </div>
+                                            <div class="q-pa-sm">
+                                                <p>¿La pregunta central 2 se cumple?</p>
+                                                <q-checkbox v-model="preguntaCentral2" true-label="Cumple" false-label="No cumple" />
+                                                <span>{{ preguntaCentral2 ? 'Cumple' : 'No cumple' }}</span>
+                                            </div>
+                                            <div class="q-pa-sm">
+                                                <p>¿La pregunta central 3 se cumple?</p>
+                                                <q-checkbox v-model="preguntaCentral3" true-label="Cumple" false-label="No cumple" />
+                                                <span>{{ preguntaCentral3 ? 'Cumple' : 'No cumple' }}</span>
+                                            </div>
+                                        </div>
+                                        <!-- Tercera columna centrada que ocupa el espacio equivalente a 3 filas -->
+                                        <div class="col-4 flex flex-center">
+                                            <div class="q-pa-sm">
+                                                <p>¿La pregunta única se cumple?</p>
+                                                <q-checkbox v-model="preguntaSolita" true-label="Cumple" false-label="No cumple" />
+                                                <span>{{ preguntaSolita ? 'Cumple' : 'No cumple' }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- <div class="col-12 justify-center flex text-xl q-mt-md">
@@ -257,6 +302,14 @@ const requirement = ref(null);
 const requirements = ref([]);
 const inputs = ref([]);
 const expandedRows = ref([]);
+//Declarar las variables reactias para cada chekbox
+const pregunta1 = ref(false);
+const pregunta2 = ref(false);
+const pregunta3 = ref(false);
+const preguntaCentral1 = ref(false);
+const preguntaCentral2 = ref(false);
+const preguntaCentral3 = ref(false);
+const preguntaSolita = ref(false);
 
 let dataFormat = ref({
     number: '4',
@@ -379,7 +432,7 @@ async function getRequirements() {
 async function listRequirements() {
     //buscar el requerimiento seleccionado
 
-   const req = dataFormat.value.requirements.find((r) => r._id == requirement.value.value);
+    const req = dataFormat.value.requirements.find((r) => r._id == requirement.value.value);
     inputs.value = req.inputs.map((r) => ({ _id: r._id, description: r.description, selected: false }));
 }
 
