@@ -171,47 +171,49 @@
                                 <div class="col-12 q-mt-md">
                                     <div class="row">
                                         <!-- Primera columna con 3 filas -->
-                                        <div class="col-4">
+                                        <div class="col-1"></div>
+                                        <div class="col-3">
                                             <div class="q-pa-sm">
-                                                <p>¿La pregunta 1 se cumple?</p>
-                                                <q-checkbox v-model="pregunta1" true-label="Cumple" false-label="No cumple" />
-                                                <span>{{ pregunta1 ? 'Cumple' : 'No cumple' }}</span>
+                                                <p>¿Tiene personal capacitado para cumplir con las funciones?</p>
+                                                <q-checkbox v-model="pregunta1" label="Cumple" @update:model-value="updateCheckbox('pregunta1', 'pregunta1NoCumple')" />
+                                                <q-checkbox v-model="pregunta1NoCumple" label="No cumple" @update:model-value="updateCheckbox('pregunta1NoCumple', 'pregunta1')" />
                                             </div>
                                             <div class="q-pa-sm">
-                                                <p>¿La pregunta 2 se cumple?</p>
-                                                <q-checkbox v-model="pregunta2" true-label="Cumple" false-label="No cumple" />
-                                                <span>{{ pregunta2 ? 'Cumple' : 'No cumple' }}</span>
+                                                <p>¿Cuenta su equipo con certificaciones óptimas?</p>
+                                                <q-checkbox v-model="pregunta2" label="Cumple" @update:model-value="updateCheckbox('pregunta2', 'pregunta2NoCumple')" />
+                                                <q-checkbox v-model="pregunta2NoCumple" label="No cumple" @update:model-value="updateCheckbox('pregunta2NoCumple', 'pregunta2')" />
                                             </div>
                                             <div class="q-pa-sm">
-                                                <p>¿La pregunta 3 se cumple?</p>
-                                                <q-checkbox v-model="pregunta3" true-label="Cumple" false-label="No cumple" />
-                                                <span>{{ pregunta3 ? 'Cumple' : 'No cumple' }}</span>
+                                                <p>¿Dispone de personal entrenado para las funciones?</p>
+                                                <q-checkbox v-model="pregunta3" label="Cumple" @update:model-value="updateCheckbox('pregunta3', 'pregunta3NoCumple')" />
+                                                <q-checkbox v-model="pregunta3NoCumple" label="No cumple" @update:model-value="updateCheckbox('pregunta3NoCumple', 'pregunta3')" />
                                             </div>
                                         </div>
                                         <!-- Segunda columna con 3 filas -->
-                                        <div class="col-4">
+                                         <div class="col-1"></div>
+                                        <div class="col-3">
                                             <div class="q-pa-sm">
-                                                <p>¿La pregunta central 1 se cumple?</p>
-                                                <q-checkbox v-model="preguntaCentral1" true-label="Cumple" false-label="No cumple" />
-                                                <span>{{ preguntaCentral1 ? 'Cumple' : 'No cumple' }}</span>
+                                                <p>¿El equipo esta debidamente certificado?</p>
+                                                <q-checkbox v-model="preguntaCentral1" label="Cumple" @update:model-value="updateCheckbox('preguntaCentral1', 'preguntaCentral1NoCumple')" />
+                                                <q-checkbox v-model="preguntaCentral1NoCumple" label="No cumple" @update:model-value="updateCheckbox('preguntaCentral1NoCumple', 'preguntaCentral1')" />
                                             </div>
                                             <div class="q-pa-sm">
-                                                <p>¿La pregunta central 2 se cumple?</p>
-                                                <q-checkbox v-model="preguntaCentral2" true-label="Cumple" false-label="No cumple" />
-                                                <span>{{ preguntaCentral2 ? 'Cumple' : 'No cumple' }}</span>
+                                                <p>¿El área de trabajo cumple con las dimensiones necesarias?</p>
+                                                <q-checkbox v-model="preguntaCentral2" label="Cumple" @update:model-value="updateCheckbox('preguntaCentral2', 'preguntaCentral2NoCumple')" />
+                                                <q-checkbox v-model="preguntaCentral2NoCumple" label="No cumple" @update:model-value="updateCheckbox('preguntaCentral2NoCumple', 'preguntaCentral2')" />
                                             </div>
                                             <div class="q-pa-sm">
-                                                <p>¿La pregunta central 3 se cumple?</p>
-                                                <q-checkbox v-model="preguntaCentral3" true-label="Cumple" false-label="No cumple" />
-                                                <span>{{ preguntaCentral3 ? 'Cumple' : 'No cumple' }}</span>
+                                                <p>¿El área de trabajo cumple con el equipo necesario?</p>
+                                                <q-checkbox v-model="preguntaCentral3" label="Cumple" @update:model-value="updateCheckbox('preguntaCentral3', 'preguntaCentral3NoCumple')" />
+                                                <q-checkbox v-model="preguntaCentral3NoCumple" label="No cumple" @update:model-value="updateCheckbox('preguntaCentral3NoCumple', 'preguntaCentral3')" />
                                             </div>
                                         </div>
                                         <!-- Tercera columna centrada que ocupa el espacio equivalente a 3 filas -->
                                         <div class="col-4 flex flex-center">
                                             <div class="q-pa-sm">
-                                                <p>¿La pregunta única se cumple?</p>
-                                                <q-checkbox v-model="preguntaSolita" true-label="Cumple" false-label="No cumple" />
-                                                <span>{{ preguntaSolita ? 'Cumple' : 'No cumple' }}</span>
+                                                <p>¿Cuenta con personal de salud?</p>
+                                                <q-checkbox v-model="preguntaSolita" label="Cumple" @update:model-value="updateCheckbox('preguntaSolita', 'preguntaSolitaNoCumple')" />
+                                                <q-checkbox v-model="preguntaSolitaNoCumple" label="No cumple" @update:model-value="updateCheckbox('preguntaSolitaNoCumple', 'preguntaSolita')" />
                                             </div>
                                         </div>
                                     </div>
@@ -303,14 +305,27 @@ const requirements = ref([]);
 const inputs = ref([]);
 const expandedRows = ref([]);
 //Declarar las variables reactias para cada chekbox
-const pregunta1 = ref(false);
-const pregunta2 = ref(false);
-const pregunta3 = ref(false);
-const preguntaCentral1 = ref(false);
-const preguntaCentral2 = ref(false);
-const preguntaCentral3 = ref(false);
-const preguntaSolita = ref(false);
 
+const pregunta1 = ref(false);
+const pregunta1NoCumple = ref(false);
+const pregunta2 = ref(false);
+const pregunta2NoCumple = ref(false);
+const pregunta3 = ref(false);
+const pregunta3NoCumple = ref(false);
+const preguntaCentral1 = ref(false);
+const preguntaCentral1NoCumple = ref(false);
+const preguntaCentral2 = ref(false);
+const preguntaCentral2NoCumple = ref(false);
+const preguntaCentral3 = ref(false);
+const preguntaCentral3NoCumple = ref(false);
+const preguntaSolita = ref(false);
+const preguntaSolitaNoCumple = ref(false);
+
+function updateCheckbox(selected, other) {
+    if (this[selected]) {
+        this[other] = false;
+    }
+}
 let dataFormat = ref({
     number: '4',
     requirements: [

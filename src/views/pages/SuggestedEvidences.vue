@@ -5,7 +5,7 @@
             <div class="row q-my-md">
                 <div class="col-6">
                     <div class="text-h5" style="color: rgb(4, 178, 217); text-transform: uppercase">
-                        <strong>SUGERENCIAS DE EVIDENCIAS</strong>
+                        <strong>SUGERENCIA DE EVIDENCIAS</strong>
                     </div>
                 </div>
                 <div class="col-12 flex justify-end">
@@ -24,12 +24,10 @@
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
             >
-                <Column field="name" header="NOMBRE" :sortable="true" style="width: 10%" />
-                <Column field="description" header="DESCRIPCIÓN" style="width: 10%" />
-                <Column field="norm" header="NORMA" style="width: 10%" />
-                <Column field="requirement" header="REQUERIMIENTO" style="width: 10%" />
-                <Column field="evidence" header="EVIDENCIA" style="width: 10%" />
-<!--                 <Column field="enterprise" header="EMPRESA" style="width: 10%" /> -->
+                <Column field="name" header="NOMBRE" :sortable="true" style="width: 20%" />
+                <Column field="description" header="DESCRIPCIÓN" style="width: 20%" />
+                <Column field="category" header="CATEGORÍA" style="width: 20%" />
+                <Column field="norm" header="NORMA" style="width: 20%" />
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
@@ -56,13 +54,10 @@
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
-                        <h5>Nombre de la sugerencia de evidencia: {{ slotProps.data.name }}</h5>
+                        <h5>Detalles de sugerencias de evidencias: {{ slotProps.data.name }}</h5>
                         <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
+                        <p><strong>Categoría:</strong> {{ slotProps.data.category }}</p>
                         <p><strong>Norma:</strong> {{ slotProps.data.norm }}</p>
-                        <p><strong>Requerimiento:</strong> {{ slotProps.data.requirement }}</p>
-                        <p><strong>Nivel de cumplimiento:</strong> {{ slotProps.data.levelOfCompliance }}</p>
-                        <p><strong>Empresa:</strong> {{ slotProps.data.enterprise }}</p>
-                        <p><strong>Valor:</strong> {{ slotProps.data.fieldvalue }}</p>
                         <p>
                             <strong>Estado:</strong>
                             <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
@@ -82,26 +77,35 @@
                     <q-form @submit.prevent.stop="saveSuggestedEvidence" novalidate class="q-pa-md full-width">
                         <q-card-section>
                             <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
-                                {{ suggestedEvidence._id ? 'EDITAR SUGERENCIA DE EVIDENCIA' : 'NUEVA SUGERENCIA DE EVIDENCIA' }}
+                                {{ suggestedEvidence._id ? 'EDITAR SUGERENCIA DE EVIDENCIAS' : 'NUEVA SUGERENCIA DE EVIDENCIA' }}
                             </div>
                         </q-card-section>
 
                         <q-card-section>
                             <div class="row full-width q-py-lg">
                                 <div class="col-6">
-                                    <q-select v-model="selectedNorm" :options="normOptions" label="Norma" @change="loadRequirements" required style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre del sugerencia de evidencia es requerido']" v-model="suggestedEvidence.name" label="Nombre del sugerencia de evidencias" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input v-model="selectedRequirement" label="Requerimiento" disabled style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="suggestedEvidence.description" label="Descripción" required style="padding: 10px" autogrow />
                                 </div>
                                 <div class="col-6">
-                                    <q-input v-model="suggestedEvidence.name" label="Nombre de la sugerencia de la evidencia" required style="padding: 10px" />
+                                    <q-select v-model="suggestedEvidence.category" :options="categories" label="Categoría" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input v-model="suggestedEvidence.description" label="Descripción" required style="padding: 10px" autogrow />
+                                    <q-select v-model="suggestedEvidence.norm" :options="norms" label="Norma" required style="padding: 10px" @change="fetchNormDetails" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input v-model="normDetails.name" label="Nombre de la Norma" disabled style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input v-model="normDetails.requirement" label="Requisito de la Norma" disabled style="padding: 10px" />
                                 </div>
                                 <div class="col-12">
-                                    <q-input type="textarea" v-model="suggestedEvidence.evidence" label="Evidencia" required style="padding: 10px" autogrow />
+                                    <q-select v-model="suggestedEvidence.status" :options="status" label="Estado" required style="padding: 10px" />
+                                </div>
+                                <div class="col-12">
+                                    <q-input v-model="suggestedEvidence.evidence" label="Evidencia" type="textarea" style="padding: 10px" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -119,7 +123,7 @@
 </template>
 
 <script setup>
-import { createSuggestedEvidenceApi, editSuggestedEvidenceApi, getSuggestedEvidenceApi, toggleActiveSuggestedEvidenceApi, getNormsApi, getRequirementsApi } from '../../api/suggestedEvidence';
+import { createSuggestedEvidenceApi, editSuggestedEvidenceApi, getSuggestedEvidenceApi, toggleActiveSuggestedEvidenceApi, getNormDetailsApi } from '@/api/suggestedEvidences';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
@@ -129,32 +133,36 @@ const suggestedEvidence = ref({
     id: null,
     name: '',
     description: '',
-    norm: '',
-    requirement: '',
-    evidence: '',
-    status: true
+    category: '',
+    status: true,
+    norm: ''
 });
 const expandedRows = ref([]);
 const status = ref([
     { label: 'ACTIVO', value: true },
     { label: 'INACTIVO', value: false }
 ]);
-const norms = ref([]);
-const requirements = ref([]);
-const selectedNorm = ref(null);
-const selectedRequirement = ref('');
 
-const normOptions = [
-    { label: 'Mensual', value: 'mensual' },
-    { label: 'Bimestral', value: 'bimestral' },
-    { label: 'Trimestral', value: 'trimestral' },
-    { label: 'Semestral', value: 'semestral' },
-    { label: 'Anual', value: 'anual' },
-];
+const categories = ref([
+    { label: 'Categoría 1', value: 'Categoría 1' },
+    { label: 'Categoría 2', value: 'Categoría 2' },
+    { label: 'Categoría 3', value: 'Categoría 3' }
+]);
+
+const norms = ref([
+    { label: 'Norma 0312', value: '0312' },
+    { label: 'Norma 0313', value: '0313' },
+    { label: 'Norma 0314', value: '0314' }
+]);
+
+const normDetails = ref({
+    name: '',
+    requirement: ''
+});
 
 onBeforeMount(async () => {
     await getSuggestedEvidence();
-    await loadNorms();
+    fetchNormDetails();
 });
 
 async function getSuggestedEvidence() {
@@ -166,41 +174,17 @@ async function getSuggestedEvidence() {
     }
 }
 
-async function loadNorms() {
-    try {
-        const { data } = await getNormsApi();
-        norms.value = data;
-        if (norms.value.length > 0) {
-            selectedNorm.value = norms.value[0].value;
-            await loadRequirements();
-        }
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-async function loadRequirements() {
-    try {
-        const { data } = await getRequirementsApi(selectedNorm.value);
-        requirements.value = data;
-        if (requirements.value.length > 0) {
-            selectedRequirement.value = requirements.value[0].value;
-        }
-    } catch (error) {
-        console.error(error);
-    }
-}
-
 function openDialog() {
     suggestedEvidence.value = {
         id: null,
         name: '',
         description: '',
-        norm: '',
-        requirement: '',
-        evidence: '',
-        status: status.value[0].value
+        category: '',
+        status: status.value[0],
+        norm: norms.value[0].value,
+        evidence: ''
     };
+    fetchNormDetails();
     suggestedEvidenceDialog.value = true;
 }
 
@@ -209,15 +193,15 @@ function hideDialog() {
 }
 
 async function saveSuggestedEvidence() {
-    if (suggestedEvidence.value._id) {
+    if (suggestedEvidence.value.id) {
         const suggestedEvidenceApi = {
-            id: suggestedEvidence.value._id,
+            id: suggestedEvidence.value.id,
             name: suggestedEvidence.value.name,
             description: suggestedEvidence.value.description,
-            norm: selectedNorm.value,
-            requirement: selectedRequirement.value,
-            evidence: suggestedEvidence.value.evidence,
-            status: suggestedEvidence.value.status
+            category: suggestedEvidence.value.category,
+            status: suggestedEvidence.value.status.value,
+            norm: suggestedEvidence.value.norm,
+            evidence: suggestedEvidence.value.evidence
         };
 
         const response = await editSuggestedEvidenceApi(suggestedEvidenceApi);
@@ -227,16 +211,16 @@ async function saveSuggestedEvidence() {
             await getSuggestedEvidence();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar la evidencia.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar sugerencia de evidencias.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     } else {
         const suggestedEvidenceApi = {
             name: suggestedEvidence.value.name,
             description: suggestedEvidence.value.description,
-            norm: selectedNorm.value,
-            requirement: selectedRequirement.value,
-            evidence: suggestedEvidence.value.evidence,
-            status: suggestedEvidence.value.status
+            category: suggestedEvidence.value.category,
+            status: suggestedEvidence.value.status.value,
+            norm: suggestedEvidence.value.norm,
+            evidence: suggestedEvidence.value.evidence
         };
 
         const response = await createSuggestedEvidenceApi(suggestedEvidenceApi);
@@ -246,42 +230,40 @@ async function saveSuggestedEvidence() {
             await getSuggestedEvidence();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear la evidencia.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear sugerencia de evidencia.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     }
 }
 
 function editSuggestedEvidence(selectedSuggestedEvidence) {
     suggestedEvidence.value = { ...selectedSuggestedEvidence };
-    selectedNorm.value = selectedSuggestedEvidence.norm;
-    selectedRequirement.value = selectedSuggestedEvidence.requirement;
+    suggestedEvidence.value.status = status.value.find((s) => s.value === selectedSuggestedEvidence.status);
+    fetchNormDetails();
     suggestedEvidenceDialog.value = true;
 }
 
 async function toggleStatus(selectedSuggestedEvidence) {
     try {
-        const response = await toggleActiveSuggestedEvidenceApi(selectedSuggestedEvidence._id);
+        const response = await toggleActiveSuggestedEvidenceApi(selectedSuggestedEvidence.id);
 
         if (response.status <= 300) {
             selectedSuggestedEvidence.status = !selectedSuggestedEvidence.status;
-
             Notify.create({
-                message: `Sugerencia de la evidencia ${selectedSuggestedEvidence.status ? 'activada' : 'desactivada'} correctamente.`,
+                message: `Sugerencia de evidencia ${selectedSuggestedEvidence.status ? 'activado' : 'desactivado'} correctamente.`,
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
                 color: selectedSuggestedEvidence.status ? 'blue' : 'red',
                 multiLine: true
             });
-
             await getSuggestedEvidence();
         } else {
-            throw new Error('Error al actualizar el estado de la evidencia.');
+            throw new Error('Error al actualizar el estado de la sugerencia de evidencia.');
         }
     } catch (error) {
         console.error(error);
         Notify.create({
-            message: 'Hubo un error al cambiar el estado de la actividad.',
+            message: 'Hubo un error al cambiar el estado de la sugerencia de evidencia.',
             type: 'negative',
             position: 'top',
             textColor: 'white',
@@ -291,8 +273,17 @@ async function toggleStatus(selectedSuggestedEvidence) {
     }
 }
 
+async function fetchNormDetails() {
+    try {
+        const { data } = await getNormDetailsApi(suggestedEvidence.value.norm);
+        normDetails.value = data;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 function expandAll() {
-    expandedRows.value = suggestedEvidences.value.reduce((acc, p) => (acc[p._id] = true) && acc, {});
+    expandedRows.value = suggestedEvidences.value.reduce((acc, p) => (acc[p.id] = true) && acc, {});
 }
 
 function collapseAll() {
