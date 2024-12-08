@@ -5,7 +5,7 @@
             <div class="row q-my-md">
                 <div class="col-6">
                     <div class="text-h5" style="color: rgb(4, 178, 217); text-transform: uppercase">
-                        <strong>NORMAS</strong>
+                        <strong>Normas</strong>
                     </div>
                 </div>
                 <div class="col-12 flex justify-end">
@@ -19,7 +19,7 @@
                     <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
                 </div>
             </div>
-            <!-- Tabla de normas -->
+            <!-- Tabla de usuarios -->
             <DataTable
                 v-model:expandedRows="expandedRows"
                 :value="norms"
@@ -30,51 +30,55 @@
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
             >
-                <Column field="name" header="NOMBRE" :sortable="true" style="width: 20%" />
-                <Column field="description" header="DESCRIPCIÓN" style="width: 20%" />
+                <Column field="name" header="NOMBRE" :sortable="true" style="width: 15%" />
+                <Column field="description" header="DESCRIPCIÓN" style="width: 35%" />
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
-                    <template #body="slotProps">
-                        <div style="text-align: left">
-                            <q-badge v-if="role.type == 'ADMIN'" :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
-                                {{ status.find((s) => s.value === slotProps.data.status)?.label }}
+                    <template #body="slotNorms">
+                        <div style="text-align: left" v-if="role.type == 'USER'">
+                            <q-badge :color="existEnterprise(slotNorms.data) ? 'blue' : 'red'" class="q-ml-xs">
+                                {{ existEnterprise(slotNorms.data) ? 'ACTIVA' : 'INACTIVA' }}
                             </q-badge>
-                            <q-badge v-else :color="existEnterprise(slotProps.data) ? 'blue' : 'red'" class="q-ml-xs">
-                                {{ existEnterprise(slotProps.data) ? 'ACTIVO' : 'INACTIVO' }}
+                        </div>
+                        <div style="text-align: left" v-else>
+                            <q-badge :color="slotNorms.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
+                                {{ status.find((s) => s.value === slotNorms.data.status).label }}
                             </q-badge>
                         </div>
                     </template>
                 </Column>
-                <Column header="ACCIONES" style="width: 10%">
-                    <template #body="slotProps">
+                <Column header="ACCIONES" style="width: 4%">
+                    <template #body="slotNorms">
                         <div class="button-group">
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
                             <q-btn
                                 v-if="role.type == 'ADMIN'"
-                                :icon="slotProps.data.status === true ? 'clear' : 'check'"
-                                :style="{ backgroundColor: slotProps.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="toggleStatus(slotProps.data)"
+                                :icon="slotNorms.data.status === true ? 'clear' : 'check'"
+                                :style="{ backgroundColor: slotNorms.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
+                                @click="toggleStatus(slotNorms.data)"
                                 dense
                                 round
                                 class="q-mr-xs"
                             />
+
                             <q-btn
                                 v-if="role.type == 'USER'"
-                                :icon="existEnterprise(slotProps.data) ? 'check' : 'clear'"
-                                :style="{ backgroundColor: !existEnterprise(slotProps.data) ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="toggleEnterprise(slotProps.data)"
+                                :icon="existEnterprise(slotNorms.data) ? 'check' : 'clear'"
+                                :style="{ backgroundColor: !existEnterprise(slotNorms.data) ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
+                                @click="toggleEnterprise(slotNorms.data)"
                                 dense
                                 round
                                 class="q-mr-xs"
                             />
+
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
-                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editNorms(slotProps.data)" dense round />
+                            <q-btn v-if="role.type == 'ADMIN'" icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editNorm(slotNorms.data)" dense round />
                         </div>
                     </template>
                 </Column>
-                <template #expansion="slotProps">
+                <template #expansion="slotNorms">
                     <div class="p-4">
-                        <h5>Detalles de la norma: {{ slotProps.data.name }}</h5>
-                        <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
+                        <h5>Detalles de la norma: {{ slotNorms.data.name }}</h5>
+                        <p><strong>Descripción:</strong> {{ slotNorms.data.description }}</p>
                         <p>
                             <strong>Prompt de extracción:</strong>
                             {{ selectPrompt(slotNorms.data.promptExtraction?._id) }}
@@ -85,8 +89,8 @@
                         </p>
                         <p>
                             <strong>Estado:</strong>
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
-                                {{ status.find((s) => s.value === slotProps.data.status).label }}
+                            <q-badge :color="slotNorms.data.status === true ? 'blue' : 'red'">
+                                {{ status.find((s) => s.value === slotNorms.data.status).label }}
                             </q-badge>
                         </p>
                     </div>
@@ -95,7 +99,7 @@
         </div>
     </div>
 
-    <!-- Modal para agregar/editar norma -->
+    <!-- Modal para agregar/editar usuario -->
     <q-dialog v-model="normDialog" persistent width="800px">
         <div class="container bg-white">
             <div class="watermark-container justify-center flex">
@@ -110,7 +114,7 @@
                         <q-card-section>
                             <div class="row full-width q-py-lg">
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre de la norma requerido']" v-model="norm.name" label="Nombre de la norma" required style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre de la norma requerida']" v-model="norm.name" label="Nombre del norm" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
                                     <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="norm.description" label="Descripción" required style="padding: 10px" autogrow />
@@ -138,54 +142,42 @@
         </div>
     </q-dialog>
 </template>
+
 <script setup>
-import { createNormApi, editNormApi, getNormApi, toggleActiveNormApi } from '@/api/norms';
+import { createNormApi, editNormApi, getNormsApi, toggleActiveNormApi, toggleEnterpriseNormApi } from '@/api/norms';
 import { getPromptsApi } from '@/api/prompts';
 import { notifyError, notifySuccess } from '@/config/notifications';
 import { storeAuth } from '@/store/auth';
-import { computed, onBeforeMount, ref } from 'vue'; // Asegúrate de importar computed
+import { computed, onBeforeMount, ref } from 'vue';
 
+const useStoreAuth = storeAuth();
+const role = ref(null);
+const enterprise = ref(null);
 const norms = ref([]);
 const normDialog = ref(false);
 const norm = ref({
     id: null,
     name: '',
     description: '',
-    status: true
+    status: true,
+    promptExtraction: null,
+    promptFormat: null
 });
-const role = ref({ type: '' });
 const expandedRows = ref([]);
 const status = ref([
-    { label: 'ACTIVO', value: true },
-    { label: 'INACTIVO', value: false }
+    { label: 'ACTIVA', value: true },
+    { label: 'INACTIVA', value: false }
 ]);
 
-const useAuth = storeAuth();
-const enterprise = ref({ value: '' });
+const prompts = ref([]);
 
 onBeforeMount(async () => {
-    role.value = useAuth.getRoleToken();
-    await getNorm();
-    enterprise.value = useAuth.getSelectedCompany();
+    role.value = useStoreAuth.getRoleToken();
+    enterprise.value = useStoreAuth.getSelectedCompany();
+    console.log(enterprise.value);
+    await getNorms();
+    await getPrompts();
 });
-
-async function getNorm() {
-    try {
-        const { data } = await getNormApi();
-        norms.value = data.length ? data : [];
-        if (norms.value.length && role.value.type === 'USER') {
-            norms.value = norms.value.filter((n) => n.status === true);
-        }
-        console.log(norms.value);
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-function existEnterprise(selectedNorm) {
-    const exist = selectedNorm.enterprise?.find((e) => e === enterprise.value.value);
-    return exist ? true : false;
-}
 
 //crear computed para seleccionar prompt
 
@@ -193,6 +185,25 @@ const selectPrompt = computed(() => (id) => {
     const prompt = prompts.value.find((p) => p.value === id);
     return prompt ? `${prompt.label} - ${prompt.description}` : '';
 });
+async function getNorms() {
+    try {
+        const { data } = await getNormsApi();
+        console.log(data);
+        norms.value = data.length ? data : [];
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function getPrompts() {
+    try {
+        const { data } = await getPromptsApi();
+        console.log(data);
+        prompts.value = data.map((p) => ({ label: p.name, value: p._id, description: p.description }));
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 function openDialog() {
     norm.value = {
@@ -200,6 +211,8 @@ function openDialog() {
         id: null,
         name: '',
         description: '',
+        promptExtraction: '',
+        promptFormat: '',
         status: status.value[0]
     };
     normDialog.value = true;
@@ -217,22 +230,26 @@ async function saveNorm() {
             id: norm.value._id,
             name: norm.value.name,
             description: norm.value.description,
+            promptExtraction: norm.value.promptExtraction.value,
+            promptFormat: norm.value.promptFormat.value,
             status: norm.value.status.value
         };
 
         const response = await editNormApi(normApi);
 
         if (response.status <= 300) {
-            Notify.create({ message: 'Norma actualizada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getNorm();
+            notifySuccess({ message: 'Norma actualizada correctamente.' });
+            await getNorms();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar la norma.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            notifyError({ message: 'Error al actualizar la norma.' });
         }
     } else {
         const normApi = {
             name: norm.value.name,
             description: norm.value.description,
+            promptExtraction: norm.value.promptExtraction.value,
+            promptFormat: norm.value.promptFormat.value,
             status: norm.value.status.value
         };
 
@@ -240,23 +257,26 @@ async function saveNorm() {
         console.log(response);
 
         if (response.status <= 300) {
-            Notify.create({ message: 'Norma creada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getNorm();
+            notifySuccess({ message: 'Norma creada correctamente.' });
+            await getNorms();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear la norma.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            notifyError({ message: 'Error al crear la norma.' });
         }
     }
 }
 
 function editNorm(selectedNorm) {
+    console.log(selectedNorm);
     norm.value = { ...selectedNorm };
     norm.value.status = status.value.find((s) => s.value === selectedNorm.status);
+    norm.value.promptExtraction = prompts.value.find((p) => p.value === selectedNorm.promptExtraction?._id);
+    norm.value.promptFormat = prompts.value.find((p) => p.value === selectedNorm.promptFormat?._id);
     normDialog.value = true;
     console.log(norm.value);
 }
 
-//funcion activar desactivar norma
+//funcion activar desactivavr usuario
 async function toggleStatus(selectedNorm) {
     try {
         // Cambia el estado del usuario (activo/inactivo)
@@ -266,58 +286,44 @@ async function toggleStatus(selectedNorm) {
             // Actualiza el estado localmente después de recibir respuesta del backend
             selectedNorm.status = selectedNorm.status === 'Activo' ? 'Inactivo' : 'Activo';
 
-            // Mostrar notificación de éxito
-            Notify.create({
-                message: `Norma ${selectedNorm.status === 'Activo' ? 'activada' : 'desactivada'} correctamente.`,
-                type: 'positive',
-                position: 'top',
-                textColor: 'white',
-                color: selectedNorm.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
-                multiLine: true
+            notifySuccess({
+                message: `Norma ${selectedNorm.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
+                color: selectedNorm.status === 'Activo' ? 'blue' : 'red'
             });
 
             // Vuelve a cargar los usuarios si es necesario
-            await getNorm();
+            await getNorms();
         } else {
-            throw new Error('Error al actualizar el estado de la norma.');
+            throw new Error('Error al actualizar el estado del norma.');
         }
     } catch (error) {
         console.error(error);
-        Notify.create({
-            message: 'Hubo un error al cambiar el estado de la norma.',
-            type: 'negative',
-            position: 'top',
-            textColor: 'white',
-            color: 'red',
-            multiLine: true
-        });
+        notifyError({ message: 'Error al actualizar el estado del norma.' });
     }
 }
-
-//funcion activar desactivar usuario
+//funcion activar desactivavr usuario
 async function toggleEnterprise(selectedNorm) {
     try {
         // Cambia el estado del usuario (activo/inactivo)
-        console.log(enterprise.value);
-        const response = await toggleActiveNormApi({ id: selectedNorm._id, enterprise: enterprise.value.value });
+        const response = await toggleEnterpriseNormApi({ id: selectedNorm._id, enterprise: enterprise.value.value });
 
         if (response.status <= 300) {
             // Actualiza el estado localmente después de recibir respuesta del backend
             selectedNorm.status = selectedNorm.status === 'Activo' ? 'Inactivo' : 'Activo';
 
             notifySuccess({
-                message: `Norma ${selectedNorm.status === 'Activo' ? 'activada' : 'desactivada'} correctamente.`,
+                message: `Norma ${selectedNorm.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
                 color: selectedNorm.status === 'Activo' ? 'blue' : 'red'
             });
 
             // Vuelve a cargar los usuarios si es necesario
-            await getNorm();
+            await getNorms();
         } else {
-            throw new Error('Error al actualizar el estado de la norma.');
+            throw new Error('Error al actualizar el estado del norma.');
         }
     } catch (error) {
         console.error(error);
-        notifyError({ message: 'Error al actualizar el estado de la norma.' });
+        notifyError({ message: 'Error al actualizar el estado del norma.' });
     }
 }
 
@@ -328,6 +334,16 @@ function expandAll() {
 
 function collapseAll() {
     expandedRows.value = [];
+}
+
+function existEnterprise(data) {
+    console.log(role.value)
+
+    console.log(data.enterprise);
+    console.log(enterprise.value);
+
+    const exist = data.enterprise?.find((e) => e == enterprise.value.value);
+    return exist ? true : false;
 }
 </script>
 
