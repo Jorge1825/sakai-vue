@@ -34,14 +34,14 @@
                         {{ slotNorms.data?.norm?.name }}
                     </template>
                 </Column>
-                <Column field="title" header="TITULO" style="width: 75%" />
-                <Column field="renovation" header="RENOVACIÓN" style="width: 5%">
+                <Column field="title" header="TITULO" style="width: 80%" />
+                <!-- <Column field="renovation" header="RENOVACIÓN" style="width: 5%">
                     <template #body="slotProps">
                         <div style="text-align: left">
-                            {{ renovationOptions.find((r) => r.value === slotProps.data.renovation).label }}
+                            {{ renovationOptions?.find((r) => r.value === slotProps.data?.renovation)?.label }}
                         </div>
                     </template>
-                </Column>
+                </Column> -->
                 <!-- Columna de calificaciones (para números) -->
                 <!-- <Column field="score" header="CALIFICACIONES" style="width: 5%">
           <template #body="slotNorms">
@@ -177,7 +177,9 @@
                                                             </template>
                                                         </td>
                                                         <td class="col-renovation">
-                                                            <q-select v-model="req.renovation" :options="renovationOptions" dense />
+                                                            <template v-for="input in req.inputs" :key="input._id">
+                                                                <q-select v-model="input.renovation" :options="renovationOptions" dense />
+                                                            </template>
                                                         </td>
                                                         <td class="col-actions">
                                                             <q-btn icon="control_point_duplicate" :style="{ color: 'rgb(4, 178, 217)' }" @click="addInput(req._id)" dense round />
@@ -600,7 +602,7 @@ function addReq(idCurrentReq) {
 }
 
 .col-requirements {
-    max-width: 400px;
+    max-width: 350px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -621,7 +623,7 @@ function addReq(idCurrentReq) {
 }
 
 .col-req-description {
-    max-width: 300px;
+    max-width: 250px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -629,6 +631,14 @@ function addReq(idCurrentReq) {
 
 .col-value {
     max-width: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.col-renovation {
+    max-width: 25px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

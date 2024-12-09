@@ -1,78 +1,51 @@
 <template>
-    <div class="text-h6 text-center text-primary q-my-md" style="font-weight: bold; font-size: 24px"> 
-        
-        EVALUACIÓN EXPRESS DE CUMPLIMIENTO
-
-    </div>
+    <div class="text-h6 text-center text-primary q-my-md" style="font-weight: bold; font-size: 24px">EVALUACIÓN EXPRESS DE CUMPLIMIENTO</div>
     <div class="q-pa-md full-width">
         <q-stepper v-model="step" header-nav ref="stepper" color="primary" animated>
-            <q-step :name="1" title="Pregunta 1" icon="settings" :done="step > 1" :header-nav="step > 1">
+            <q-step :name="1" title="Cuestionario" icon="settings"  :header-nav="step > 1">
                 <div class="row full-width q-my-lg">
-                    <div class="col-5 row justify-center flex">
-                        <div class="col-12 justify-center flex">
-                            <q-img src="../assets/sosteniweb/logo_negro.png" spinner-color="white" style="width: 10rem; height: 10rem; opacity: 0.2" />
-                        </div>
-                        <span class="text-2xl text-gray-400 col-12 text-center">Sosteniweb Colombia</span>
-                    </div>
-                    <div class="col-7 row">
-                        <div class="col-12">
-                            <span class="text-xl">
-                                {{ questions[0].question }}
-                            </span>
-                        </div>
-                        <div class="col-12">
-                            <q-option-group :options="options" type="radio" v-model="group" />
+                    <div class="col-12 q-mt-md">
+                        <div class="row justify-center flex">
+                            
+                            <div class="col-4 q-px-md" v-for="(question, index) in questions.slice(0, 3)" :key="index">
+                                <div class="q-pa-sm">
+                                    <p>{{ question.text }}</p>
+                                    <div>
+                                        <q-checkbox v-model="question.cumple" label="Cumple" @update:model-value="updateCheckbox(question, 'cumple', 'noCumple')" />
+                                        <q-checkbox v-model="question.noCumple" label="No cumple" @update:model-value="updateCheckbox(question, 'noCumple', 'cumple')" />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-4 q-px-md q-mt-xl" v-for="(question, index) in questions.slice(3, 6)" :key="index">
+                                <div class="q-pa-sm">
+                                    <p>{{ question.text }}</p>
+                                    <div>
+                                        <q-checkbox v-model="question.cumple" label="Cumple" @update:model-value="updateCheckbox(question, 'cumple', 'noCumple')" />
+                                        <q-checkbox v-model="question.noCumple" label="No cumple" @update:model-value="updateCheckbox(question, 'noCumple', 'cumple')" />
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4 q-px-md flex flex-center q-mt-xl">
+                                <div class="q-pa-sm">
+                                    <p>{{ questions[6].text }}</p>
+                                    <div>
+
+                                        <q-checkbox v-model="questions[6].cumple" label="Cumple" @update:model-value="updateCheckbox(questions[6], 'cumple', 'noCumple')" />
+                                        <q-checkbox v-model="questions[6].noCumple" label="No cumple" @update:model-value="updateCheckbox(questions[6], 'noCumple', 'cumple')" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="row justify-end flex">
                     <q-stepper-navigation>
-                        <q-btn flat color="primary" @click="" label="Omitir" class="q-mx-md" />
+                        <q-btn flat color="primary" label="Omitir" class="q-mx-md" @click="close()" />
                         <q-btn
-                            @click="
-                                () => {
-                                    done1 = true;
-                                    step = 2;
-                                }
-                            "
-                            color="primary"
-                            label="Continuar"
-                        />
-
-                    </q-stepper-navigation>
-                </div>
-            </q-step>
-
-            <q-step v-if="done1" :name="2" title="Pregunta 2" icon="create_new_folder" :done="step > 2" :header-nav="step > 2">
-                <div class="row full-width q-my-lg">
-                    <div class="col-5 row justify-center flex">
-                        <div class="col-12 justify-center flex">
-                            <q-img src="../assets/sosteniweb/logo_negro.png" spinner-color="white" style="width: 10rem; height: 10rem; opacity: 0.2" />
-                        </div>
-                        <span class="text-2xl text-gray-400 col-12 text-center">Sosteniweb Colombia</span>
-                    </div>
-                    <div class="col-7 row">
-                        <div class="col-12">
-                            <span class="text-xl">
-                                {{ questions[1].question }}
-                            </span>
-                        </div>
-                        <div class="col-12">
-                            <q-option-group :options="options" type="radio" v-model="group" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row justify-end flex">
-                    <q-stepper-navigation>
-                        <q-btn
-                            @click="
-                                () => {
-                                    done2 = true;
-                                    step = 3;
-                                }
-                            "
+                            @click="continueStep"
                             color="primary"
                             label="Continuar"
                         />
@@ -80,7 +53,7 @@
                 </div>
             </q-step>
 
-            <q-step v-if="done2" :name="3" title="Pregunta 3" icon="create_new_folder" :done="step > 3" :header-nav="step > 3">
+            <q-step :name="2" title="Diagnostico" icon="add_comment" :header-nav="step > 2">
                 <div class="row full-width q-my-lg">
                     <div class="col-5 row justify-center flex">
                         <div class="col-12 justify-center flex">
@@ -90,193 +63,42 @@
                     </div>
                     <div class="col-7 row">
                         <div class="col-12">
-                            <span class="text-xl">
-                                {{ questions[2].question }}
-                            </span>
+                            <span class="text-xl text-primary"> TÚ DIAGNOSTICO RÁPIDO ESTÁ LISTO !!!</span>
                         </div>
-                        <div class="col-12">
-                            <q-option-group :options="options" type="radio" v-model="group" />
-                        </div>
-                    </div>
-                </div>
+                        <div class="col-12 row q-mt-md">
+                            <div class="col-12 text-xl text-bold">
+                                Resultados obtenidos:
 
-                <div class="row justify-end flex">
-                    <q-stepper-navigation>
-                        <q-btn
-                            @click="
-                                () => {
-                                    done3 = true;
-                                    step = 4;
-                                }
-                            "
-                            color="primary"
-                            label="Continuar"
-                        />
-                    </q-stepper-navigation>
-                </div>
-            </q-step>
+                            </div>
 
-            <q-step v-if="done3" :name="4" title="Pregunta 4" icon="create_new_folder" :done="step > 4" :header-nav="step > 4">
-                <div class="row full-width q-my-lg">
-                    <div class="col-5 row justify-center flex">
-                        <div class="col-12 justify-center flex">
-                            <q-img src="../assets/sosteniweb/logo_negro.png" spinner-color="white" style="width: 10rem; height: 10rem; opacity: 0.2" />
-                        </div>
-                        <span class="text-2xl text-gray-400 col-12 text-center">Sosteniweb Colombia</span>
-                    </div>
-                    <div class="col-7 row">
-                        <div class="col-12">
-                            <span class="text-xl">
-                                {{ questions[3].question }}
-                            </span>
-                        </div>
-                        <div class="col-12">
-                            <q-option-group :options="options" type="radio" v-model="group" />
-                        </div>
-                    </div>
-                </div>
+                            <div class="col-10 text-lg" :class="color">
+                                Nivel de cumplimiendo basico requerido</div>
+                            <div class="col-2 text-lg" :class="color">
+                                {{ percent }} %
+                            </div>
 
-                <div class="row justify-end flex">
-                    <q-stepper-navigation>
-                        <q-btn
-                            @click="
-                                () => {
-                                    done4 = true;
-                                    step = 5;
-                                }
-                            "
-                            color="primary"
-                            label="Continuar"
-                        />
-                    </q-stepper-navigation>
-                </div>
-            </q-step>
-
-            <q-step v-if="done4" :name="5" title="Pregunta 5" icon="create_new_folder" :done="step > 5" :header-nav="step > 5">
-                <div class="row full-width q-my-lg">
-                    <div class="col-5 row justify-center flex">
-                        <div class="col-12 justify-center flex">
-                            <q-img src="../assets/sosteniweb/logo_negro.png" spinner-color="white" style="width: 10rem; height: 10rem; opacity: 0.2" />
                         </div>
-                        <span class="text-2xl text-gray-400 col-12 text-center">Sosteniweb Colombia</span>
-                    </div>
-                    <div class="col-7 row">
-                        <div class="col-12">
-                            <span class="text-xl">
-                                {{ questions[4].question }}
-                            </span>
+                        <div class="q-mt-xl text-lg">
+                            {{ text }}
                         </div>
-                        <div class="col-12">
-                            <q-option-group :options="options" type="radio" v-model="group" />
+                        <div class="col-12 row">
+                            <div class="col-12 q-mt-md row">
+                                <div class="col-12">
+                                    <q-icon name="receipt_long" class="q-mx-sm text-primary"/>
+                                    <RouterLink class="text-primary" to="/documents">Ver Suscripciones</RouterLink>
+                                </div>
+                                <div class="col-12 q-mt-md">
+                                    <q-icon name="font_download" class="q-mx-sm text-green" />
+                                    <RouterLink class="text-green" to="/qualificationClient">Obtener Diagnostico Oficial</RouterLink>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="row justify-end flex">
-                    <q-stepper-navigation>
-                        <q-btn
-                            @click="
-                                () => {
-                                    done5 = true;
-                                    step = 6;
-                                }
-                            "
-                            color="primary"
-                            label="Continuar"
-                        />
-                    </q-stepper-navigation>
-                </div>
-            </q-step>
-
-            <q-step v-if="done5" :name="6" title="Pregunta 6" icon="create_new_folder" :done="step > 6" :header-nav="step > 6">
-                <div class="row full-width q-my-lg">
-                    <div class="col-5 row justify-center flex">
-                        <div class="col-12 justify-center flex">
-                            <q-img src="../assets/sosteniweb/logo_negro.png" spinner-color="white" style="width: 10rem; height: 10rem; opacity: 0.2" />
-                        </div>
-                        <span class="text-2xl text-gray-400 col-12 text-center">Sosteniweb Colombia</span>
-                    </div>
-                    <div class="col-7 row">
-                        <div class="col-12">
-                            <span class="text-xl">
-                                {{ questions[5].question }}
-                            </span>
-                        </div>
-                        <div class="col-12">
-                            <q-option-group :options="options" type="radio" v-model="group" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row justify-end flex">
-                    <q-stepper-navigation>
-                        <q-btn
-                            @click="
-                                () => {
-                                    done6 = true;
-                                    step = 7;
-                                }
-                            "
-                            color="primary"
-                            label="Continuar"
-                        />
-                    </q-stepper-navigation>
-                </div>
-            </q-step>
-
-            <q-step v-if="done6" :name="7" title="Pregunta 7" icon="create_new_folder" :done="step > 7" :header-nav="step > 7">
-                <div class="row full-width q-my-lg">
-                    <div class="col-5 row justify-center flex">
-                        <div class="col-12 justify-center flex">
-                            <q-img src="../assets/sosteniweb/logo_negro.png" spinner-color="white" style="width: 10rem; height: 10rem; opacity: 0.2" />
-                        </div>
-                        <span class="text-2xl text-gray-400 col-12 text-center">Sosteniweb Colombia</span>
-                    </div>
-                    <div class="col-7 row">
-                        <div class="col-12">
-                            <span class="text-xl">
-                                {{ questions[6].question }}
-                            </span>
-                        </div>
-                        <div class="col-12">
-                            <q-option-group :options="options" type="radio" v-model="group" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row justify-end flex">
-                    <q-stepper-navigation>
-                        <q-btn
-                            @click="
-                                () => {
-                                    done7 = true;
-                                    step = 8;
-                                }
-                            "
-                            color="primary"
-                            label="Evaluar"
-                        />
-                    </q-stepper-navigation>
-                </div>
-            </q-step>
-
-            <q-step :name="8" title="Diagnostico" icon="add_comment" :header-nav="step > 8">
-                <div class="row full-width q-my-lg">
-                    <div class="col-5 row justify-center flex">
-                        <div class="col-12 justify-center flex">
-                            <q-img src="../assets/sosteniweb/logo_negro.png" spinner-color="white" style="width: 10rem; height: 10rem; opacity: 0.2" />
-                        </div>
-                        <span class="text-2xl text-gray-400 col-12 text-center">Sosteniweb Colombia</span>
-                    </div>
-                    <div class="col-7 row">
-                        <div class="col-12">
-                            <span class="text-xl"> AQUI VA EL DIAGNOSTICO </span>
-                        </div>
+                    
                     </div>
                 </div>
                 <div class="row justify-end flex">
                     <q-stepper-navigation>
-                        <q-btn color="primary" @click="done3 = true" label="Finalizar" />
+                        <q-btn color="primary" @click="done2 = true" label="Finalizar" />
                     </q-stepper-navigation>
                 </div>
             </q-step>
@@ -284,49 +106,67 @@
     </div>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { defineEmits, ref } from 'vue';
 
+const emit = defineEmits(['close-dialog']);
+
+const text = ref('');
+const color = ref('text-red');
+const percent = ref(0);
 const step = ref(1);
-let group = ref();
-let options = ref([
-    {
-        label: 'Si Cumple',
-        value: true
-    },
-    {
-        label: 'No Cumple',
-        value: false
-    }
+const questions = ref([
+    { text: '¿Tiene personal capacitado para cumplir con las funciones?', cumple: ref(false), noCumple: ref(false) },
+    { text: '¿Cuenta su equipo con certificaciones óptimas?', cumple: ref(false), noCumple: ref(false) },
+    { text: '¿Dispone de personal entrenado para las funciones?', cumple: ref(false), noCumple: ref(false) },
+    { text: '¿El equipo está debidamente certificado?', cumple: ref(false), noCumple: ref(false) },
+    { text: '¿El área de trabajo cumple con las dimensiones necesarias?', cumple: ref(false), noCumple: ref(false) },
+    { text: '¿El área de trabajo cumple con el equipo necesario?', cumple: ref(false), noCumple: ref(false) },
+    { text: '¿Cuenta con personal de salud?', cumple: ref(false), noCumple: ref(false) }
 ]);
 
-let questions = ref([
-    {
-        question: '¿Cuál es tu nombre?',
-        answer: false
-    },
-    {
-        question: '¿Cuál es tu edad?',
-        answer: false
-    },
-    {
-        question: '¿Cuál es tu género?',
-        answer: false
-    },
-    {
-        question: '¿Cuál es tu dirección?',
-        answer: false
-    },
-    {
-        question: '¿Cuál es tu número de teléfono?',
-        answer: false
-    },
-    {
-        question: '¿Cuál es tu correo electrónico?',
-        answer: false
-    },
-    {
-        question: '¿Cuál es tu ocupación?',
-        answer: false
+function close() {
+    emit('close-dialog');
+}
+
+function updateCheckbox(question, selected, other) {
+    if (question[selected]) {
+        question[other] = false;
     }
-]);
+}
+
+/* 
+
+	1.	0 a 60% 
+Para resultados bajos:
+“Identificaste puntos clave para mejorar. Ahora, profundiza con el diagnóstico oficial y da el paso hacia el cumplimiento priorizado.”
+
+	2.	60% a 80% Para resultados intermedios:
+“¡Vas por buen camino! Completa tu progreso con el diagnóstico oficial y asegúrate de cumplir con los estándares exigidos.”
+	3.	Más de 80 % 
+Para resultados altos:
+“¡Gran trabajo! Solo necesitas un diagnóstico oficial de tu cumplimiento para presentarlo con confianza.”
+
+*/
+
+function continueStep() {
+    //evaluar cuantas preguntas cumplieron y cuantas no sacar el porcentaje
+
+    const cumple = questions.value.filter((question) => question.cumple).length;
+    const total = questions.value.length;
+    const porcentajeCumple = (cumple / total) * 100;
+
+    if (porcentajeCumple < 60) {
+        text.value = 'Identificaste puntos clave para mejorar. Ahora, profundiza con el diagnóstico oficial y da el paso hacia el cumplimiento priorizado.';
+        color.value = 'text-red';
+    } else if (porcentajeCumple >= 60 && porcentajeCumple < 80) {
+        text.value = '¡Vas por buen camino! Completa tu progreso con el diagnóstico oficial y asegúrate de cumplir con los estándares exigidos.';
+        color.value = 'text-yellow-8';
+    } else {
+        text.value = '¡Gran trabajo! Solo necesitas un diagnóstico oficial de tu cumplimiento para presentarlo con confianza.';
+        color.value = 'text-green';
+    }
+    percent.value = parseFloat(porcentajeCumple.toFixed(2));
+
+    step.value = 2;
+}
 </script>

@@ -11,7 +11,7 @@ const products = ref(null);
 const chartData = ref(null);
 const chartOptions = ref(null);
 const user = ref(null);
-const dialog = ref(false);
+const dialog = ref(true);
 
 const items = ref([
     { label: 'Add New', icon: 'pi pi-fw pi-plus' },
@@ -96,6 +96,10 @@ function setChartOptions() {
 
 const formatCurrency = (value) => {
     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+};
+
+const closeDialog = () => {
+    dialog.value = false;
 };
 
 watch([getPrimary, getSurface, isDarkTheme], () => {
@@ -357,7 +361,7 @@ watch([getPrimary, getSurface, isDarkTheme], () => {
         <q-dialog v-model="dialog" persistent>
             <div class="container bg-white" style="min-width: 450px; max-width: 50vw; min-height: 30vh; max-height: 90vh">
                 <div class="watermark-container justify-center flex">
-                    <FormDiagnostic />
+                    <FormDiagnostic  @close-dialog="closeDialog" />
                 </div>
             </div>
         </q-dialog>

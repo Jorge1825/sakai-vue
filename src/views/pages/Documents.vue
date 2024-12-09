@@ -1,5 +1,18 @@
 <template>
-    <q-splitter v-model="splitterModel" class="bg-white rounded " style="height: 85vh;">
+    <div class="window-height flex items-center justify-center">
+        <div class="justify-center flex row">
+            <div class="col-12 justify-center flex">
+                <q-img src="../../assets/sosteniweb/logo_negro.png" class="col-span-12" width="30rem" />
+            </div>
+            <div class="col-12 text-2xl text-bold text-center">Este modulo aún se encuentra en costrucción</div>
+
+        </div>
+
+    </div>
+ 
+
+
+    <!-- <q-splitter v-model="splitterModel" class="bg-white rounded " style="height: 85vh;">
         <template v-slot:before>
             <div class="q-pa-md">
                 <q-tree :nodes="simple" node-key="label" selected-color="primary" v-model:selected="selected" default-expand-all />
@@ -32,7 +45,7 @@
                 </template>
             </q-tab-panels>
         </template>
-    </q-splitter>
+    </q-splitter> -->
 </template>
 
 <script setup>
