@@ -48,6 +48,11 @@
             <q-input v-model="slotNorms.data.score" type="number" dense />
           </template>
         </Column> -->
+        <Column field="suggestedEvidence" header="SUGERENCIA DE EVIDENCIA " style="width: 10%">
+                    <template #body="slotsuggestedEvidences">
+                        {{ slotsuggestedEvidences.data?.suggestedEvidence?.name }}
+                    </template>
+                </Column>
                 <!-- Columna para el botón "ojo" en cada fila -->
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotNorms">
@@ -78,6 +83,17 @@
                                 <div class="col-12 justify-center flex items-center q-py-lg">
                                     <input type="file" id="inputFile" @change="selectFile" style="display: none" />
                                     <q-btn :disabled="!norm" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
+                                </div>
+                            </div>
+                        </q-card-section>
+                        <q-card-section>
+                            <div class="row full-width q-pb-lg q-pt-md">
+                                <div class="col-12">
+                                    <q-select v-model="suggestedEvidence" :options="suggestedEvidences" label="Sugerencia de evidencia" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Sugerencia requerida']" />
+                                </div>
+                                <div class="col-12 justify-center flex items-center q-py-lg">
+                                    <input type="file" id="inputFile" @change="selectFile" style="display: none" />
+                                    <q-btn :disabled="!suggestedEvidence" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -224,6 +240,7 @@ import { getNormsApi } from '@/api/norms';
 import { createRequirementApi, editRequirementApi, formatDataRequirement, getRequirementsApi } from '@/api/requirements';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
+import SuggestedEvidences from './SuggestedEvidences.vue';
 const requis = ref([
     // Datos de ejemplo
     { _id: 1, name: '001/6503', description: 'Norma de seguridad', requirements: 'La requia de seguridad dicta que.....', score: 0 },
