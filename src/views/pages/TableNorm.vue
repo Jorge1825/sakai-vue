@@ -167,6 +167,7 @@
                                                         <th class="col-req-description">Descripción de Requisito</th>
                                                         <th class="col-value">Valor</th>
                                                         <th class="col-renovation">Renovación</th>
+                                                        <th class="col-evidence">Evidencia</th>
                                                         <th class="col-actions">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -195,6 +196,11 @@
                                                         <td class="col-renovation">
                                                             <template v-for="input in req.inputs" :key="input._id">
                                                                 <q-select v-model="input.renovation" :options="renovationOptions" dense />
+                                                            </template>
+                                                        </td>
+                                                        <td class="col-evidence">
+                                                            <template v-for="input in req.inputs" :key="input._id">
+                                                                <q-select v-model="input.suggestedEvidence" :options="suggestedEvidences" dense />
                                                             </template>
                                                         </td>
                                                         <td class="col-actions">
@@ -262,6 +268,11 @@ const renovationOptions = ref([
     { label: 'Anual', value: 1 },
     { label: 'Bienal', value: 2 },
     { label: 'Trienal', value: 3 }
+]);
+const suggestedEvidences = ref([
+    { label: 'Evidencia 1', value: 1 },
+    { label: 'Evidencia 2', value: 2 },
+    { label: 'Evidencia 3', value: 3 }
 ]);
 let file = ref(null);
 let textResponse = ref('');

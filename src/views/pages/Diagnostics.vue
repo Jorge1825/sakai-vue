@@ -32,23 +32,19 @@
             >
                 <Column field="norm" header="NORMA" style="width: 70%">
                     <template #body="slotProps">
-                            {{ slotProps.data?.norm?.name }}
+                        {{ slotProps.data?.norm?.name }}
                     </template>
                 </Column>
-                <Column field="levelOfCompliance" header="NIVEL DE CUMPLIMIENTO" style="width: 10%" >
+                <Column field="levelOfCompliance" header="NIVEL DE CUMPLIMIENTO" style="width: 10%">
                     <template #body="slotProps">
-                        <q-chip
-                            :color="slotProps.data?.totalEvaluation < (slotProps.data?.total / 2 ) ? 'red' : 'green'"
-                            :label="`${slotProps.data?.totalEvaluation} / ${slotProps.data?.total}`"
-                        />
+                        <q-chip :color="slotProps.data?.totalEvaluation < slotProps.data?.total / 2 ? 'red' : 'green'" :label="`${slotProps.data?.totalEvaluation} / ${slotProps.data?.total}`" />
                     </template>
                 </Column>
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotProps">
                         <div class="button-group">
                             <!-- Botón de ojo para ver detalles del diagnostico -->
-                            <q-btn icon="visibility" :style="{ color: 'rgb(4, 178, 217)' }" @click="" dense round />
-                           
+                            <q-btn icon="visibility" :style="{ color: 'rgb(4, 178, 217)' }" @click="viewDiagnostic(slotProps.data)" dense round />
                         </div>
                     </template>
                 </Column>
@@ -56,8 +52,8 @@
                     <div class="p-4">
                         <h5>Detalles del diagnostico: {{ slotProps.data.name }}</h5>
                         <p><strong>Norma:</strong> {{ slotProps.data.norm }}</p>
-                        <p><strong>Nivel de cumplimento:</strong> {{ slotProps.data.levelOfCompliance }}</p>>
-
+                        <p><strong>Nivel de cumplimento:</strong> {{ slotProps.data.levelOfCompliance }}</p>
+                        >
                     </div>
                 </template>
             </DataTable>
@@ -77,6 +73,43 @@
                         </q-card-section>
 
                         <q-card-section>
+                            <div class="row full-width q-py-lg">
+                                <div class="col-6">
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Estandar requerido']" v-model="diagnostic.standard" label="Estandar" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Item de estandar requerido']" v-model="diagnostic.standardItem" label="Item de estandar" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Valor requerido']" v-model="diagnostic.value" label="Valor" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input
+                                        type="number"
+                                        lazy-rules
+                                        :rules="[(val) => (!isNaN(val) && val !== null && val !== '') || 'Debe ser un número decimal válido']"
+                                        v-model.number="diagnostic.percentageWeight"
+                                        label="Peso porcentual"
+                                        required
+                                        style="padding: 10px"
+                                    />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Cumple totalmente requerido']" v-model="diagnostic.fullyComplies" label="Cumple totalmente" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'No cumple requerido']" v-model="diagnostic.doesNotComply" label="No cumple" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Justifica requerido']" v-model="diagnostic.justifies" label="Justifica" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'No justifica requerido']" v-model="diagnostic.doesNotJustify" label="No justifica" required style="padding: 10px" />
+                                </div>
+                            </div>
+                        </q-card-section>
+
+                        <!-- <q-card-section>
                             <div class="row full-width q-py-lg">
                                 <div class="col-6">
                                     <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre del diagnostico requerido']" v-model="diagnostic.name" label="Nombre del diagnostico" required style="padding: 10px" />
@@ -101,7 +134,7 @@
                                     <q-select v-model="diagnostic.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
                             </div>
-                        </q-card-section>
+                        </q-card-section> -->
 
                         <q-card-actions align="right">
                             <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />

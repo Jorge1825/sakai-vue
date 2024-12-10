@@ -5,7 +5,7 @@ import RequirementsPanel from '@/views/pages/RequirementsPanel.vue'; //Ruta a Re
 import TableNorm from '@/views/pages/TableNorm.vue';
 import Enterprises from '@/views/pages/Enterprises.vue'
 import Qualification from '@/views/pages/Qualification.vue'
-import Activities from '@/views/pages/Activities.vue'
+import WorkPlans from '@/views/pages/WorkPlans.vue'
 import Programs from '@/views/pages/Programs.vue';
 import Cookies from 'js-cookie';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -194,10 +194,10 @@ const router = createRouter({
                     component: Documents
                 },
                 {
-                    path: '/activities',
-                    name: 'activities',
-                    component: Activities
-                }, 
+                    path: '/workPlans',
+                    name: 'workPlans',
+                    component: WorkPlans
+                },
                 {
                     path: '/programs',
                     name: 'programs',

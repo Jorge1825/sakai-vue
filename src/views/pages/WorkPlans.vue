@@ -5,7 +5,7 @@
             <div class="row q-my-md">
                 <div class="col-6">
                     <div class="text-h5" style="color: rgb(4, 178, 217); text-transform: uppercase">
-                        <strong>ACTIVIDADES</strong>
+                        <strong>PLAN DE TRABAJO</strong>
                     </div>
                 </div>
                 <div class="col-12 flex justify-end">
@@ -19,10 +19,10 @@
                     <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
                 </div>
             </div>
-            <!-- Tabla de actividades -->
+            <!-- Tabla de plan de trabajo  -->
             <DataTable
                 v-model:expandedRows="expandedRows"
-                :value="activities"
+                :value="workPlans"
                 dataKey="_id"
                 responsiveLayout="scroll"
                 :paginator="true"
@@ -33,8 +33,8 @@
                 <Column field="name" header="NOMBRE" :sortable="true" style="width: 20%" />
                 <Column field="description" header="DESCRIPCIÓN" style="width: 20%" />
                 <Column field="norm" header="NORMA" style="width: 20%" />
-                <Column field="requirement" header="REQUERIMIENTO" style="width: 20%" />
-                <Column field="fieldvalue" header="VALOR" style="width: 10%" />
+                <Column field="pendingRequirementsCount" header="CANTIDAD DE REQUISITOS PENDIENTES" style="width: 15%" />
+                <Column field="generationDate" header="FECHA DE GENERACIÓN" style="width: 10%" />
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
@@ -57,17 +57,17 @@
                                 class="q-mr-xs"
                             />
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
-                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editActivity(slotProps.data)" dense round />
+                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editWorkPlan(slotProps.data)" dense round />
                         </div>
                     </template>
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
-                        <h5>Detalles de la actividad: {{ slotProps.data.name }}</h5>
+                        <h5>Detalles del plan de trabajo: {{ slotProps.data.name }}</h5>
                         <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
                         <p><strong>Norma:</strong> {{ slotProps.data.norm }}</p>
-                        <p><strong>Requerimiento:</strong> {{ slotProps.data.requirement }}</p>
-                        <p><strong>Valor:</strong> {{ slotProps.data.fieldvalue }}</p>
+                        <p><strong>Cantidad de requisitos pendientes:</strong> {{ slotProps.data.pendingRequirementsCount }}</p>
+                        <p><strong>Fecha de generación:</strong> {{ formatDate(slotProps.data.generationDate) }}</p>
                         <p>
                             <strong>Estado:</strong>
                             <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
@@ -80,39 +80,37 @@
         </div>
     </div>
 
-    <!-- Modal para agregar/editar actividad -->
-    <q-dialog v-model="activityDialog" persistent width="800px">
+    <!-- Modal para agregar/editar plan de trabajo -->
+    <q-dialog v-model="workPlanDialog" persistent width="800px">
         <div class="container bg-white">
             <div class="watermark-container justify-center flex">
                 <q-card class="justify-center flex bg-transparent full-width">
-                    <q-form @submit.prevent.stop="saveActivity" novalidate class="q-pa-md full-width">
+                    <q-form @submit.prevent.stop="saveWorkPlan" novalidate class="q-pa-md full-width">
                         <q-card-section>
                             <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
-                                {{ activity._id ? 'EDITAR ACTIVIDAD' : 'NUEVA ACTIVIDAD' }}
+                                {{ workPlan._id ? 'EDITAR PLAN DE TRABAJO' : 'NUEVO PLAN DE TRABAJO' }}
                             </div>
                         </q-card-section>
 
                         <q-card-section>
                             <div class="row full-width q-py-lg">
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre de la actividad requerido']" v-model="activity.name" label="Nombre de la actividad" required style="padding: 10px" />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre del plan de trabajo']" v-model="workPlan.name" label="Nombre del plan de trabajo" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="activity.description" label="Descripción" required style="padding: 10px" autogrow />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="workPlan.description" label="Descripción" required style="padding: 10px" autogrow />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Norma']" v-model="activity.norm" label="Norma" required style="padding: 10px" autogrow />
+                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Norma requerida']" v-model="workPlan.norm" label="Norma" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Requerimiento']" v-model="activity.requirement" label="Requerimiento" required style="padding: 10px" autogrow />
+                                    <q-input type="date" lazy-rules :rules="[(val) => (val && val.length > 0) || 'Fecha de generación requerida']" v-model="workPlan.generationDate" label="Fecha de generación" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-input type="number" lazy-rules :rules="[(val) => (!isNaN(val) && val !== null && val !== '') || 'Debe ser un número decimal válido']" v-model.number="activity.fieldvalue" label="Valor" required style="padding: 10px" autogrow
-                                    />
+                                    <q-input type="number" lazy-rules :rules="[(val) => (!isNaN(val) && val !== null && val !== '') || 'Debe ser un número válido']" v-model.number="workPlan.pendingRequirementsCount" label="Cantidad de requisitos pendientes" required style="padding: 10px" />
                                 </div>
-
                                 <div class="col-6">
-                                    <q-select v-model="activity.status" :options="status" label="Estado" required style="padding: 10px" />
+                                    <q-select v-model="workPlan.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -130,19 +128,19 @@
 </template>
 
 <script setup>
-import { createActivityApi, editActivityApi, getActivityApi, toggleActiveActivityApi } from '@/api/activities'; //ROLES
+import { createWorkPlanApi, editWorkPlanApi, getWorkPlanApi, toggleActiveWorkPlanApi } from '@/api/worksPlans.js'; //ROLES
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
-const activities = ref([]);
-const activityDialog = ref(false);
-const activity = ref({
+const workPlans = ref([]);
+const workPlanDialog = ref(false);
+const workPlan = ref({
     id: null,
     name: '',
     description: '',
     norm: '',
-    requirement: '',
-    fieldvalue: 0,
+    generationDate: '',
+    pendingRequirementsCount: 0,
     status: true
 });
 const expandedRows = ref([]);
@@ -152,116 +150,116 @@ const status = ref([
 ]);
 
 onBeforeMount(async () => {
-    await getActivity();
+    await getWorkPlan();
 });
 
-async function getActivity() {
+async function getWorkPlan() {
     try {
-        const { data } = await getActivityApi();
+        const { data } = await getWorkPlanApi();
         console.log(data);
-        activities.value = data.length ? data : [];
+        workPlans.value = data.length ? data : [];
 
-        console.log(activities.value);
+        console.log(workPlans.value);
     } catch (error) {
         console.error(error);
     }
 }
 
 function openDialog() {
-    activity.value = {
+    workPlan.value = {
         // Reinicar el objeto usuario
         id: null,
         name: '',
         description: '',
         norm: '',
-        requirement: '',
-        fieldvalue: 0,
+        generationDate: '',
+        pendingRequirementsCount: 0,
         status: status.value[0]
     };
-    activityDialog.value = true;
+    workPlanDialog.value = true;
 }
 
 function hideDialog() {
-    activityDialog.value = false;
+    workPlanDialog.value = false;
 }
 
-async function saveActivity() {
-    console.log(activity.value);
+async function saveWorkPlan() {
+    console.log(workPlan.value);
 
-    if (activity.value._id) {
-        const activityApi = {
-            id: activity.value._id,
-            name: activity.value.name,
-            description: activity.value.description,
-            norm: activity.value.norm,
-            requirement: activity.value.requirement,
-            fieldvalue: activity.value.fieldvalue,
-            status: activity.value.status.value
+    if (workPlan.value._id) {
+        const workPlanApi = {
+            id: workPlan.value._id,
+            name: workPlan.value.name,
+            description: workPlan.value.description,
+            norm: workPlan.value.norm,
+            generationDate: workPlan.value.generationDate,
+            pendingRequirementsCount: workPlan.value.pendingRequirementsCount,
+            status: workPlan.value.status.value
         };
 
-        const response = await editActivityApi(activityApi);
+        const response = await editWorkPlanApi(workPlanApi);
 
         if (response.status <= 300) {
-            Notify.create({ message: 'Actividad actualizada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getActivity();
+            Notify.create({ message: 'Plan de trabajo actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            await getWorkPlan();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar el actividad.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar el plan de trabajo.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     } else {
-        const activityApi = {
-            name: activity.value.name,
-            description: activity.value.description,
-            norm: activity.value.norm,
-            requirement: activity.value.requirement,
-            fieldvalue: activity.value.fieldvalue,
-            status: activity.value.status.value
+        const workPlanApi = {
+            name: workPlan.value.name,
+            description: workPlan.value.description,
+            norm: workPlan.value.norm,
+            generationDate: workPlan.value.generationDate,
+            pendingRequirementsCount: workPlan.value.pendingRequirementsCount,
+            status: workPlan.value.status.value
         };
 
-        const response = await createActivityApi(activityApi);
+        const response = await createWorkPlanApi(workPlanApi);
         console.log(response);
 
         if (response.status <= 300) {
-            Notify.create({ message: 'Actividad creada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getActivity();
+            Notify.create({ message: 'Plan de trabajo creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            await getWorkPlan();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear la actividad.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear el plan de trabajo.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
         }
     }
 }
 
-function editActivity(selectedActivity) {
-    activity.value = { ...selectedActivity };
-    activity.value.status = status.value.find((s) => s.value === selectedActivity.status);
-    activityDialog.value = true;
-    console.log(activity.value);
+function editWorkPlan(selectedWorkPlan) {
+    workPlan.value = { ...selectedWorkPlan };
+    workPlan.value.status = status.value.find((s) => s.value === selectedWorkPlan.status);
+    workPlanDialog.value = true;
+    console.log(workPlan.value);
 }
 
 //funcion activar desactivavr usuario
-async function toggleStatus(selectedActivity) {
+async function toggleStatus(selectedWorkPlan) {
     try {
         // Cambia el estado del usuario (activo/inactivo)
-        const response = await toggleActiveActivityApi(selectedActivity._id);
+        const response = await toggleActiveWorkPlanApi(selectedWorkPlan._id);
 
         if (response.status <= 300) {
             // Actualiza el estado localmente después de recibir respuesta del backend
-            selectedActivity.status = selectedActivity.status === 'Activo' ? 'Inactivo' : 'Activo';
+            selectedWorkPlan.status = selectedWorkPlan.status === 'Activo' ? 'Inactivo' : 'Activo';
 
             // Mostrar notificación de éxito
             Notify.create({
-                message: `Actividad ${selectedActivity.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
+                message: `Plan de trabajo ${selectedWorkPlan.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedActivity.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
+                color: selectedWorkPlan.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
                 multiLine: true
             });
 
             // Vuelve a cargar los usuarios si es necesario
-            await getActivity();
+            await getWorkPlan();
         } else {
-            throw new Error('Error al actualizar el estado de la actividad.');
+            throw new Error('Error al actualizar el estado del plan de trabajo.');
         }
     } catch (error) {
         console.error(error);
@@ -278,7 +276,7 @@ async function toggleStatus(selectedActivity) {
 
 // Funciones para expandir y colapsar
 function expandAll() {
-    expandedRows.value = activities.value.reduce((acc, p) => (acc[p._id] = true) && acc, {});
+    expandedRows.value = workPlans.value.reduce((acc, p) => (acc[p._id] = true) && acc, {});
 }
 
 function collapseAll() {
