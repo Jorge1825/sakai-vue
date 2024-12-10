@@ -35,9 +35,6 @@ const emailRequired = (val) => !!val || 'El campo de correo es obligatorio';
 async function signIn() {
     try {
         const { data, status } = await login(email.value, password.value);
-
-        console.log(data);
-
         // Si el login es exitoso
         if (data.token && status <= 300) {
             if(checked.value) {

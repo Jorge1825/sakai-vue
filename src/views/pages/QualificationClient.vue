@@ -28,22 +28,25 @@
                 :paginator="true"
                 :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                :rowsPerPageOptions="[5, 10, 25]"
+                :rowsPerPageOptions="[5, 10, 25, 50, 100]"
             >
-                <Column field="name" header="NOMBRE" :sortable="true" style="width: 10%" />
-                <Column field="requirement" header="REQUISITO" :sortable="true" style="width: 10%" />
-                <Column field="norm" header="NORMA " :sortable="true" style="width: 15%" />
-                <Column field="qualificaction" header="EVALUACIÓN" :sortable="true" style="width: 15%" />
-                <Column field="evidence" header="EVIDENCIAS" :sortable="true" style="width: 15%" />
-                <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
+                <!-- <Column field="name" header="NOMBRE" :sortable="true" style="width: 10%" /> -->
+                <Column field="requirement" header="REQUISITO" :sortable="true" style="width: 10%" >
                     <template #body="slotProps">
-                        <div style="text-align: left">
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
-                                {{ status.find((s) => s.value === slotProps.data.status).label }}
-                            </q-badge>
-                        </div>
+                        {{ slotProps.data?.description }}
                     </template>
                 </Column>
+                <Column field="norm" header="NORMA " :sortable="true" style="width: 15%" >
+                    <template #body="slotProps">
+                        {{ slotProps.data?.norm?.name }}
+                    </template>
+                </Column>
+                <Column field="qualificaction" header="EVALUACIÓN" :sortable="true" style="width: 15%" >
+                    <template #body="slotProps">
+                        {{ slotProps.data?.evaluation || 'N/A' }}
+                    </template>
+                </Column>
+                <Column field="evidence" header="EVIDENCIAS" :sortable="true" style="width: 15%" />
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotProps">
                         <div class="button-group">
@@ -56,19 +59,10 @@
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
-                        <h5>Detalles del Prompt: {{ slotProps.data.name }}</h5>
-                        <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
-                        <p><strong>Prompt:</strong> {{ slotProps.data.qualification }}</p>
-                        <p><strong>Requerimiento:</strong>{{ slotProps.data.requirement }}</p>
-                        <p><strong>Norma:</strong> {{ slotProps.data.norm }}</p>
-                        <p><strong>Evaluacion:</strong> {{ slotProps.data.evaluation }}</p>
-                        <p><strong>Evidencia:</strong>{{ slotProps.data.evidence }}</p>
-                        <p>
-                            <strong>Estado:</strong>
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
-                                {{ status.find((s) => s.value === slotProps.data.status).label }}
-                            </q-badge>
-                        </p>
+                        <p><strong>Description:</strong>{{ slotProps.data.description }}</p>
+                        <p><strong>Norma:</strong> {{ slotProps.data?.norm?.name }}</p>
+                        <p><strong>Calificación:</strong> {{ slotProps.data?.evaluation }}</p>
+                        <p><strong>Evidencia:</strong>{{ slotProps.data?.evidence }}</p>
                     </div>
                 </template>
             </DataTable>
@@ -198,7 +192,7 @@ import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
 const qualifications = ref([]);
-const qualificationDialog = ref(true);
+const qualificationDialog = ref(false);
 const file = ref(null);
 const norm = ref(null);
 const norms = ref([null]);
@@ -335,7 +329,7 @@ async function listRequirements() {
 
 async function getQualifications() {
     try {
-        const { data } = await getQualificationsApi();
+        const { data } = await getQualificationsApi(enterprise.value.value);
         qualifications.value = Array.isArray(data) ? data : [];
     } catch (error) {
         console.error('Error al obtener datos de qualifications:', error);
@@ -383,13 +377,13 @@ async function uploadFileServer() {
 
         const response = await processRequirementsApi(formData);
 
-        // if (response.status <= 300) {
-        //     Notify.create({ message: 'Norma evaluada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-        //     await getQualifications();
-        //     hideDialog();
-        // } else {
-        //     notifySuccess({ message: 'Error al evaluar la norma.' });
-        // }
+        if (response.status <= 300) {
+            Notify.create({ message: 'Norma evaluada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            await getQualifications();
+            hideDialog();
+        } else {
+            notifySuccess({ message: 'Error al evaluar la norma.' });
+        }
     } catch (error) {
         console.error(error);
         notifyError({ message: 'Error al actualizar la norma.' });
