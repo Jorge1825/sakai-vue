@@ -13,6 +13,18 @@ export const getQualificationsApi = async () => {
     }
     
 };
+export const getQualificationsByEnterprise = async (enterpriseId) => {
+    try {
+
+        const response = await axiosInstance.get(`/qualifications/enterprise/${enterpriseId}`);
+
+        return response;
+    } catch (error) {
+        console.error('Error al obtener los qualifications', error); 
+        throw error; 
+    }
+    
+};
 export const editQualificationApi = async (data) => {
     try {
         console.log(data);
@@ -60,10 +72,7 @@ export const qualificationNormApi = async (data) => {
     }
 }
 // Nueva función para procesar requisitos
-export const processRequirementsApi = async (file, normId) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('normId', normId);
+export const processRequirementsApi = async (formData) => {
 
     try {
         const response = await axiosInstance.post('/qualifications/process-requirements', formData, {

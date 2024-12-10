@@ -93,7 +93,7 @@
 
                                 <div class="col-6">
                                     <q-select
-                                        :disabled="!norm"
+                                        :disable="!norm"
                                         v-model="requirement"
                                         :options="requirements"
                                         label="Requisito"
@@ -166,15 +166,19 @@
                                         </q-item> -->
                                     </q-list>
                                 </div>
-                                <div class="col-12 justify-center flex items-center q-py-lg">
+                                <div class="col-12 justify-center flex q-py-lg">
+                                    {{ file?.name || 'No se ha seleccionado un archivo' }}
+
+                                </div>
+                                <div class="col-12 justify-center flex items-center ">
                                     <input type="file" id="inputFile" @change="selectFile" style="display: none" />
-                                    <q-btn :disabled="!norm && !file" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
+                                    <q-btn :disable="!norm || !requirement || !inputs.length" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
                                 </div>
                             </div>
                         </q-card-section>
                         <q-card-actions align="right">
                             <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
-                            <q-btn class="q-mx-sm" outline label="Cargar" color="primary" @click="uploadFile" />
+                            <q-btn class="q-mx-sm" outline label="EVALUAR" color="primary" @click="uploadFileServer()" />
                         </q-card-actions>
                     </q-form>
                 </q-card>
@@ -187,6 +191,7 @@
 <script setup>
 import { getNormEnterpriseApi } from '@/api/norms';
 import { getQualificationsApi, processRequirementsApi } from '@/api/qualifications';
+import { getRequirementsByNormApi } from '@/api/requirements';
 import { notifyError, notifySuccess } from '@/config/notifications';
 import { storeAuth } from '@/store/auth';
 import { Notify } from 'quasar';
@@ -197,32 +202,13 @@ const qualificationDialog = ref(true);
 const file = ref(null);
 const norm = ref(null);
 const norms = ref([null]);
+const reqData = ref([]);
 const requirement = ref(null);
 const requirements = ref([]);
 const inputs = ref([]);
 const expandedRows = ref([]);
 //Declarar las variables reactias para cada chekbox
 
-const pregunta1 = ref(false);
-const pregunta1NoCumple = ref(false);
-const pregunta2 = ref(false);
-const pregunta2NoCumple = ref(false);
-const pregunta3 = ref(false);
-const pregunta3NoCumple = ref(false);
-const preguntaCentral1 = ref(false);
-const preguntaCentral1NoCumple = ref(false);
-const preguntaCentral2 = ref(false);
-const preguntaCentral2NoCumple = ref(false);
-const preguntaCentral3 = ref(false);
-const preguntaCentral3NoCumple = ref(false);
-const preguntaSolita = ref(false);
-const preguntaSolitaNoCumple = ref(false);
-
-function updateCheckbox(selected, other) {
-    if (this[selected]) {
-        this[other] = false;
-    }
-}
 let dataFormat = ref({
     number: '4',
     requirements: [
@@ -314,8 +300,6 @@ let dataFormat = ref({
     title: 'CONTEXTO DE LA ORGANIZACIÓN'
 });
 
-const normId = ref('');
-const response = ref(null);
 
 const status = ref([
     { label: 'ACTIVO', value: true },
@@ -331,20 +315,21 @@ onBeforeMount(async () => {
 });
 
 async function getRequirements() {
-    // try {
-    //     const { data } = await getRequirementsByNormApi(norm.value.value);
-    //     console.log('Requerimientos:', data);
-    // } catch (error) {
-    //     console.error(error);
-    // }
+    try {
+        const { data } = await getRequirementsByNormApi(norm.value.value);
+ 
+        //extraer los requirements de cada recurso y dejarlos en un array
+        reqData.value = data.map((r) => r.requirements).flat();
 
-    requirements.value = dataFormat.value.requirements.map((r) => ({ label: r.title, value: r._id }));
+        requirements.value = reqData.value.map((r) => ({ label: r.title, value: r._id }));
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 async function listRequirements() {
     //buscar el requerimiento seleccionado
-
-    const req = dataFormat.value.requirements.find((r) => r._id == requirement.value.value);
+    const req = reqData.value.find((r) => r._id == requirement.value.value);
     inputs.value = req.inputs.map((r) => ({ _id: r._id, description: r.description, selected: false }));
 }
 
@@ -371,7 +356,6 @@ async function getNorms() {
 
 const selectFile = (event) => {
     file.value = event.target.files[0];
-    uploadFileServer();
 };
 
 function openDialog() {
@@ -393,19 +377,19 @@ async function uploadFileServer() {
         const formData = new FormData();
         formData.append('file', file.value);
         formData.append('normId', norm.value.value);
-        formData.append('enterpriseId', '6730ea062850ba386d4dfa75');
-        console.log('Archivo:', file.value);
-        console.log('Norma:', norm.value);
+        formData.append('enterpriseId', enterprise.value.value);
+        formData.append('requirementId', requirement.value.value);
+        formData.append('inputs', JSON.stringify(inputs.value.filter((i) => i.selected).map((i) => i._id)));
 
-        const response = await processRequirementsApi(file.value, norm.value.value);
+        const response = await processRequirementsApi(formData);
 
-        if (response.status <= 300) {
-            Notify.create({ message: 'Norma evaluada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getQualifications();
-            hideDialog();
-        } else {
-            notifySuccess({ message: 'Error al evaluar la norma.' });
-        }
+        // if (response.status <= 300) {
+        //     Notify.create({ message: 'Norma evaluada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+        //     await getQualifications();
+        //     hideDialog();
+        // } else {
+        //     notifySuccess({ message: 'Error al evaluar la norma.' });
+        // }
     } catch (error) {
         console.error(error);
         notifyError({ message: 'Error al actualizar la norma.' });

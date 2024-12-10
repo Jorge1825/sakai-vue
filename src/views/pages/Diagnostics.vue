@@ -30,53 +30,34 @@
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
             >
-                <Column field="name" header="NOMBRE" :sortable="true" style="width: 10%" />
-                <Column field="description" header="DESCRIPCIÓN" style="width: 10%" />
-                <Column field="norm" header="NORMA" style="width: 10%"/>
-                <Column field="requirement" header="REQUERIMIENTO" style="width: 10%" />
-                <Column field="levelOfCompliance" header="NIVEL DE CUMPLIMIENTO" style="width: 10%" />
-                <Column field="enterprise" header="EMPRESA" style="width: 10%" />
-                <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
+                <Column field="norm" header="NORMA" style="width: 70%">
                     <template #body="slotProps">
-                        <div style="text-align: left">
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
-                                {{ status.find((s) => s.value === slotProps.data.status).label }}
-                            </q-badge>
-                        </div>
+                            {{ slotProps.data?.norm?.name }}
+                    </template>
+                </Column>
+                <Column field="levelOfCompliance" header="NIVEL DE CUMPLIMIENTO" style="width: 10%" >
+                    <template #body="slotProps">
+                        <q-chip
+                            :color="slotProps.data?.totalEvaluation < (slotProps.data?.total / 2 ) ? 'red' : 'green'"
+                            :label="`${slotProps.data?.totalEvaluation} / ${slotProps.data?.total}`"
+                        />
                     </template>
                 </Column>
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotProps">
                         <div class="button-group">
-                            <!-- Botón que cambia color de fondo sin afectar el icono -->
-                            <q-btn
-                                :icon="slotProps.data.status === true ? 'clear' : 'check'"
-                                :style="{ backgroundColor: slotProps.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="toggleStatus(slotProps.data)"
-                                dense
-                                round
-                                class="q-mr-xs"
-                            />
-                            <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
-                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editDiagnostic(slotProps.data)" dense round />
+                            <!-- Botón de ojo para ver detalles del diagnostico -->
+                            <q-btn icon="visibility" :style="{ color: 'rgb(4, 178, 217)' }" @click="" dense round />
+                           
                         </div>
                     </template>
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
                         <h5>Detalles del diagnostico: {{ slotProps.data.name }}</h5>
-                        <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
                         <p><strong>Norma:</strong> {{ slotProps.data.norm }}</p>
-                        <p><strong>Requerimiento:</strong> {{ slotProps.data.requirement }}</p>
-                        <p><strong>Nivel de cumplimento:</strong> {{ slotProps.data.levelOfCompliance }}</p>\
-                        <p><strong>Empresa:</strong> {{ slotProps.data.enterprise }}</p>
-                        <p><strong>Valor:</strong> {{ slotProps.data.fieldvalue }}</p>
-                        <p>
-                            <strong>Estado:</strong>
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
-                                {{ status.find((s) => s.value === slotProps.data.status).label }}
-                            </q-badge>
-                        </p>
+                        <p><strong>Nivel de cumplimento:</strong> {{ slotProps.data.levelOfCompliance }}</p>>
+
                     </div>
                 </template>
             </DataTable>
@@ -135,8 +116,12 @@
 </template>
 <script setup>
 import { createDiagnosticApi, editDiagnosticApi, getDiagnosticApi, toggleActiveDiagnosticApi } from '@/api/diagnostics'; //ROLES
+import { getQualificationsByEnterprise } from '@/api/qualifications';
+import { storeAuth } from '@/store/auth';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
+
+const useStoreAuth = storeAuth();
 
 const diagnostics = ref([]);
 const diagnosticDialog = ref(false);
@@ -155,14 +140,15 @@ const status = ref([
     { label: 'ACTIVO', value: true },
     { label: 'INACTIVO', value: false }
 ]);
-
+const enterprise = ref(null);
 onBeforeMount(async () => {
+    enterprise.value = useStoreAuth.getSelectedCompany();
     await getDiagnostic();
 });
 
 async function getDiagnostic() {
     try {
-        const { data } = await getDiagnosticApi();
+        const { data } = await getQualificationsByEnterprise(enterprise.value.value);
         console.log(data);
         diagnostics.value = data.length ? data : [];
 
