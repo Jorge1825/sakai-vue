@@ -39,9 +39,9 @@ const model = ref([
             { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification', users: ['ADMIN'] },
             { label: 'Calificar Requerimientos', icon: 'pi pi-fw pi-cog', to: 'qualificationClient', users: ['USER'] },
             { label: 'Documentos', icon: 'pi pi-fw pi-cog', to: '/documents', users: ['USER','ADMIN'] },
-            { label: 'Actividades', icon: 'pi pi-fw pi-cog', to: '/activities', users: ['USER','ADMIN'] },
+            { label: 'Plan de trabajo', icon: 'pi pi-fw pi-cog', to: '/WorkPlans', users: ['USER','ADMIN'] },
             { label: 'Programas', icon: 'pi pi-fw pi-cog', to: '/programs', users: ['ADMIN'] },
-            { label: 'Sugerencia de evidencias', icon: 'pi pi-fw pi-cog', to: '/suggestedEvidences', users: ['USER','ADMIN'] },
+            { label: 'Sugerencia de evidencias', icon: 'pi pi-fw pi-cog', to: '/suggestedEvidences', users: ['ADMIN'] },
             { label: 'Diagnostico', icon: 'pi pi-fw pi-cog', to: '/diagnostic', users: ['USER','ADMIN'] },
             // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout', users: ['ADMIN'] },
             // { label: 'Input', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
@@ -135,7 +135,7 @@ const changeEnterprise = (value) => {
     </ul>
     <ul class="q-mt-lg">
         <router-link to="/" class="flex justify-center items-center gap-1 q-mr-md ani_heartBeat aniUtil_onMouse aniUtil_active aniUtil_onMouseRepeat">
-            <img src="/public/demo/images/LogoSosteniweb/sosteniweb manual-23.png" alt="Logo Sosteniweb" width="30" />
+            <img src="/src/assets/sosteniweb/sosteniweb manual-23.png" alt="Logo Sosteniweb" width="30" />
 
             <span>SOSTENIWEB</span>
         </router-link>

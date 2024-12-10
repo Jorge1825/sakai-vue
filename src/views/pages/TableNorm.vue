@@ -48,6 +48,11 @@
             <q-input v-model="slotNorms.data.score" type="number" dense />
           </template>
         </Column> -->
+        <Column field="suggestedEvidence" header="SUGERENCIA DE EVIDENCIA " style="width: 10%">
+                    <template #body="slotsuggestedEvidences">
+                        {{ slotsuggestedEvidences.data?.suggestedEvidence?.name }}
+                    </template>
+                </Column>
                 <!-- Columna para el botón "ojo" en cada fila -->
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotNorms">
@@ -78,6 +83,17 @@
                                 <div class="col-12 justify-center flex items-center q-py-lg">
                                     <input type="file" id="inputFile" @change="selectFile" style="display: none" />
                                     <q-btn :disabled="!norm" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
+                                </div>
+                            </div>
+                        </q-card-section>
+                        <q-card-section>
+                            <div class="row full-width q-pb-lg q-pt-md">
+                                <div class="col-12">
+                                    <q-select v-model="suggestedEvidence" :options="suggestedEvidences" label="Sugerencia de evidencia" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Sugerencia requerida']" />
+                                </div>
+                                <div class="col-12 justify-center flex items-center q-py-lg">
+                                    <input type="file" id="inputFile" @change="selectFile" style="display: none" />
+                                    <q-btn :disabled="!suggestedEvidence" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -151,6 +167,7 @@
                                                         <th class="col-req-description">Descripción de Requisito</th>
                                                         <th class="col-value">Valor</th>
                                                         <th class="col-renovation">Renovación</th>
+                                                        <th class="col-evidence">Evidencia</th>
                                                         <th class="col-actions">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -179,6 +196,11 @@
                                                         <td class="col-renovation">
                                                             <template v-for="input in req.inputs" :key="input._id">
                                                                 <q-select v-model="input.renovation" :options="renovationOptions" dense />
+                                                            </template>
+                                                        </td>
+                                                        <td class="col-evidence">
+                                                            <template v-for="input in req.inputs" :key="input._id">
+                                                                <q-select v-model="input.suggestedEvidence" :options="suggestedEvidences" dense />
                                                             </template>
                                                         </td>
                                                         <td class="col-actions">
@@ -224,6 +246,7 @@ import { getNormsApi } from '@/api/norms';
 import { createRequirementApi, editRequirementApi, formatDataRequirement, getRequirementsApi } from '@/api/requirements';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
+import SuggestedEvidences from './SuggestedEvidences.vue';
 const requis = ref([
     // Datos de ejemplo
     { _id: 1, name: '001/6503', description: 'Norma de seguridad', requirements: 'La requia de seguridad dicta que.....', score: 0 },
@@ -245,6 +268,11 @@ const renovationOptions = ref([
     { label: 'Anual', value: 1 },
     { label: 'Bienal', value: 2 },
     { label: 'Trienal', value: 3 }
+]);
+const suggestedEvidences = ref([
+    { label: 'Evidencia 1', value: 1 },
+    { label: 'Evidencia 2', value: 2 },
+    { label: 'Evidencia 3', value: 3 }
 ]);
 let file = ref(null);
 let textResponse = ref('');

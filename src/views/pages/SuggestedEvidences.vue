@@ -25,9 +25,7 @@
                 :rowsPerPageOptions="[5, 10, 25]"
             >
                 <Column field="name" header="NOMBRE" :sortable="true" style="width: 20%" />
-                <Column field="description" header="DESCRIPCIÓN" style="width: 20%" />
-                <Column field="category" header="CATEGORÍA" style="width: 20%" />
-                <Column field="norm" header="NORMA" style="width: 20%" />
+                <Column field="description" header="DESCRIPCIÓN" style="width: 50%" />
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
@@ -37,9 +35,9 @@
                         </div>
                     </template>
                 </Column>
-                <Column header="ACCIONES" style="width: 10%">
+                <Column header="ACCIONES" style="width: 10%; text-align: center">
                     <template #body="slotProps">
-                        <div class="button-group">
+                        <div class="button-group" style="text-align: center">
                             <q-btn
                                 :icon="slotProps.data.status === true ? 'clear' : 'check'"
                                 :style="{ backgroundColor: slotProps.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
@@ -56,8 +54,6 @@
                     <div class="p-4">
                         <h5>Detalles de sugerencias de evidencias: {{ slotProps.data.name }}</h5>
                         <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
-                        <p><strong>Categoría:</strong> {{ slotProps.data.category }}</p>
-                        <p><strong>Norma:</strong> {{ slotProps.data.norm }}</p>
                         <p>
                             <strong>Estado:</strong>
                             <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
@@ -84,28 +80,20 @@
                         <q-card-section>
                             <div class="row full-width q-py-lg">
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre del sugerencia de evidencia es requerido']" v-model="suggestedEvidence.name" label="Nombre del sugerencia de evidencias" required style="padding: 10px" />
+                                    <q-input
+                                        lazy-rules
+                                        :rules="[(val) => (val && val.length > 0) || 'Nombre del sugerencia de evidencia es requerido']"
+                                        v-model="suggestedEvidence.name"
+                                        label="Nombre del sugerencia de evidencias"
+                                        required
+                                        style="padding: 10px"
+                                    />
                                 </div>
                                 <div class="col-6">
                                     <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="suggestedEvidence.description" label="Descripción" required style="padding: 10px" autogrow />
                                 </div>
-                                <div class="col-6">
-                                    <q-select v-model="suggestedEvidence.category" :options="categories" label="Categoría" required style="padding: 10px" />
-                                </div>
-                                <div class="col-6">
-                                    <q-select v-model="suggestedEvidence.norm" :options="norms" label="Norma" required style="padding: 10px" @change="fetchNormDetails" />
-                                </div>
-                                <div class="col-6">
-                                    <q-input v-model="normDetails.name" label="Nombre de la Norma" disabled style="padding: 10px" />
-                                </div>
-                                <div class="col-6">
-                                    <q-input v-model="normDetails.requirement" label="Requisito de la Norma" disabled style="padding: 10px" />
-                                </div>
                                 <div class="col-12">
                                     <q-select v-model="suggestedEvidence.status" :options="status" label="Estado" required style="padding: 10px" />
-                                </div>
-                                <div class="col-12">
-                                    <q-input v-model="suggestedEvidence.evidence" label="Evidencia" type="textarea" style="padding: 10px" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -133,9 +121,7 @@ const suggestedEvidence = ref({
     id: null,
     name: '',
     description: '',
-    category: '',
-    status: true,
-    norm: ''
+    status: true
 });
 const expandedRows = ref([]);
 const status = ref([
@@ -179,10 +165,7 @@ function openDialog() {
         id: null,
         name: '',
         description: '',
-        category: '',
-        status: status.value[0],
-        norm: norms.value[0].value,
-        evidence: ''
+        status: status.value[0]
     };
     fetchNormDetails();
     suggestedEvidenceDialog.value = true;
@@ -198,10 +181,7 @@ async function saveSuggestedEvidence() {
             id: suggestedEvidence.value.id,
             name: suggestedEvidence.value.name,
             description: suggestedEvidence.value.description,
-            category: suggestedEvidence.value.category,
-            status: suggestedEvidence.value.status.value,
-            norm: suggestedEvidence.value.norm,
-            evidence: suggestedEvidence.value.evidence
+            status: suggestedEvidence.value.status.value
         };
 
         const response = await editSuggestedEvidenceApi(suggestedEvidenceApi);
@@ -217,9 +197,7 @@ async function saveSuggestedEvidence() {
         const suggestedEvidenceApi = {
             name: suggestedEvidence.value.name,
             description: suggestedEvidence.value.description,
-            category: suggestedEvidence.value.category,
             status: suggestedEvidence.value.status.value,
-            norm: suggestedEvidence.value.norm,
             evidence: suggestedEvidence.value.evidence
         };
 
