@@ -43,10 +43,14 @@
                 </Column>
                 <Column field="qualificaction" header="EVALUACIÓN" :sortable="true" style="width: 15%" >
                     <template #body="slotProps">
-                        {{ slotProps.data?.evaluation || 'N/A' }}
+                        {{ calculateQualification(slotProps.data) }}
                     </template>
                 </Column>
-                <Column field="evidence" header="EVIDENCIAS" :sortable="true" style="width: 15%" />
+                <Column field="evidence" header="EVIDENCIAS" :sortable="true" style="width: 15%" >
+                    <template #body="slotProps" >
+                        <q-btn icon="visibility" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="" dense round />
+                    </template>
+                </Column>
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotProps">
                         <div class="button-group">
@@ -387,6 +391,22 @@ async function uploadFileServer() {
     } catch (error) {
         console.error(error);
         notifyError({ message: 'Error al actualizar la norma.' });
+    }
+}
+
+function calculateQualification(data) {
+    if(data?.required){
+        if(data?.cumple != 0){
+            return data?.cumple
+        }else{
+            return data?.noCumple
+        }
+    }else{
+        if(data?.justifica != 0){
+            return data?.justifica
+        }else{
+            return data?.noJustifica
+        }
     }
 }
 

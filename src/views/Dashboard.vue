@@ -353,7 +353,7 @@ watch([getPrimary, getSurface, isDarkTheme], () => {
     <div class="justify-center flex items-center" style="height: 80vh">
         <div class="justify-center flex row">
             <div class="col-12 justify-center flex">
-                <q-img src="../assets/sosteniweb/logo_negro.png" class="col-span-12" width="30rem" />
+                <q-img src="../assets/sosteniweb/logo_negro.png" class="col-span-12" width="20rem" />
             </div>
             <div class="col-12 text-7xl text-bold text-center">Bienvenid@</div>
             <div class="col-12 text-2xl text-center q-mt-sm">{{ user?.username }}</div>

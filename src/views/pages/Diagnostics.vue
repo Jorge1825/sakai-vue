@@ -10,7 +10,7 @@
                 </div>
                 <div class="col-12 flex justify-end">
                     <!-- Botón de agregar con fondo azul claro y color de ícono blanco -->
-                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" />
+                    <!-- <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" /> -->
 
                     <!-- Botón de expandir con fondo azul claro y color de ícono blanco -->
                     <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
@@ -30,14 +30,34 @@
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
             >
-                <Column field="norm" header="NORMA" style="width: 70%">
+                <Column field="norm" header="NORMA" style="width: 50%">
                     <template #body="slotProps">
                         {{ slotProps.data?.norm?.name }}
                     </template>
                 </Column>
-                <Column field="levelOfCompliance" header="NIVEL DE CUMPLIMIENTO" style="width: 10%">
+                <Column field="levelOfCompliance" header="PESO PORCENTUAL" style="width: 10%">
                     <template #body="slotProps">
-                        <q-chip :color="slotProps.data?.totalEvaluation < slotProps.data?.total / 2 ? 'red' : 'green'" :label="`${slotProps.data?.totalEvaluation} / ${slotProps.data?.total}`" />
+                        <q-chip  :label="`${slotProps.data?.total}`" />
+                    </template>
+                </Column>
+                <Column field="levelOfCompliance" header="CUMPLE TOTALMENTE" style="width: 10%">
+                    <template #body="slotProps">
+                        <q-chip :color="'green'" :label="`${slotProps.data?.cumple}`" />
+                    </template>
+                </Column>
+                <Column field="levelOfCompliance" header="NO CUMPLE" style="width: 10%">
+                    <template #body="slotProps">
+                        <q-chip :color="'green'" :label="`${slotProps.data?.noCumple}`" />
+                    </template>
+                </Column>
+                <Column field="levelOfCompliance" header="JUSTIFICA" style="width: 10%">
+                    <template #body="slotProps">
+                        <q-chip :color="'green'" :label="`${slotProps.data?.justifica}`" />
+                    </template>
+                </Column>
+                <Column field="levelOfCompliance" header="NO JUSTIFICA" style="width: 10%">
+                    <template #body="slotProps">
+                        <q-chip :color="'green'" :label="`${slotProps.data?.noJustifica}`" />
                     </template>
                 </Column>
                 <Column header="ACCIONES" style="width: 10%">

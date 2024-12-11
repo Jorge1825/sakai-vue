@@ -8,7 +8,7 @@ import Qualification from '@/views/pages/Qualification.vue'
 import WorkPlans from '@/views/pages/WorkPlans.vue'
 import Programs from '@/views/pages/Programs.vue';
 import Cookies from 'js-cookie';
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import QualificationClient from '@/views/pages/QualificationClient.vue';
 import { storeAuth } from '@/store/auth';
 import Documents from '@/views/pages/Documents.vue';
@@ -41,7 +41,7 @@ const returnHome = (to, from, next) => {
 };
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes: [
         {
             path: '/',

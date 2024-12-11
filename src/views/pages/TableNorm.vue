@@ -256,7 +256,7 @@ const requis = ref([
 
 const requiDialog = ref(false);
 const responseIADialog = ref(false);
-const formatDialog = ref(true);
+const formatDialog = ref(false);
 const norm = ref(null);
 const norms = ref([]);
 const expandedRows = ref([]);

@@ -165,7 +165,7 @@ function continueStep() {
         text.value = '¡Gran trabajo! Solo necesitas un diagnóstico oficial de tu cumplimiento para presentarlo con confianza.';
         color.value = 'text-green';
     }
-    percent.value = parseFloat(porcentajeCumple.toFixed(2));
+    percent.value = parseInt(porcentajeCumple);
 
     step.value = 2;
 }

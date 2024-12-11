@@ -12,7 +12,7 @@ function smoothScroll(id) {
         <div id="home" class="landing-wrapper overflow-hidden">
             <div class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static">
                 <a class="flex items-center" href="#">
-                    <img src="/public/demo/images/LogoSosteniweb/sosteniweb manual-23.png" alt="Logo Sosteniweb" class="logo">
+                    <img src="../../assets/sosteniweb/logo_negro.png" alt="Logo Sosteniweb" class="logo">
 
                     <span
                         class="text-surface-900 dark:text-surface-0 font-medium text-2xl leading-normal mr-20">SOSTENIWEB</span>
@@ -409,7 +409,7 @@ function smoothScroll(id) {
                     <div class="col-span-12 md:col-span-2">
                         <a @click="smoothScroll('#home')"
                             class="flex flex-wrap items-center justify-center md:justify-start md:mb-0 mb-4 cursor-pointer">
-                            <img src="/public/demo/images/LogoSosteniweb/sosteniweb manual-23.png" alt="Logo Sosteniweb" class="logo">
+                            <img src="../../assets/sosteniweb/logo_negro.png" alt="Logo Sosteniweb" class="logo">
                             <p class="font-medium text-3xl text-surface-900 dark:text-surface-0">SOSTENIWEB</p>
                         </a>
                     </div>

@@ -128,14 +128,14 @@ const changeEnterprise = (value) => {
             </template>
         </template>
         <div class="q-py-md" v-if="role?.type === 'USER'">
-            <h1 class="text-center">Bienvenido {{ user.username }}</h1>
+            <h1 class="text-center">Bienvenid@ {{ user.username }}</h1>
             <p class="text-xs text-center q-my-sm">Empresa:</p>
             <q-select rounded outlined bottom-slots dense borderless v-model="enterprise" :options="enterprises" @input="changeEnterprise" />
         </div>
     </ul>
     <ul class="q-mt-lg">
         <router-link to="/" class="flex justify-center items-center gap-1 q-mr-md ani_heartBeat aniUtil_onMouse aniUtil_active aniUtil_onMouseRepeat">
-            <img src="/src/assets/sosteniweb/sosteniweb manual-23.png" alt="Logo Sosteniweb" width="30" />
+            <img src="../assets/sosteniweb/logo_negro.png" alt="Logo Sosteniweb" width="30" />
 
             <span>SOSTENIWEB</span>
         </router-link>

@@ -13,7 +13,7 @@ const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout();
                 <i class="pi pi-bars"></i>
             </button>
             <router-link to="/" class="layout-topbar-logo">
-                <img src="/public/demo/images/LogoSosteniweb/sosteniweb manual-23.png" alt="Logo Sosteniweb" class="logo" />
+                <img src="../assets/sosteniweb/logo_negro.png" alt="Logo Sosteniweb" class="logo" />
 
                 <span>SOSTENIWEB</span>
             </router-link>
