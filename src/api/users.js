@@ -1,5 +1,6 @@
 
 import axiosInstance from "@/config/axios.conf";
+import { notifyError, notifySuccess } from "@/config/notifications";
 
 export const getUsersApi = async () => {
     try {
@@ -48,4 +49,16 @@ export const toggleActiveUserApi = async (id) => {
         throw error;
     }
 };
+
+export const checkFirstDiagnosticApi = async (id) => {
+    try {
+        // Hacer la petición PUT al endpoint de activar/desactivar usuario
+        const response = await axiosInstance.put(`/users/check-first-diagnostic/${id}`);
+
+        return response;
+    } catch (error) {
+        notifyError({ message: 'Error al crear la norma.' });
+        throw error;
+    }
+}
 

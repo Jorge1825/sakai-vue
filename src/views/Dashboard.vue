@@ -1,26 +1,36 @@
 <script setup>
+import { checkFirstDiagnosticApi } from '@/api/users';
 import FormDiagnostic from '@/components/FormDiagnostic.vue';
 import { useLayout } from '@/layout/composables/layout';
 import { ProductService } from '@/service/ProductService';
 import { storeAuth } from '@/store/auth';
-import { onMounted, ref, watch } from 'vue';
+import { useQuasar } from 'quasar';
+import { onBeforeMount, onMounted, ref, watch } from 'vue';
 
 const { getPrimary, getSurface, isDarkTheme } = useLayout();
 
+const $q = useQuasar();
+const useStoreAuth = storeAuth();
 const products = ref(null);
 const chartData = ref(null);
 const chartOptions = ref(null);
 const user = ref(null);
-const dialog = ref(true);
+const dialog = ref(false);
 
 const items = ref([
     { label: 'Add New', icon: 'pi pi-fw pi-plus' },
     { label: 'Remove', icon: 'pi pi-fw pi-trash' }
 ]);
 
-onMounted(() => {
+onBeforeMount(() => {
     const useStoreAuth = storeAuth();
     user.value = useStoreAuth.getUserToken();
+
+    console.log(user.value);
+
+    if(!user.value?.firstDiagnostic) {
+        dialog.value = true;
+    }
 
     ProductService.getProductsSmall().then((data) => (products.value = data));
     chartData.value = setChartData();
@@ -98,8 +108,11 @@ const formatCurrency = (value) => {
     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 };
 
-const closeDialog = () => {
+const closeDialog = async () => {
     dialog.value = false;
+    await checkFirstDiagnosticApi(user.value.id);
+    useStoreAuth.loadToken();
+    useStoreAuth.decodeToken();
 };
 
 watch([getPrimary, getSurface, isDarkTheme], () => {
@@ -359,7 +372,11 @@ watch([getPrimary, getSurface, isDarkTheme], () => {
             <div class="col-12 text-2xl text-center q-mt-sm">{{ user?.username }}</div>
         </div>
         <q-dialog v-model="dialog" persistent>
-            <div class="container bg-white" style="min-width: 450px; max-width: 50vw; min-height: 30vh; max-height: 90vh">
+            <div 
+                class="container bg-white"
+                style="min-width: 450px; min-height: 30vh; max-height: 90vh"
+                :style="$q.screen.width < 1000 ? 'min-width: 100vw' : 'min-width: 50vw'"
+                 >
                 <div class="watermark-container justify-center flex">
                     <FormDiagnostic  @close-dialog="closeDialog" />
                 </div>

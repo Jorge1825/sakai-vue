@@ -98,7 +98,7 @@
                 </div>
                 <div class="row justify-end flex">
                     <q-stepper-navigation>
-                        <q-btn color="primary" @click="done2 = true;" label="Finalizar" />
+                        <q-btn color="primary" @click="done2 = true;close()" label="Finalizar" />
                     </q-stepper-navigation>
                 </div>
             </q-step>

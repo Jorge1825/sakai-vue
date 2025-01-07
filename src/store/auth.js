@@ -27,6 +27,7 @@ export const storeAuth = defineStore(
             if (token.value) {
                 dataToken.value = jwtDecode(token.value);
                 console.log(dataToken.value);
+                console.log(dataToken.value);
                 enterprises.value = dataToken.value.enterprises || [];
             }
             return dataToken.value;
@@ -36,6 +37,8 @@ export const storeAuth = defineStore(
             return{
                 username: dataToken.value.username,
                 email: dataToken.value.email,
+                firstDiagnostic: dataToken.value?.firstDiagnostic || false,
+                id: dataToken.value.id,
             }
         }
 
