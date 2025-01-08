@@ -93,6 +93,12 @@
                                 {{ status.find((s) => s.value === slotNorms.data.status).label }}
                             </q-badge>
                         </p>
+                        <p>
+                            <strong>Por Defecto:</strong>
+                            <q-badge :color="slotNorms.data?.defaultNorm === true ? 'blue' : 'red'">
+                                {{ status.find((s) => s.value === slotNorms.data?.defaultNorm)?.label }}
+                            </q-badge>
+                        </p>
                     </div>
                 </template>
             </DataTable>
@@ -128,6 +134,9 @@
                                 <div class="col-6">
                                     <q-select v-model="norm.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
+                                <div class="col-6">
+                                    <q-select v-model="norm.defaultNorm" :options="status" label="Por Defecto" required style="padding: 10px" />
+                                </div>
                             </div>
                         </q-card-section>
 
@@ -160,6 +169,7 @@ const norm = ref({
     name: '',
     description: '',
     status: true,
+    defaultNorm: false,
     promptExtraction: null,
     promptFormat: null
 });
@@ -213,7 +223,8 @@ function openDialog() {
         description: '',
         promptExtraction: '',
         promptFormat: '',
-        status: status.value[0]
+        status: status.value[0],
+        defaultNorm: status.value[0]
     };
     normDialog.value = true;
 }
@@ -232,7 +243,8 @@ async function saveNorm() {
             description: norm.value.description,
             promptExtraction: norm.value.promptExtraction.value,
             promptFormat: norm.value.promptFormat.value,
-            status: norm.value.status.value
+            status: norm.value.status.value,
+            defaultNorm: norm.value.defaultNorm.value
         };
 
         const response = await editNormApi(normApi);
@@ -250,7 +262,8 @@ async function saveNorm() {
             description: norm.value.description,
             promptExtraction: norm.value.promptExtraction.value,
             promptFormat: norm.value.promptFormat.value,
-            status: norm.value.status.value
+            status: norm.value.status.value,
+            defaultNorm: norm.value.defaultNorm.value
         };
 
         const response = await createNormApi(normApi);
@@ -272,6 +285,7 @@ function editNorm(selectedNorm) {
     norm.value.status = status.value.find((s) => s.value === selectedNorm.status);
     norm.value.promptExtraction = prompts.value.find((p) => p.value === selectedNorm.promptExtraction?._id);
     norm.value.promptFormat = prompts.value.find((p) => p.value === selectedNorm.promptFormat?._id);
+    norm.value.defaultNorm = status.value.find((s) => s.value === selectedNorm?.defaultNorm);
     normDialog.value = true;
     console.log(norm.value);
 }

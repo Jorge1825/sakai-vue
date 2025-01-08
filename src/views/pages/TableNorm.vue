@@ -48,7 +48,7 @@
             <q-input v-model="slotNorms.data.score" type="number" dense />
           </template>
         </Column> -->
-        <Column field="suggestedEvidence" header="SUGERENCIA DE EVIDENCIA " style="width: 10%">
+                <Column field="suggestedEvidence" header="SUGERENCIA DE EVIDENCIA " style="width: 10%">
                     <template #body="slotsuggestedEvidences">
                         {{ slotsuggestedEvidences.data?.suggestedEvidence?.name }}
                     </template>
@@ -144,7 +144,7 @@
                         </q-card-section>
 
                         <q-card-section class="overflow-auto">
-                            <table class="tablereq">
+                            <table class="tablereq overflow-auto">
                                 <thead>
                                     <tr>
                                         <th class="col-number">Número</th>
@@ -244,9 +244,9 @@
 <script setup>
 import { getNormsApi } from '@/api/norms';
 import { createRequirementApi, editRequirementApi, formatDataRequirement, getRequirementsApi } from '@/api/requirements';
+import { getSuggestedEvidenceApi } from '@/api/suggestedEvidences';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
-import SuggestedEvidences from './SuggestedEvidences.vue';
 const requis = ref([
     // Datos de ejemplo
     { _id: 1, name: '001/6503', description: 'Norma de seguridad', requirements: 'La requia de seguridad dicta que.....', score: 0 },
@@ -269,11 +269,7 @@ const renovationOptions = ref([
     { label: 'Bienal', value: 2 },
     { label: 'Trienal', value: 3 }
 ]);
-const suggestedEvidences = ref([
-    { label: 'Evidencia 1', value: 1 },
-    { label: 'Evidencia 2', value: 2 },
-    { label: 'Evidencia 3', value: 3 }
-]);
+const suggestedEvidences = ref([]);
 let file = ref(null);
 let textResponse = ref('');
 let dataFormat = ref({
@@ -317,6 +313,7 @@ Acciones preventivas y correctivas con base en los resultados del SG-SST (10%)	7
 onBeforeMount(async () => {
     await getRequirements();
     await getNorms();
+    await getSuggestedEvidence();
     // await formatData(text);
 });
 
@@ -361,6 +358,15 @@ async function getNorms() {
     }
 }
 
+async function getSuggestedEvidence() {
+    try {
+        const { data } = await getSuggestedEvidenceApi();
+        suggestedEvidences.value = data.length ? data?.map((r) => ({ label: r.name, value: r._id })) : [];
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 function openDialog() {
     norm.value = null;
     requiDialog.value = true;
@@ -371,6 +377,13 @@ function hideDialog() {
 }
 
 async function saveNorm() {
+    //dejar solo value de suggestedEvidence y renovation
+    dataFormat.value.requirements.forEach((r) => {
+        r.inputs.forEach((i) => {
+            i.suggestedEvidence = i.suggestedEvidence?.value || null;
+            i.renovation = i.renovation?.value || null;
+        });
+    });
     if (dataFormat.value?._id) {
         const response = await editRequirementApi({
             ...dataFormat.value,
@@ -407,6 +420,15 @@ async function saveNorm() {
 function editRequirement(isReq) {
     dataFormat.value = requis.value.find((r) => r._id === isReq);
     norm.value = norms.value.find((n) => n.value === dataFormat.value.norm._id);
+
+    //buscar el suggestedEvidence y el renovation en el array de suggestedEvidences y renovationOptions
+    dataFormat.value.requirements.forEach((r) => {
+        r.inputs.forEach((i) => {
+            i.suggestedEvidence = suggestedEvidences.value.find((s) => s.value == i.suggestedEvidence);
+            i.renovation = renovationOptions.value.find((s) => s.value == i.renovation);
+        });
+    });
+
     formatDialog.value = true;
 }
 
@@ -616,7 +638,7 @@ function addReq(idCurrentReq) {
 
 /* Limitar el tamaño máximo de cada columna */
 .col-number {
-    max-width: 25px;
+    width: 25px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -624,20 +646,20 @@ function addReq(idCurrentReq) {
 }
 
 .col-title {
-    max-width: 40px;
+    width: 150px;
     overflow: hidden;
     text-align: center;
 }
 
 .col-requirements {
-    max-width: 350px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .col-req-number {
-    max-width: 35px;
+    max-width: 50px;
+    min-width: 50px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -645,20 +667,22 @@ function addReq(idCurrentReq) {
 }
 
 .col-req-title {
-    max-width: 60px;
+    max-width: 150px;
+    min-width: 150px;
     overflow: hidden;
     white-space: wrap;
 }
 
 .col-req-description {
-    max-width: 250px;
+    max-width: 150px;
+    min-width: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .col-value {
-    max-width: 15px;
+    width: 15px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -666,7 +690,7 @@ function addReq(idCurrentReq) {
 }
 
 .col-renovation {
-    max-width: 25px;
+    width: 25px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -674,7 +698,7 @@ function addReq(idCurrentReq) {
 }
 
 .col-actions {
-    max-width: 25px;
+    width: 25px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

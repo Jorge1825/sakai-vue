@@ -126,9 +126,9 @@
                                         style="padding: 10px"
                                         autogrow
                                     />
-                                    <div class="col-6">
-                                    <q-select v-model="enterprise.riskLevel" :options="riskLevels" label="Nivel de Riesgo" required style="padding: 10px" />
                                 </div>
+                                <div class="col-6">
+                                    <q-select v-model="enterprise.riskLevel" :options="riskLevels" label="Nivel de Riesgo" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
                                     <q-select v-model="enterprise.status" :options="status" label="Estado" required style="padding: 10px" />
@@ -172,7 +172,7 @@ const enterprise = ref({
     email: '',
     phone: '',
     riskLevel: riskLevels.value[0],
-    status: status.value[0]
+    status: status.value[0],
 });
 const expandedRows = ref([]);
 
@@ -240,7 +240,8 @@ async function saveEnterprise() {
             address: enterprise.value.address,
             email: enterprise.value.email,
             phone: enterprise.value.phone,
-            status: enterprise.value.status.value
+            status: enterprise.value.status.value,
+            riskLevel: enterprise.value.riskLevel.value
         };
 
         const response = await createEnterpriseApi(enterpriseApi);

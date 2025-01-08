@@ -16,7 +16,7 @@ export const getEnterprisesApi = async () => {
 export const editEnterpriseApi = async (data) => {
     try {
         console.log(data);
-        const response = await axiosInstance.put('/enterprise/update',data);
+        const response = await axiosInstance.put('/enterprises/update',data);
         
         return response;
     } catch (error) {
