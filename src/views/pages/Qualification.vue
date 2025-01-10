@@ -10,7 +10,7 @@
                 </div>
                 <div class="col-12 flex justify-end">
                     <!-- Botón de agregar con fondo azul claro y color de ícono blanco -->
-                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" />
+                    <!-- <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" /> -->
 
                     <!-- Botón de expandir con fondo azul claro y color de ícono blanco -->
                     <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />

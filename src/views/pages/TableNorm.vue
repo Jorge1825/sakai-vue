@@ -29,7 +29,7 @@
                 :rowsPerPageOptions="[5, 10, 25]"
             >
                 <Column field="number" header="NUMBERO" :sortable="true" style="width: 5%" />
-                <Column field="norm" header="NORMA" style="width: 10%">
+                <Column field="norm" header="NORMA" style="width: 15%">
                     <template #body="slotNorms">
                         {{ slotNorms.data?.norm?.name }}
                     </template>
@@ -48,11 +48,11 @@
             <q-input v-model="slotNorms.data.score" type="number" dense />
           </template>
         </Column> -->
-                <Column field="suggestedEvidence" header="SUGERENCIA DE EVIDENCIA " style="width: 10%">
-                    <template #body="slotsuggestedEvidences">
-                        {{ slotsuggestedEvidences.data?.suggestedEvidence?.name }}
+                <!-- <Column field="suggestedEvidence" header="SUGERENCIA DE EVIDENCIA " style="width: 10%">
+                    <template #body="slotNorms">
+                        {{ slotNorms.data }}
                     </template>
-                </Column>
+                </Column> -->
                 <!-- Columna para el botón "ojo" en cada fila -->
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotNorms">

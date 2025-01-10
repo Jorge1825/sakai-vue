@@ -317,6 +317,7 @@ async function toggleStatus(selectedNorm) {
 }
 //funcion activar desactivavr usuario
 async function toggleEnterprise(selectedNorm) {
+
     try {
         // Cambia el estado del usuario (activo/inactivo)
         const response = await toggleEnterpriseNormApi({ id: selectedNorm._id, enterprise: enterprise.value.value });

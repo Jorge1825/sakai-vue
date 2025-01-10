@@ -169,14 +169,16 @@
 
                                 </div>
                                 <div class="col-12 justify-center flex items-center ">
-                                    <input type="file" id="inputFile" @change="selectFile" style="display: none" />
+                                    <input type="file" id="inputFile" @change="selectFile" style="display: none" 
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" />
                                     <q-btn :disable="!norm || !requirement || !inputs.length" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
                                 </div>
                             </div>
                         </q-card-section>
                         <q-card-actions align="right">
                             <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
-                            <q-btn class="q-mx-sm" outline label="EVALUAR" color="primary" @click="uploadFileServer()" />
+                            <q-btn 
+                            class="q-mx-sm" outline label="EVALUAR" color="primary" @click="uploadFileServer()" />
                         </q-card-actions>
                     </q-form>
                 </q-card>
@@ -357,6 +359,10 @@ const selectFile = (event) => {
 };
 
 function openDialog() {
+    file.value = null;
+    inputs.value = [];
+    norm.value = null;
+    requirement.value = null
     norm.value = null;
     qualificationDialog.value = true;
 }
@@ -372,6 +378,12 @@ const uploadFile = () => {
 
 async function uploadFileServer() {
     try {
+
+        if (!file.value) {
+            notifyError({ message: 'Debe seleccionar un archivo.' });
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', file.value);
         formData.append('normId', norm.value.value);
