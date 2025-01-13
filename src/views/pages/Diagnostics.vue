@@ -37,7 +37,7 @@
                 </Column>
                 <Column field="levelOfCompliance" header="PESO PORCENTUAL" style="width: 10%">
                     <template #body="slotProps">
-                        <q-chip  :label="`${slotProps.data?.total}`" />
+                        <q-chip :label="`${slotProps.data?.total}`" />
                     </template>
                 </Column>
                 <Column field="levelOfCompliance" header="CUMPLE TOTALMENTE" style="width: 10%">
@@ -168,9 +168,10 @@
     </q-dialog>
 </template>
 <script setup>
-import { createDiagnosticApi, editDiagnosticApi, getDiagnosticApi, toggleActiveDiagnosticApi } from '@/api/diagnostics'; //ROLES
-import { getQualificationsByEnterprise } from '@/api/qualifications';
+import { createDiagnosticApi, editDiagnosticApi, toggleActiveDiagnosticApi } from '@/api/diagnostics'; //ROLES
+import { getQualificationsByEnterprise, getQualificationsByEnterpriseExcel } from '@/api/qualifications';
 import { storeAuth } from '@/store/auth';
+import { generateDiagnostic } from '@/utils/generateDiagnostic';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
@@ -194,6 +195,9 @@ const status = ref([
     { label: 'INACTIVO', value: false }
 ]);
 const enterprise = ref(null);
+
+const dataTable = ref(null);
+
 onBeforeMount(async () => {
     enterprise.value = useStoreAuth.getSelectedCompany();
     await getDiagnostic();
@@ -202,10 +206,8 @@ onBeforeMount(async () => {
 async function getDiagnostic() {
     try {
         const { data } = await getQualificationsByEnterprise(enterprise.value.value);
-        console.log(data);
         diagnostics.value = data.length ? data : [];
 
-        console.log(diagnostics.value);
     } catch (error) {
         console.error(error);
     }
@@ -330,6 +332,91 @@ function expandAll() {
 function collapseAll() {
     expandedRows.value = [];
 }
+
+async function viewDiagnostic(selectedDiagnostic) {
+    let data = [];
+
+    selectedDiagnostic.requirements.forEach((requirement) => {
+        const req = selectedDiagnostic?.namesRequirement.find((name) => name._id == requirement.requirement);
+
+        if (!req) {
+            return;
+        }
+
+        let reqChild;
+        req?.requirements?.forEach((child) => {
+            child.inputs?.forEach((input) => {
+                if (input._id == requirement.id) {
+                    reqChild = {
+                        id: child._id,
+                        number: child.number,
+                        description: child.description,
+                        title: child.title
+                    };
+                }
+            });
+        });
+
+        data.push({
+            reqChild,
+            norm: selectedDiagnostic.norm.name,
+            normId: selectedDiagnostic.norm._id,
+            nameRequirement: req.title,
+            numberRequirement: req.number,
+            idRequirement: req._id,
+            item: requirement.description,
+            value: requirement.value,
+            percentageWeight: requirement.value,
+            fullyComplies: requirement.cumple,
+            doesNotComply: requirement.noCumple,
+            justifies: requirement.justifica,
+            doesNotJustify: requirement.noJustifica
+        });
+    });
+
+    //crear grupos por cada idRequirement
+    data = data.reduce((acc, item) => {
+        const found = acc.find((group) => group.idRequirement === item.idRequirement);
+        if (!found) {
+            acc.push({
+                quantity: 1,
+                idRequirement: item.idRequirement,
+                nameRequirement: item.nameRequirement,
+                numberRequirement: item.numberRequirement,
+                norm: item.norm,
+                normId: item.normId,
+                items: [item]
+            });
+        } else {
+            found.items.push(item);
+            found.quantity++;
+        }
+        return acc;
+    }, []);
+
+    //ahora dentro de items, crear grupos por cada idChild
+    data.forEach((group) => {
+        group.items = group.items.reduce((acc, item) => {
+            const found = acc.find((child) => child.reqChild.id === item.reqChild.id);
+            if (!found) {
+                acc.push({
+                    quantity: 1,
+                    reqChild: item.reqChild,
+                    items: [item]
+                });
+            } else {
+                found.items.push(item);
+                found.quantity++;
+            }
+            return acc;
+        }, []);
+    });
+
+    dataTable.value = data.sort((a, b) => a.numberRequirement - b.numberRequirement);
+    
+    console.log(dataTable.value);
+    await generateDiagnostic(dataTable.value);
+}
 </script>
 
 <style scoped>
@@ -355,5 +442,12 @@ function collapseAll() {
     background-repeat: no-repeat;
     opacity: 0.05;
     z-index: -1;
+}
+
+.table-diag tr {
+    text-align: center;
+}
+.table-diag tr td {
+    border: 1px solid;
 }
 </style>

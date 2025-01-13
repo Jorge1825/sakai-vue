@@ -14,9 +14,11 @@ export const getFilesApi = async () => {
     
 };
 
-export const getFile = async (id) => {
+export const getFileApi = async (name) => {
     try {
-        const response = await axiosInstance.get(`/folder/${id}`);
+        const response = await axiosInstance.get(`/folder/${name}`, {
+            responseType: 'blob'
+        });
         return response;
     } catch (error) {
         console.error('Error al obtener el rol', error); 

@@ -25,6 +25,18 @@ export const getQualificationsByEnterprise = async (enterpriseId) => {
     }
     
 };
+export const getQualificationsByEnterpriseExcel = async (enterpriseId) => {
+    try {
+
+        const response = await axiosInstance.get(`/qualifications/excel/${enterpriseId}`);
+
+        return response;
+    } catch (error) {
+        console.error('Error al obtener los qualifications', error); 
+        throw error; 
+    }
+    
+};
 export const editQualificationApi = async (data) => {
     try {
         console.log(data);

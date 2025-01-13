@@ -31,24 +31,33 @@
                 :rowsPerPageOptions="[5, 10, 25, 50, 100]"
             >
                 <!-- <Column field="name" header="NOMBRE" :sortable="true" style="width: 10%" /> -->
-                <Column field="requirement" header="REQUISITO" :sortable="true" style="width: 10%" >
+                <Column field="requirement" header="REQUISITO" :sortable="true" style="width: 10%">
                     <template #body="slotProps">
                         {{ slotProps.data?.description }}
                     </template>
                 </Column>
-                <Column field="norm" header="NORMA " :sortable="true" style="width: 15%" >
+                <Column field="norm" header="NORMA " :sortable="true" style="width: 15%">
                     <template #body="slotProps">
                         {{ slotProps.data?.norm?.name }}
                     </template>
                 </Column>
-                <Column field="qualificaction" header="EVALUACIÓN" :sortable="true" style="width: 15%" >
+                <Column field="qualificaction" header="EVALUACIÓN" :sortable="true" style="width: 15%">
                     <template #body="slotProps">
                         {{ calculateQualification(slotProps.data) }}
                     </template>
                 </Column>
-                <Column field="evidence" header="EVIDENCIAS" :sortable="true" style="width: 15%" >
-                    <template #body="slotProps" >
-                        <q-btn icon="visibility" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="" dense round />
+                <Column field="evidence" header="EVIDENCIAS" :sortable="true" style="width: 15%">
+                    <template #body="slotProps">
+                        <q-btn
+                            icon="visibility"
+                            :style="{
+                                backgroundColor: slotProps.data.evidence ? 'rgb(4, 178, 217)' : 'red',
+                                color: 'white'
+                            }"
+                            @click="renderFile(slotProps.data.evidence?.name)"
+                            dense
+                            round
+                        />
                     </template>
                 </Column>
                 <Column header="ACCIONES" style="width: 10%">
@@ -166,19 +175,16 @@
                                 </div>
                                 <div class="col-12 justify-center flex q-py-lg">
                                     {{ file?.name || 'No se ha seleccionado un archivo' }}
-
                                 </div>
-                                <div class="col-12 justify-center flex items-center ">
-                                    <input type="file" id="inputFile" @change="selectFile" style="display: none" 
-                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" />
+                                <div class="col-12 justify-center flex items-center">
+                                    <input type="file" id="inputFile" @change="selectFile" style="display: none" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" />
                                     <q-btn :disable="!norm || !requirement || !inputs.length" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
                                 </div>
                             </div>
                         </q-card-section>
                         <q-card-actions align="right">
                             <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
-                            <q-btn 
-                            class="q-mx-sm" outline label="EVALUAR" color="primary" @click="uploadFileServer()" />
+                            <q-btn class="q-mx-sm" outline label="EVALUAR" color="primary" @click="uploadFileServer()" />
                         </q-card-actions>
                     </q-form>
                 </q-card>
@@ -186,9 +192,28 @@
             </div>
         </div>
     </q-dialog>
+    <q-dialog v-model="viewDocument" persistent>
+        <div class="container bg-white" style="min-width: 450px; max-width: 85vw; min-height: 30vh; max-height: 90vh">
+            <div class="watermark-container justify-center flex">
+                <q-card class="justify-center flex bg-transparent full-width">
+                    
+                    <q-card-section>
+                        <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">EVIDENCIA</div>
+                    </q-card-section>
+
+                    <iframe src="http://localhost:4600/api/v1/folder/dacaccdd-7079-4bbf-8e7c-59fe40155df5.pdf"
+                    width="800" height="600"/>
+
+                    <q-btn icon="close" class="q-mr-sm" @click="viewDocument = false" />
+                </q-card>
+ 
+            </div>
+        </div>
+    </q-dialog>
 </template>
 
 <script setup>
+import { getFileApi, getFilesApi } from '@/api/files';
 import { getNormEnterpriseApi } from '@/api/norms';
 import { getQualificationsApi, processRequirementsApi } from '@/api/qualifications';
 import { getRequirementsByNormApi } from '@/api/requirements';
@@ -199,6 +224,8 @@ import { onBeforeMount, ref } from 'vue';
 
 const qualifications = ref([]);
 const qualificationDialog = ref(false);
+const viewDocument = ref(false);
+const documentUrl = ref(null);
 const file = ref(null);
 const norm = ref(null);
 const norms = ref([null]);
@@ -300,7 +327,6 @@ let dataFormat = ref({
     title: 'CONTEXTO DE LA ORGANIZACIÓN'
 });
 
-
 const status = ref([
     { label: 'ACTIVO', value: true },
     { label: 'INACTIVO', value: false }
@@ -317,7 +343,7 @@ onBeforeMount(async () => {
 async function getRequirements() {
     try {
         const { data } = await getRequirementsByNormApi(norm.value.value);
- 
+
         //extraer los requirements de cada recurso y dejarlos en un array
         reqData.value = data.map((r) => r.requirements).flat();
 
@@ -362,7 +388,7 @@ function openDialog() {
     file.value = null;
     inputs.value = [];
     norm.value = null;
-    requirement.value = null
+    requirement.value = null;
     norm.value = null;
     qualificationDialog.value = true;
 }
@@ -378,7 +404,6 @@ const uploadFile = () => {
 
 async function uploadFileServer() {
     try {
-
         if (!file.value) {
             notifyError({ message: 'Debe seleccionar un archivo.' });
             return;
@@ -407,21 +432,35 @@ async function uploadFileServer() {
 }
 
 function calculateQualification(data) {
-    if(data?.required){
-        if(data?.cumple != 0){
-            return data?.cumple
-        }else{
-            return data?.noCumple
+    if (data?.required) {
+        if (data?.cumple != 0) {
+            return data?.cumple;
+        } else {
+            return data?.noCumple;
         }
-    }else{
-        if(data?.justifica != 0){
-            return data?.justifica
-        }else{
-            return data?.noJustifica
+    } else {
+        if (data?.justifica != 0) {
+            return data?.justifica;
+        } else {
+            return data?.noJustifica;
         }
     }
 }
 
+async function renderFile(nameFile) {
+    if (!nameFile) {
+        notifyError({ message: 'No se ha seleccionado un archivo.' });
+        return;
+    }
+    viewDocument.value = true;
+    const response = await getFileApi(nameFile);
+
+    if (response.status <= 300) {
+        
+    } else {
+        notifyError({ message: 'Error al obtener el archivo.' });
+    }
+}
 // Funciones para expandir y colapsar
 function expandAll() {
     expandedRows.value = qualifications.value.reduce((acc, p) => (acc[p._id] = true) && acc, {});

@@ -81,39 +81,224 @@
     </div>
 
     <!-- Modal para agregar/editar plan de trabajo -->
-    <q-dialog v-model="workPlanDialog" persistent width="800px">
-        <div class="container bg-white">
+    <q-dialog v-model="workPlanDialog" persistent>
+        <div class="container bg-white" style="width: 800px; max-width: 80vw; min-width: 400px">
             <div class="watermark-container justify-center flex">
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-form @submit.prevent.stop="saveWorkPlan" novalidate class="q-pa-md full-width">
                         <q-card-section>
-                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
-                                {{ workPlan._id ? 'EDITAR PLAN DE TRABAJO' : 'NUEVO PLAN DE TRABAJO' }}
-                            </div>
+                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">RESOLUCIÓN 0312</div>
                         </q-card-section>
+                        <!-- [ -->
+                        <!-- {
+      quantity: 11,
+      idRequirement: '675967435f09f3a852efe10a',
+      nameRequirement: 'RECURSOS',
+      numberRequirement: '1',
+      norm: 'RESOLUCIÓN 0312',
+      normId: '6724ccc736a2e8c68d2c27fa',
+      items: [
+        {
+          quantity: 8,
+          reqChild: {
+            id: '6755cc2421306b1a0f73c054',
+            number: '1.1',
+            description: 
+              'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
+            title: 'Recursos para el SG-SST'
+          },
+          items: Array(8) [
+            {
+              reqChild: {
+                id: '6755cc2421306b1a0f73c054',
+                number: '1.1',
+                description: 
+                  'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
+                title: 'Recursos para el SG-SST'
+              },
+              norm: 'RESOLUCIÓN 0312',
+              normId: '6724ccc736a2e8c68d2c27fa',
+              nameRequirement: 'RECURSOS',
+              numberRequirement: '1',
+              idRequirement: '675967435f09f3a852efe10a',
+              item: 
+                'Responsable del Sistema de Gestión de Seguridad y Salud en el Trabajo SG-SST',
+              value: '0.5',
+              percentageWeight: '0.5',
+              fullyComplies: 0,
+              doesNotComply: 0,
+              justifies: 0,
+              doesNotJustify: 0
+            },
+            {
+              reqChild: {
+                id: '6755cc2421306b1a0f73c054',
+                number: '1.1',
+                description: 
+                  'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
+                title: 'Recursos para el SG-SST'
+              },
+              norm: 'RESOLUCIÓN 0312',
+              normId: '6724ccc736a2e8c68d2c27fa',
+              nameRequirement: 'RECURSOS',
+              numberRequirement: '1',
+              idRequirement: '675967435f09f3a852efe10a',
+              item: 
+                'Responsabilidades en el Sistema de Gestión de Seguridad y Salud en el Trabajo – SG-SST',
+              value: '0.5',
+              percentageWeight: '0.5',
+              fullyComplies: 0,
+              doesNotComply: 0,
+              justifies: 0,
+              doesNotJustify: 0
+            },
+            {
+              reqChild: {
+                id: '6755cc2421306b1a0f73c054',
+                number: '1.1',
+                description: 
+                  'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
+                title: 'Recursos para el SG-SST'
+              },
+              norm: 'RESOLUCIÓN 0312',
+              normId: '6724ccc736a2e8c68d2c27fa',
+              nameRequirement: 'RECURSOS',
+              numberRequirement: '1',
+              idRequirement: '675967435f09f3a852efe10a',
+              item: 
+                'Asignación de recursos para el Sistema de Gestión en Seguridad y Salud en el Trabajo – SG-SST',
+              value: '0.5',
+              percentageWeight: '0.5',
+              fullyComplies: 0,
+              doesNotComply: 0,
+              justifies: 0,
+              doesNotJustify: 0
+            },
+            {
+              reqChild: {
+                id: '6755cc2421306b1a0f73c054',
+                number: '1.1',
+                description: 
+                  'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
+                title: 'Recursos para el SG-SST'
+              },
+              norm: 'RESOLUCIÓN 0312',
+              normId: '6724ccc736a2e8c68d2c27fa',
+              nameRequirement: 'RECURSOS',
+              numberRequirement: '1',
+              idRequirement: '675967435f09f3a852efe10a',
+              item: 'Afiliación al Sistema General de Riesgos Laborales',
+              value: '0.5',
+              percentageWeight: '0.5',
+              fullyComplies: 0,
+              doesNotComply: 0,
+              justifies: 0,
+              doesNotJustify: 0
+            },
+            {
+              reqChild: {
+                id: '6755cc2421306b1a0f73c054',
+                number: '1.1',
+                description: 
+                  'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
+                title: 'Recursos para el SG-SST'
+              },
+              norm: 'RESOLUCIÓN 0312',
+              normId: '6724ccc736a2e8c68d2c27fa',
+              nameRequirement: 'RECURSOS',
+              numberRequirement: '1',
+              idRequirement: '675967435f09f3a852efe10a',
+              item: 'Pago de pensión trabajadores alto riesgo',
+              value: '0.5',
+              percentageWeight: '0.5',
+              fullyComplies: 0,
+              doesNotComply: 0,
+              justifies: 0,
+              doesNotJustify: 0
+            },
+            {
+              reqChild: {
+                id: '6755cc2421306b1a0f73c054',
+                number: '1.1',
+                description: 
+                  'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
+                title: 'Recursos para el SG-SST'
+              },
+              norm: 'RESOLUCIÓN 0312',
+              normId: '6724ccc736a2e8c68d2c27fa',
+              nameRequirement: 'RECURSOS',
+              numberRequirement: '1',
+              idRequirement: '675967435f09f3a852efe10a',
+              item: 'Conformación COPASST / Vigía',
+              value: '0.5',
+              percentageWeight: '0.5',
+              fullyComplies: 0,
+              doesNotComply: 0,
+              justifies: 0,
+              doesNotJustify: 0
+            },
+                               -->
+                        <table class="full-width table-work">
+                            <thead>
+                                <tr>
+                                    <th class="text-left">Item</th>
+                                    <th class="text-left">Criterios de la empresa</th>
+                                    <th class="text-left">Plan de acción (Actividades)</th>
+                                    <th class="text-left">Responsable</th>
+                                    <th class="text-left">Fechas de cumplimiento</th>
+                                    <th class="text-left">Recursos</th>
+                                    <th class="text-left">Soportes sugeridos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>E1.1.1 Asignación de persona que diseñe e implemente el Sistema de Gestión de SST (4%)</td>
+                                    <td>
+                                        Esta actividad podrá ser realizada profesionales en SST y profesionales con posgrado en SST, que cuenten con licencia vigente en Seguridad y Salud en el Trabajo vigente y el curso de capacitación virtual de
+                                        cincuenta (50) horas.
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <li>Realizar el diseño del Sistema de Gestión de SST.</li>
+                                            <li>Implementar el Sistema de Gestión de SST.</li>
+                                        </ul>
 
-                        <q-card-section>
-                            <div class="row full-width q-py-lg">
-                                <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Nombre del plan de trabajo']" v-model="workPlan.name" label="Nombre del plan de trabajo" required style="padding: 10px" />
-                                </div>
-                                <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="workPlan.description" label="Descripción" required style="padding: 10px" autogrow />
-                                </div>
-                                <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Norma requerida']" v-model="workPlan.norm" label="Norma" required style="padding: 10px" />
-                                </div>
-                                <div class="col-6">
-                                    <q-input type="date" lazy-rules :rules="[(val) => (val && val.length > 0) || 'Fecha de generación requerida']" v-model="workPlan.generationDate" label="Fecha de generación" required style="padding: 10px" />
-                                </div>
-                                <div class="col-6">
-                                    <q-input type="number" lazy-rules :rules="[(val) => (!isNaN(val) && val !== null && val !== '') || 'Debe ser un número válido']" v-model.number="workPlan.pendingRequirementsCount" label="Cantidad de requisitos pendientes" required style="padding: 10px" />
-                                </div>
-                                <div class="col-6">
-                                    <q-select v-model="workPlan.status" :options="status" label="Estado" required style="padding: 10px" />
-                                </div>
-                            </div>
-                        </q-card-section>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <li>Responsable del Sistema de Gestión de Seguridad y Salud en el Trabajo SG-SST.</li>
+                                            <li>Responsabilidades en el Sistema de Gestión de Seguridad y Salud en el Trabajo – SG-SST.</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <li>01-01-2025 - año fiscal</li>
+                                            <li>01-01-2025 - año fiscal</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <li>Administrativos y financieros</li>
+                                            <li>Administrativos y financieros</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <li>Evidencias de competencias y certificados de aprobación del curso de 50 y 20 horas.</li>
+                                            <li>Evidencias de competencias y certificados de aprobación del curso de 50 y 20 horas.</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>E1.1.2 Asignación de persona que diseñe e implemente el Sistema de Gestión de SST (4%)</td>
+                                    <td>Mantener a disposición de la Entidad que lo requiera la documentación que soporte el perfil de la persona que se encargó de realizar el diseño del SGSST.</td>
+                                    <td>VZH</td>
+                                    <td>01-01-2025 - año fiscal</td>
+                                    <td>Administrativos y financieros</td>
+                                    <td>Evidencias de competencias y certificados de aprobación del curso de 50 y 20 horas.</td>
+                                </tr>
+                            </tbody>
+                        </table>
 
                         <q-card-actions align="right">
                             <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
@@ -133,7 +318,7 @@ import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
 const workPlans = ref([]);
-const workPlanDialog = ref(false);
+const workPlanDialog = ref(true);
 const workPlan = ref({
     id: null,
     name: '',
@@ -307,5 +492,36 @@ function collapseAll() {
     background-repeat: no-repeat;
     opacity: 0.05;
     z-index: -1;
+}
+
+.table-work {
+    /*  
+    auto scrolll
+    */
+
+    overflow: auto;
+}
+
+.table-work,
+thead,
+tbody,
+tr,
+th,
+td {
+    text-align: center;
+    border: .5px solid;
+}
+
+ul {
+    /* border: 0.1px solid rgb(142, 142, 142); */
+    padding: 0;
+    list-style: none;
+    border-spacing: 10px; /* Espaciado entre los elementos */
+}
+
+li {
+    border: 0.1px solid rgb(142, 142, 142);
+    padding: 10px; /* Espaciado interno de los elementos */
+    margin-bottom: 15px;
 }
 </style>
