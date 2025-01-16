@@ -21,14 +21,14 @@ function logout() {
             <h2 class="ml-2"><b>SOSTENIWEB</b></h2>
         </div>
         <div class="flex flex-col gap-4">
-            <span class="text-sm text-muted-color font-semibold">Perfil</span>
+            <!-- <span class="text-sm text-muted-color font-semibold">Perfil</span>
             <div class="pt-2 flex gap-2 flex-wrap justify-between">
                 <q-btn @click="logout()" class="full-width" :style="{
                     backgroundColor: 'rgb(4, 178, 217)',
                     color: 'white',
                     borderRadius: '20px'
                 }" label="ver perfil" />
-            </div>
+            </div> -->
 
             <div>
                 <span class="text-sm text-muted-color font-semibold">Acciones</span>

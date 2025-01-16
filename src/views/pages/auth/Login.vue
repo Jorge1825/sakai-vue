@@ -88,13 +88,9 @@ async function resetPassword() {
                         <div class="image-container">
                             <img src="../../../assets/sosteniweb/logo_negro.png" alt="Logo Sosteniweb" width="75" />
                         </div>
-                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">
-                             
-                            
-                            
-                             ¡Bienvenido a Sosteniweb!</div>
+                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">¡Bienvenido a Sosteniweb!</div>
                         <span class="text-muted-color font-medium">Simplifiquemos juntos tu gestión </span>
-                        <br>
+                        <br />
                         <span class="text-muted-color font-medium">¡Comencemos!</span>
                     </div>
 

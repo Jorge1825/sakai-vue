@@ -16,7 +16,7 @@
                     <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
 
                     <!-- Botón de colapsar con fondo rojo y color de ícono blanco -->
-                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
+                    <q-btn icon="expand_less" :style="{ backgroundColor: 'rgb(2, 232, 124)', color: 'white' }" @click="collapseAll" />
                 </div>
             </div>
             <!-- Tabla de usuarios -->

@@ -367,8 +367,10 @@ watch([getPrimary, getSurface, isDarkTheme], () => {
             <div class="col-12 justify-center flex">
                 <q-img src="../assets/sosteniweb/logo_negro.png" class="col-span-12" width="20rem" />
             </div>
-            <div class="col-12 text-7xl text-bold text-center">Bienvenid@</div>
-            <div class="col-12 text-2xl text-center q-mt-sm">{{ user?.username }}</div>
+
+
+            <div class="col-12 text-5xl text-bold text-center">¡Gracias por unirte a Sosteniweb!</div>
+            <div class="col-12 text-3xl text-center q-mt-sm">Estamos listos para simplificar tu gestión y avanzar juntos</div>
         </div>
         <q-dialog v-model="dialog" persistent>
             <div 
