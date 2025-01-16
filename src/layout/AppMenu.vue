@@ -23,27 +23,27 @@ onBeforeMount(() => {
 const model = ref([
     {
         label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/', users: ['ADMIN', 'USER'] }],
-        users: ['ADMIN', 'USER']
+        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/', users: ['ADMIN','SUPERADMIN', 'USER'] }],
+        users: ['ADMIN','SUPERADMIN', 'USER']
     },
     {
         label: 'Administración',
         items: [
-            { label: 'Usuarios', icon: 'pi pi-fw pi-id-card', to: '/users', users: ['ADMIN'] },
-            { label: 'Roles', icon: 'pi pi-fw pi-list', to: '/roles', users: ['ADMIN'] },
-            // { label: 'Requerimientos',icon: 'pi pi-fw pi-file', to: '/requirements, users: ['ADMIN']'},
-            { label: 'Prompts', icon: 'pi pi-fw pi-cog', to: '/prompts', users: ['ADMIN'] },
-            { label: 'Normas', icon: 'pi pi-fw pi-cog', to: '/norms', users: ['ADMIN', 'USER'] },
-            { label: 'Requerimientos', icon: 'pi pi-fw pi-cog', to: '/tablenorm', users: ['ADMIN'] },
-            { label: 'Empresas ', icon: 'pi pi-fw pi-cog', to: '/enterprises', users: ['ADMIN'] },
-            { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification', users: ['ADMIN'] },
+            { label: 'Usuarios', icon: 'pi pi-fw pi-id-card', to: '/users', users: ['ADMIN','SUPERADMIN'] },
+            { label: 'Roles', icon: 'pi pi-fw pi-list', to: '/roles', users: ['ADMIN','SUPERADMIN'] },
+            // { label: 'Requerimientos',icon: 'pi pi-fw pi-file', to: '/requirements, users: ['ADMIN','SUPERADMIN']'},
+            { label: 'Prompts', icon: 'pi pi-fw pi-cog', to: '/prompts', users: ['ADMIN','SUPERADMIN'] },
+            { label: 'Normas', icon: 'pi pi-fw pi-cog', to: '/norms', users: ['ADMIN','SUPERADMIN', 'USER'] },
+            { label: 'Requerimientos', icon: 'pi pi-fw pi-cog', to: '/tablenorm', users: ['ADMIN','SUPERADMIN'] },
+            { label: 'Empresas ', icon: 'pi pi-fw pi-cog', to: '/enterprises', users: ['ADMIN','SUPERADMIN'] },
+            { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification', users: ['ADMIN','SUPERADMIN'] },
             { label: 'Calificar Requerimientos', icon: 'pi pi-fw pi-cog', to: 'qualificationClient', users: ['USER'] },
-            { label: 'Documentos', icon: 'pi pi-fw pi-cog', to: '/documents', users: ['USER','ADMIN'] },
-            { label: 'Plan de trabajo', icon: 'pi pi-fw pi-cog', to: '/WorkPlans', users: ['USER','ADMIN'] },
-            { label: 'Programas', icon: 'pi pi-fw pi-cog', to: '/programs', users: ['ADMIN'] },
-            { label: 'Sugerencia de evidencias', icon: 'pi pi-fw pi-cog', to: '/suggestedEvidences', users: ['ADMIN'] },
-            { label: 'Diagnostico', icon: 'pi pi-fw pi-cog', to: '/diagnostic', users: ['USER','ADMIN'] },
-            // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout', users: ['ADMIN'] },
+            { label: 'Documentos', icon: 'pi pi-fw pi-cog', to: '/documents', users: ['USER','ADMIN','SUPERADMIN'] },
+            { label: 'Plan de trabajo', icon: 'pi pi-fw pi-cog', to: '/WorkPlans', users: ['USER','ADMIN','SUPERADMIN'] },
+            { label: 'Programas', icon: 'pi pi-fw pi-cog', to: '/programs', users: ['ADMIN','SUPERADMIN'] },
+            { label: 'Sugerencia de evidencias', icon: 'pi pi-fw pi-cog', to: '/suggestedEvidences', users: ['ADMIN','SUPERADMIN'] },
+            { label: 'Diagnostico', icon: 'pi pi-fw pi-cog', to: '/diagnostic', users: ['USER','ADMIN','SUPERADMIN'] },
+            // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout', users: ['ADMIN','SUPERADMIN'] },
             // { label: 'Input', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
             // { label: 'Button', icon: 'pi pi-fw pi-mobile', to: '/uikit/button', class: 'rotated-icon' },
             // { label: 'Table', icon: 'pi pi-fw pi-table', to: '/uikit/table' },
@@ -59,7 +59,7 @@ const model = ref([
             // { label: 'Timeline', icon: 'pi pi-fw pi-calendar', to: '/uikit/timeline' },
             // { label: 'Misc', icon: 'pi pi-fw pi-circle', to: '/uikit/misc' }
         ],
-        users: ['ADMIN', 'USER']
+        users: ['ADMIN','SUPERADMIN', 'USER']
     },
     {
         label: 'Pages',
@@ -79,7 +79,7 @@ const model = ref([
                         label: 'Login',
                         icon: 'pi pi-fw pi-sign-in',
                         to: '/auth/login',
-                        users: ['ADMIN', 'USER']
+                        users: ['ADMIN','SUPERADMIN', 'USER']
                     }
                     // {
                     // label: 'Error',
@@ -92,7 +92,7 @@ const model = ref([
                     // to: '/auth/access'
                     // }
                 ],
-                users: ['ADMIN']
+                users: ['ADMIN','SUPERADMIN']
             }
             // {
             // label: 'Crud',
@@ -110,7 +110,7 @@ const model = ref([
             // to: '/pages/empty'
             // }
         ],
-        users: ['ADMIN']
+        users: ['ADMIN','SUPERADMIN']
     }
 ]);
 

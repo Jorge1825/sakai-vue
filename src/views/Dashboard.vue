@@ -25,10 +25,9 @@ const items = ref([
 onBeforeMount(() => {
     const useStoreAuth = storeAuth();
     user.value = useStoreAuth.getUserToken();
+    const role = useStoreAuth.getRoleToken()
 
-    console.log(user.value);
-
-    if(!user.value?.firstDiagnostic) {
+    if(!user.value?.firstDiagnostic && role.name != 'ADMIN' && role.name != 'SUPERADMIN') {
         dialog.value = true;
     }
 

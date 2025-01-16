@@ -142,7 +142,11 @@
                                 </div>
 
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'password requerida']" v-model="user.password" label="Contraseña" required style="padding: 10px" />
+                                    <q-input lazy-rules :rules="
+                                    //contraseña es requerida si no se esta editando
+                                    user._id ? [] : [(val) => (val && val.length > 0) || 'Contraseña requerida']
+                                    
+                                    " v-model="user.password" label="Contraseña" required style="padding: 10px" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -187,8 +191,9 @@ const status = ref([
 ]);
 
 const roles = ref([
-    { label: 'ADMIN', value: 'ADMIN' },
-    { label: 'USER', value: 'USER' }
+    { label: 'SUPER ADMINISTRADOR', value: 'SUPERADMIN' },
+    { label: 'ADMINISTRADOR', value: 'ADMIN' },
+    { label: 'USUARIO', value: 'USER' }
 ]);
 
 const exampleUsers = [
@@ -232,8 +237,6 @@ async function getEnterprises() {
         users.value = exampleUsers;
     }
 }
-
-
 
 function openDialog() {
     user.value = {
@@ -358,6 +361,14 @@ function editUser(selectedUser) {
     user.value = { ...selectedUser };
     user.value.role = roles.value.find((r) => r.value === selectedUser.role._id);
     user.value.status = status.value.find((s) => s.value === selectedUser.status);
+    user.value.enterprises = [];
+
+    selectedUser.enterprises.forEach((e) => {
+        console.log('e', e);
+        user.value.enterprises.push(enterprises.value.find((ent) => ent.value === e._id));
+    });
+    user.value.subscription = 'Suscrito';
+
     userDialog.value = true;
     console.log(user.value);
 }
