@@ -233,6 +233,8 @@ async function getEnterprises() {
     }
 }
 
+
+
 function openDialog() {
     user.value = {
         // Reinicar el objeto usuario

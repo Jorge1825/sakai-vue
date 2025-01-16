@@ -36,12 +36,13 @@
                 <Column field="address" header="DIRECCIÓN " :sortable="true" style="width: 10%" />
                 <Column field="phone" header="TELÉFONO" :sortable="true" style="width: 10%" />
                 <Column field="email" header="CORREO" :sortable="true" style="width: 10%" />
-                <Column field="riskLevel" header="NIVEL DE RIESGO" style="width: 10%"/>
-                <template #body="slotProps">
-                <div style="text-align: left">
-                    {{ riskLevels.find((r) => r.value === slotProps.data.riskLevel).label }}
-                </div>
-                </template>
+                <Column field="riskLevel" header="CLASE DE RIESGO" style="width: 10%">
+                    <template #body="slotProps">
+                        <div style="text-align: left">
+                            {{ riskLevels.find((r) => r.value === slotProps.data.riskLevel).label }}
+                        </div>
+                    </template>
+                </Column>
                 <!--<Column field="nit" header="DESCRIPCIÓN" style="width: 35%" />-->
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
@@ -69,6 +70,7 @@
                         <p><strong>Dirección:</strong> {{ slotProps.data.address }}</p>
                         <p><strong>Teléfono:</strong> {{ slotProps.data.phone }}</p>
                         <p><strong>Correo:</strong> {{ slotProps.data.email }}</p>
+                        <p><strong>Clase de riesgo:</strong> {{ riskLevels.find((r) => r.value === slotProps.data.riskLevel).label }}</p>
                         <p>
                             <strong>Estado:</strong>
                             <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
@@ -115,6 +117,7 @@
                                         :rules="[(val) => (val && val?.toString().length > 0) || 'Teléfono requerido', (val) => (val && val?.toString().length === 10) || 'Teléfono inválido']"
                                     />
                                 </div>
+
                                 <div class="col-6">
                                     <q-input
                                         lazy-rules
@@ -127,11 +130,26 @@
                                         autogrow
                                     />
                                 </div>
+
                                 <div class="col-6">
-                                    <q-select v-model="enterprise.riskLevel" :options="riskLevels" label="Nivel de Riesgo" required style="padding: 10px" />
+                                    <q-select v-model="enterprise.riskLevel" :options="riskLevels" label="Clase de Riesgo" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-input
+                                        lazy-rules
+                                        v-model="enterprise.numberEmployees"
+                                        label="Número de empleados"
+                                        type="number"
+                                        required
+                                        style="padding: 10px"
+                                        :rules="[(val) => (val && val?.toString().length > 0) || 'Número de empleados requerido']"
+                                    />
                                 </div>
                                 <div class="col-6">
                                     <q-select v-model="enterprise.status" :options="status" label="Estado" required style="padding: 10px" />
+                                </div>
+                                <div class="col-6">
+                                    <q-select use-chips multiple stack-label v-model="enterprise.norms" :options="norms" label="Normas activas" required style="padding: 10px" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -149,7 +167,8 @@
 </template>
 
 <script setup>
-import { createEnterpriseApi, editEnterpriseApi, getEnterprisesApi, toggleActiveEnterpriseApi } from '@/api/enterprises';
+import { createEnterpriseApi, editEnterpriseApi, getEnterprisesApi } from '@/api/enterprises';
+import { getNormsApi } from '@/api/norms';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
@@ -160,23 +179,29 @@ const status = ref([
     { label: 'INACTIVO', value: false }
 ]);
 const riskLevels = ref([
-    { label: 'ALTO', value: 2 },
-    { label: 'MEDIO', value: 1 },
-    { label: 'BAJO', value: 0 }
+    { label: 'I', value: 1 },
+    { label: 'II', value: 2 },
+    { label: 'III', value: 3 },
+    { label: 'IV', value: 4 },
+    { label: 'V', value: 5 }
 ]);
 const enterprise = ref({
     id: null,
     name: '',
     nit: '',
     address: '',
+    numberEmployees: '',
     email: '',
     phone: '',
     riskLevel: riskLevels.value[0],
     status: status.value[0],
+    norms: []
 });
 const expandedRows = ref([]);
+const norms = ref([]);
 
 onBeforeMount(async () => {
+    await getNorms();
     await getEnterprises();
 });
 
@@ -185,6 +210,16 @@ async function getEnterprises() {
         const { data } = await getEnterprisesApi();
         console.log(data);
         enterprises.value = data.length ? data : [];
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function getNorms() {
+    try {
+        const { data } = await getNormsApi();
+        console.log(data);
+        norms.value = data.length ? data?.map((norm) => ({ label: norm.name, value: norm._id })) : [];
     } catch (error) {
         console.error(error);
     }
@@ -199,7 +234,9 @@ function openDialog() {
         email: '',
         phone: '',
         riskLevel: riskLevels.value[0],
-        status: status.value[0]
+        status: status.value[0],
+        norms: [],
+        numberEmployees: ''
     };
     enterpriseDialog.value = true;
 }
@@ -220,7 +257,9 @@ async function saveEnterprise() {
             email: enterprise.value.email,
             phone: enterprise.value.phone,
             riskLevel: enterprise.value.riskLevel.value,
-            status: enterprise.value.status.value
+            status: enterprise.value.status.value,
+            norms: enterprise.value.norms?.map((norm) => norm.value),
+            numberEmployees: enterprise.value.numberEmployees
         };
 
         const response = await editEnterpriseApi(enterpriseApi);
@@ -241,7 +280,9 @@ async function saveEnterprise() {
             email: enterprise.value.email,
             phone: enterprise.value.phone,
             status: enterprise.value.status.value,
-            riskLevel: enterprise.value.riskLevel.value
+            riskLevel: enterprise.value.riskLevel.value,
+            norms: enterprise.value.norms?.map((norm) => norm.value),
+            numberEmployees: enterprise.value.numberEmployees
         };
 
         const response = await createEnterpriseApi(enterpriseApi);
@@ -261,45 +302,20 @@ function editEnterprise(selectedEnterprise) {
     enterprise.value = { ...selectedEnterprise };
     enterprise.value.riskLevel = riskLevels.value.find((r) => r.value === selectedEnterprise.riskLevel);
     enterprise.value.status = status.value.find((s) => s.value === selectedEnterprise.status);
-    enterpriseDialog.value = true;
-}
+    enterprise.value.numberEmployees = selectedEnterprise.numberEmployees;
+    enterprise.value.norms = [];
 
-//funcion activar desactivavr usuario
-async function toggleStatus(selectedEnterprise) {
-    try {
-        // Cambia el estado del usuario (activo/inactivo)
-        const response = await toggleActiveEnterpriseApi(selectedEnterprise._id);
-
-        if (response.status <= 300) {
-            // Actualiza el estado localmente después de recibir respuesta del backend
-            selectedEnterprise.status = selectedEnterprise.status === 'Activo' ? 'Inactivo' : 'Activo';
-
-            // Mostrar notificación de éxito
-            Notify.create({
-                message: `Enterprise ${selectedEnterprise.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
-                type: 'positive',
-                position: 'top',
-                textColor: 'white',
-                color: selectedEnterprise.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
-                multiLine: true
+    selectedEnterprise.norms.forEach((norm) => {
+        const findNorm = norms.value.find((n) => n.value === norm._id);
+        if (findNorm) {
+            enterprise.value.norms.push({
+                label: findNorm.label,
+                value: findNorm.value
             });
-
-            // Vuelve a cargar los usuarios si es necesario
-            await getEnterpries();
-        } else {
-            throw new Error('Error al actualizar el estado del calificacion.');
         }
-    } catch (error) {
-        console.error(error);
-        Notify.create({
-            message: 'Hubo un error al cambiar el estado del calificacion.',
-            type: 'negative',
-            position: 'top',
-            textColor: 'white',
-            color: 'red',
-            multiLine: true
-        });
-    }
+    });
+
+    enterpriseDialog.value = true;
 }
 
 // Funciones para expandir y colapsar

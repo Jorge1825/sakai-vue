@@ -1,6 +1,8 @@
 <script setup>
 import { login } from '@/api/auth.js';
+import { forgotPasswordApi } from '@/api/users';
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
+import { notifyError, notifySuccess } from '@/config/notifications';
 import { storeAuth } from '@/store/auth';
 import { onBeforeMount, ref } from 'vue';
 import { useRouter } from 'vue-router'; // Importar el router para redirección
@@ -15,7 +17,7 @@ const errorMessage = ref(''); // Para almacenar el mensaje de error
 const router = useRouter(); // Inicializar el router para redirigir después del login
 
 // Modal y correo para recuperación de contraseña
-const showRecoverPasswordModal = ref(false);
+let showRecoverPasswordModal = ref(false);
 const recoverEmail = ref('');
 
 onBeforeMount(() => {
@@ -26,7 +28,6 @@ onBeforeMount(() => {
         password.value = userData?.password;
         checked.value = userData?.checked;
     }
-
 });
 
 // Regla de validación: campo de correo requerido
@@ -37,7 +38,7 @@ async function signIn() {
         const { data, status } = await login(email.value, password.value);
         // Si el login es exitoso
         if (data.token && status <= 300) {
-            if(checked.value) {
+            if (checked.value) {
                 useAuth.saveUser({
                     email: email.value,
                     password: password.value,
@@ -49,14 +50,31 @@ async function signIn() {
 
             errorMessage.value = ''; // Limpiar el mensaje de error si es exitoso
             router.push({ name: 'dashboard' }); // Redirigir al dashboard
-        }
-
-        else if (status === 401) {
+        } else if (status === 401) {
             errorMessage.value = '2 v3131c2Correo o contraseña incorrectos. Inténtalo de nuevo.';
         }
     } catch (error) {
         errorMessage.value = 'Correo o contraseña incorrectos. Inténtalo de nuevo.';
     }
+}
+
+async function resetPassword() {
+    try {
+        const response = await forgotPasswordApi(recoverEmail.value);
+        if (response.status === 200) {
+            notifySuccess({
+                message: 'Correo de recuperación enviado'
+            });
+        }
+        showRecoverPasswordModal.value = false;
+    } catch (error) {
+        console.error(error);
+        notifyError({
+            message: 'Error al enviar el correo de recuperación'
+        });
+    }
+
+    showRecoverPasswordModal.value = false;
 }
 </script>
 
@@ -129,7 +147,7 @@ async function signIn() {
 
     <!-- Modal de recuperación de contraseña -->
     <q-dialog v-model="showRecoverPasswordModal">
-        <div class="container bg-white">
+        <div class="container bg-white q-py-xl">
             <div class="watermark-container justify-center flex">
                 <q-card class="q-pa-md text-center bg-transparent" style="max-width: 400px; margin: auto">
                     <q-card-section>
@@ -138,7 +156,7 @@ async function signIn() {
                     </q-card-section>
 
                     <q-card-section>
-                        <q-form @submit.prevent="() => (showRecoverPasswordModal = false)">
+                        <q-form @submit.prevent="resetPassword" novalidate>
                             <q-input filled v-model="recoverEmail" label="Correo electrónico" type="email" :rules="[emailRequired]" lazy-rules clearable autofocus required />
                             <!-- Centrando el botón con estilo de margen automático -->
                             <q-btn type="submit" label="Enviar código" color="primary" class="q-mt-md q-mx-auto" />

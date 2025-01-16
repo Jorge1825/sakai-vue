@@ -50,6 +50,33 @@ export const toggleActiveUserApi = async (id) => {
     }
 };
 
+export const forgotPasswordApi = async (email) => {
+    try {
+        // Hacer la petición PUT al endpoint de activar/desactivar usuario
+        const response = await axiosInstance.get(`/users/forgot-password/${email}`);
+
+        return response;
+    } catch (error) {
+        console.error('Error al resetear contraseña', error); 
+        throw error;
+    }
+};
+
+export const newPasswordApi = async (password, token) => {
+    try {
+        // Hacer la petición PUT al endpoint de activar/desactivar usuario
+        const response = await axiosInstance.put(`/users/new-password`, { 
+            password,
+            token_temp: token
+        });
+
+        return response;
+    } catch (error) {
+        console.error('Error al resetear contraseña', error);
+        throw error;
+    }
+};
+
 export const checkFirstDiagnosticApi = async (id) => {
     try {
         // Hacer la petición PUT al endpoint de activar/desactivar usuario

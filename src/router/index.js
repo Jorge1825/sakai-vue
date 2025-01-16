@@ -222,6 +222,11 @@ const router = createRouter({
             beforeEnter: auth
         },
         {
+            path: '/new-password/:token',
+            name: 'landing',
+            component: () => import('@/views/pages/ResetPassword.vue'),
+        },
+        {
             path: '/pages/notfound',
             name: 'notfound',
             component: () => import('@/views/pages/NotFound.vue'),
