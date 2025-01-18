@@ -61,10 +61,10 @@ export const toggleActiveEnterpriseApi = async (id) => {
     }
 };
 
-export const checkFirstDiagnosticApi = async (id) => {
+export const checkFirstDiagnosticApi = async (id, user) => {
     try {
         // Hacer la petición PUT al endpoint de activar/desactivar usuario
-        const response = await axiosInstance.put(`/enterprises/check-first-diagnostic/${id}`);
+        const response = await axiosInstance.post(`/enterprises/check-first-diagnostic`, { enterprise: id, user });
 
         return response;
     } catch (error) {

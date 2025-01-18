@@ -112,8 +112,8 @@ const formatCurrency = (value) => {
 const closeDialog = async () => {
     dialog.value = false;
     const company = useStoreAuth.getSelectedCompany()
-    console.log(company)
-    await checkFirstDiagnosticApi(company.value)
+    const user = useStoreAuth.getUserToken()
+    await checkFirstDiagnosticApi(company.value, user.id)
 
 };
 
