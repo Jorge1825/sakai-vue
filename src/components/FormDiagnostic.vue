@@ -2,36 +2,33 @@
     <div class="text-h6 text-center text-primary q-my-md" style="font-weight: bold; font-size: 24px">EVALUACIÓN EXPRESS DE CUMPLIMIENTO</div>
     <div class="q-pa-md full-width">
         <q-stepper v-model="step" header-nav ref="stepper" color="primary" animated>
-            <q-step :name="1" title="Cuestionario" icon="settings"  :header-nav="step > 1">
+            <q-step :name="1" title="Cuestionario" icon="settings" :header-nav="step > 1">
                 <div class="row full-width q-my-lg">
                     <div class="col-12 q-mt-md">
                         <div class="row justify-center flex">
-                            
                             <div class="col-4 q-px-md" v-for="(question, index) in questions.slice(0, 3)" :key="index">
                                 <div class="q-pa-sm">
-                                    <p>{{ question.text }}</p>
+                                    <p v-html="question.text"></p>
                                     <div>
                                         <q-checkbox v-model="question.cumple" label="Cumple" @update:model-value="updateCheckbox(question, 'cumple', 'noCumple')" />
                                         <q-checkbox v-model="question.noCumple" label="No cumple" @update:model-value="updateCheckbox(question, 'noCumple', 'cumple')" />
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="col-4 q-px-md q-mt-xl" v-for="(question, index) in questions.slice(3, 6)" :key="index">
                                 <div class="q-pa-sm">
-                                    <p>{{ question.text }}</p>
+                                    <p v-html="question.text"></p>
                                     <div>
                                         <q-checkbox v-model="question.cumple" label="Cumple" @update:model-value="updateCheckbox(question, 'cumple', 'noCumple')" />
                                         <q-checkbox v-model="question.noCumple" label="No cumple" @update:model-value="updateCheckbox(question, 'noCumple', 'cumple')" />
-
                                     </div>
                                 </div>
                             </div>
                             <div class="col-4 q-px-md flex flex-center q-mt-xl">
                                 <div class="q-pa-sm">
-                                    <p>{{ questions[6].text }}</p>
+                                    <p v-html="questions[6].text"></p>
                                     <div>
-
                                         <q-checkbox v-model="questions[6].cumple" label="Cumple" @update:model-value="updateCheckbox(questions[6], 'cumple', 'noCumple')" />
                                         <q-checkbox v-model="questions[6].noCumple" label="No cumple" @update:model-value="updateCheckbox(questions[6], 'noCumple', 'cumple')" />
                                     </div>
@@ -44,11 +41,7 @@
                 <div class="row justify-end flex">
                     <q-stepper-navigation>
                         <q-btn flat color="primary" label="Omitir" class="q-mx-md" @click="close()" />
-                        <q-btn
-                            @click="continueStep"
-                            color="primary"
-                            label="Continuar"
-                        />
+                        <q-btn @click="continueStep" color="primary" label="Continuar" />
                     </q-stepper-navigation>
                 </div>
             </q-step>
@@ -66,17 +59,10 @@
                             <span class="text-xl text-primary"> TÚ DIAGNOSTICO RÁPIDO ESTÁ LISTO !!!</span>
                         </div>
                         <div class="col-12 row q-mt-md">
-                            <div class="col-12 text-xl text-bold">
-                                Resultados obtenidos:
+                            <div class="col-12 text-xl text-bold">Resultados obtenidos:</div>
 
-                            </div>
-
-                            <div class="col-10 text-lg" :class="color">
-                                Nivel de cumplimiendo basico requerido</div>
-                            <div class="col-2 text-lg" :class="color">
-                                {{ percent }} %
-                            </div>
-
+                            <div class="col-10 text-lg" :class="color">Nivel de cumplimiendo basico requerido</div>
+                            <div class="col-2 text-lg" :class="color">{{ percent }} %</div>
                         </div>
                         <div class="q-mt-xl text-lg">
                             {{ text }}
@@ -84,7 +70,7 @@
                         <div class="col-12 row">
                             <div class="col-12 q-mt-md row">
                                 <div class="col-12">
-                                    <q-icon name="receipt_long" class="q-mx-sm text-primary"/>
+                                    <q-icon name="receipt_long" class="q-mx-sm text-primary" />
                                     <RouterLink class="text-primary" to="/documents">Ver Suscripciones</RouterLink>
                                 </div>
                                 <div class="col-12 q-mt-md">
@@ -93,12 +79,18 @@
                                 </div>
                             </div>
                         </div>
-                    
                     </div>
                 </div>
                 <div class="row justify-end flex">
                     <q-stepper-navigation>
-                        <q-btn color="primary" @click="done2 = true;close()" label="Finalizar" />
+                        <q-btn
+                            color="primary"
+                            @click="
+                                done2 = true;
+                                close();
+                            "
+                            label="Finalizar"
+                        />
                     </q-stepper-navigation>
                 </div>
             </q-step>
@@ -106,26 +98,56 @@
     </div>
 </template>
 <script setup>
-import { defineEmits, ref } from 'vue';
+import { firstDiagnostic } from '@/api/norms';
+import { storeAuth } from '@/store/auth';
+import { defineEmits, onBeforeMount, ref } from 'vue';
 
 const emit = defineEmits(['close-dialog']);
+const useStoreAuth = storeAuth();
 
 const text = ref('');
 const color = ref('text-red');
 const percent = ref(0);
 const step = ref(1);
 const questions = ref([
-    { id:1, text: '¿Cuentas con responsables del sistema de gestión para el diseño con licencia y para la gestión interna de tu empresa con el curso de 50 horas?', cumple: ref(false), noCumple: ref(false) },
-    { id:2, text: '¿Estas seguro que todos los trabajadores cuentan con la afiliación a la seguridad social (salud, pensión, Arl) sean de nómina, por prestación de servicios o cualquier otra modalidad de contratación?', cumple: ref(false), noCumple: ref(false) },
-    { id:3, text: '¿Elaboras y ejecutas actividades de capacitación en promoción y prevención de riesgos incluyendo los temas prioritarios en tu empresa?', cumple: ref(false), noCumple: ref(false) },
-    { id:4, text: '¿Elaboras y ejecutas actividades de capacitación en promoción y prevención de riesgos incluyendo los temas prioritarios en tu empresa', cumple: ref(false), noCumple: ref(false) },
-    { id:5, text: '¿Cuentas con las evaluaciones médicas de ingreso, anuales y de retiro de tus empleados?', cumple: ref(false), noCumple: ref(false) },
-    { id:6, text: '¿Realizas la identificación de peligros, evaluación y valoración de los riesgos con la participación de tus empleados y la evidencias en una matriz?', cumple: ref(false), noCumple: ref(false) },
-    { id:7, text: '¿Ejecutas las actividades de prevención y control de acuerdo a los resultados de los ejercicios de identificación de riesgos.?', cumple: ref(false), noCumple: ref(false) }
+    { id: 1, text: 'Ya tienes a tu equipo estrella con licencia para el diseño y curso de 50 horas para tu gestión interna del Sistema de Gestión?<b> Porque un equipo preparado lo es todo!</b> ', cumple: ref(false), noCumple: ref(false) },
+    { id: 2, text: '¿Están todos tus trabajadores (nómina, prestación de servicios o cualquier contrato) afiliados a salud, pensión y ARL?<b> ¡Que no se escape ni uno! </b>', cumple: ref(false), noCumple: ref(false) },
+    { id: 3, text: '¿Tu equipo ya recibió capacitación en prevención de riesgos?<b> ¡Que la seguridad sea un tema top en tu empresa! </b>', cumple: ref(false), noCumple: ref(false) },
+    { id: 4, text: '¿Tienes listo tu plan de trabajo anual con metas, objetivos y recursos definidos?<b> ¡Ah, y que lo haya firmado tu representante legal, claro!</b>', cumple: ref(false), noCumple: ref(false) },
+    { id: 5, text: '¿Ya haces los exámenes de ingreso, periódicos y de retiro para todos tus empleados?<b> ¡La salud de tu equipo es primero!</b>', cumple: ref(false), noCumple: ref(false) },
+    { id: 6, text: '¿Ya hiciste la identificación de peligros con tu equipo?<b> ¡Todo debe estar en tu matriz bien organizadito!</b>', cumple: ref(false), noCumple: ref(false) },
+    { id: 7, text: '¿Estás poniendo en marcha las acciones necesarias para prevenir y controlar riesgos?<b> ¡Es clave para evitar sorpresas!</b>', cumple: ref(false), noCumple: ref(false) }
 ]);
+let company = ref();
 
-function close() {
-    emit('close-dialog');
+onBeforeMount(() => {
+    // console.log(questions);
+    company.value = useStoreAuth.getSelectedCompany();
+});
+
+async function close() {
+    //enviar los resultados al backend
+
+    try {
+        //crear un objeto con los resultados de las preguntas
+        const results = questions.value.map((question) => {
+            console.log(question);
+            return {
+                order: question.id,
+                text: question.text,
+                cumple: question.cumple || false
+            };
+        });
+
+        const response = await firstDiagnostic({
+            enterpriseId: company.value.value,
+            answers: results,
+            percentage: percent.value
+        });
+        emit('close-dialog');
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 function updateCheckbox(question, selected, other) {

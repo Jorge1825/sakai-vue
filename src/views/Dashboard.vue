@@ -386,7 +386,7 @@ watch([getPrimary, getSurface, isDarkTheme], () => {
             </div>
         </q-dialog>
         <q-dialog v-model="dialog" persistent>
-            <div class="container bg-white" style="min-width: 450px; min-height: 30vh; max-height: 90vh" :style="$q.screen.width < 1000 ? 'min-width: 100vw' : 'min-width: 50vw'">
+            <div class="container bg-white" style="min-width: 450px; min-height: 30vh; max-height: 90vh" :style="$q.screen.width < 1000 ? 'min-width: 100vw' : 'min-width: 70vw'">
                 <div class="watermark-container justify-center flex">
                     <FormDiagnostic @close-dialog="closeDialog" />
                 </div>

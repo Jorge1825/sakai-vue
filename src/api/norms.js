@@ -72,3 +72,14 @@ export const toggleEnterpriseNormApi = async (data) => {
         throw error;
     }
 };
+export const firstDiagnostic = async (data) => {
+    try {
+        // Hacer la petición PUT al endpoint de activar/desactivar prompt
+        const response = await axiosInstance.post(`/norms/first-diagnostic`, data);
+
+        return response;
+    } catch (error) {
+        console.error('Error al crear el primer diagnostico', error);
+        throw error;
+    }
+};
