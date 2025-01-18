@@ -12,6 +12,7 @@ export const storeAuth = defineStore(
         let dataToken = ref(null);
         let enterprises = ref([]);
         let selectedCompany = ref(null);
+        let firstDiagnostic = ref(false);
 
         // Functions
         const loadToken = async (credentials) => {
@@ -26,8 +27,6 @@ export const storeAuth = defineStore(
         const decodeToken = () => {
             if (token.value) {
                 dataToken.value = jwtDecode(token.value);
-                console.log(dataToken.value);
-                console.log(dataToken.value);
                 enterprises.value = dataToken.value.enterprises || [];
             }
             return dataToken.value;
@@ -37,7 +36,6 @@ export const storeAuth = defineStore(
             return{
                 username: dataToken.value.username,
                 email: dataToken.value.email,
-                firstDiagnostic: dataToken.value?.firstDiagnostic || false,
                 id: dataToken.value.id,
             }
         }
@@ -54,6 +52,8 @@ export const storeAuth = defineStore(
             return dataToken.value?.role === requiredRole;
         };
         const setCompany = (data) => {
+            //guardar la empresa seleccionada en el local storage
+            localStorage.setItem('selectedCompany', JSON.stringify(data));
             selectedCompany.value = data;
         };
         
@@ -82,6 +82,14 @@ export const storeAuth = defineStore(
             return JSON.parse(localStorage.getItem('user'));
         }
 
+        const setFirstDiagnostic = (value) => {
+            firstDiagnostic.value = value;
+        }
+
+        const getFirstDiagnostic = () => {
+            return firstDiagnostic.value;
+        }
+
         return {
             loadToken,
             decodeToken,
@@ -96,6 +104,8 @@ export const storeAuth = defineStore(
             saveUser,
             removeUser,
             getUser,
+            setFirstDiagnostic,
+            getFirstDiagnostic,
         };
     },
     {

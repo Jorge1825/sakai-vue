@@ -1,5 +1,5 @@
 <script setup>
-import { checkFirstDiagnosticApi } from '@/api/users';
+import { checkFirstDiagnosticApi } from '@/api/enterprises';
 import FormDiagnostic from '@/components/FormDiagnostic.vue';
 import { useLayout } from '@/layout/composables/layout';
 import { ProductService } from '@/service/ProductService';
@@ -16,7 +16,7 @@ const chartData = ref(null);
 const chartOptions = ref(null);
 const user = ref(null);
 const dialog = ref(false);
-const dialog1 = ref(true);
+const dialog1 = ref(false);
 
 const items = ref([
     { label: 'Add New', icon: 'pi pi-fw pi-plus' },
@@ -27,8 +27,9 @@ onBeforeMount(() => {
     const useStoreAuth = storeAuth();
     user.value = useStoreAuth.getUserToken();
     const role = useStoreAuth.getRoleToken();
+    const firstDiagnostic = useStoreAuth.getFirstDiagnostic();
 
-    if (!user.value?.firstDiagnostic && role.name != 'ADMIN' && role.name != 'SUPERADMIN') {
+    if (!firstDiagnostic && role.type == 'USER') {
         dialog1.value = true;
     }
 
@@ -110,9 +111,10 @@ const formatCurrency = (value) => {
 
 const closeDialog = async () => {
     dialog.value = false;
-    await checkFirstDiagnosticApi(user.value.id);
-    useStoreAuth.loadToken();
-    useStoreAuth.decodeToken();
+    const company = useStoreAuth.getSelectedCompany()
+    console.log(company)
+    await checkFirstDiagnosticApi(company.value)
+
 };
 
 watch([getPrimary, getSurface, isDarkTheme], () => {

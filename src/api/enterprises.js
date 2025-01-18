@@ -13,6 +13,18 @@ export const getEnterprisesApi = async () => {
     }
     
 };
+export const getEnterprisesByIdApi = async (id) => {
+    try {
+
+        const response = await axiosInstance.get('/enterprises/'+id);
+
+        return response;
+    } catch (error) {
+        console.error('Error al obtener las empresas', error); 
+        throw error; 
+    }
+    
+};
 export const editEnterpriseApi = async (data) => {
     try {
         console.log(data);
@@ -49,3 +61,14 @@ export const toggleActiveEnterpriseApi = async (id) => {
     }
 };
 
+export const checkFirstDiagnosticApi = async (id) => {
+    try {
+        // Hacer la petición PUT al endpoint de activar/desactivar usuario
+        const response = await axiosInstance.put(`/enterprises/check-first-diagnostic/${id}`);
+
+        return response;
+    } catch (error) {
+        notifyError({ message: 'Error al realizar el primer diagnóstico', error });
+        throw error;
+    }
+}
