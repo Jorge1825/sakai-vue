@@ -16,7 +16,7 @@
                     <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
 
                     <!-- Botón de colapsar con fondo rojo y color de ícono blanco -->
-                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
+                    <q-btn icon="expand_less" :style="{ backgroundColor: 'rgb(242, 185, 179)', color: 'white' }" @click="collapseAll" />
                 </div>
             </div>
             <!-- Tabla de usuarios -->
@@ -35,7 +35,7 @@
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
                                 {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </div>
@@ -50,7 +50,6 @@
                             <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editPrompt(slotProps.data)" dense round />
                             <!-- Restablecer el valor del prompt -->
                             <q-btn icon="restore" color="secondary" @click="restore(slotProps.data?._id)" dense round />
-
                         </div>
                     </template>
                 </Column>
@@ -61,7 +60,7 @@
                         <p><strong>Prompt:</strong> {{ slotProps.data.prompt }}</p>
                         <p>
                             <strong>Estado:</strong>
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'">
                                 {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </p>
@@ -182,7 +181,7 @@ async function savePrompt() {
             await getPrompts();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar el prompt.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar el prompt.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     } else {
         const promptApi = {
@@ -200,7 +199,7 @@ async function savePrompt() {
             await getPrompts();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear el prompt.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear el prompt.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     }
 }
@@ -228,7 +227,7 @@ async function toggleStatus(selectedPrompt) {
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedPrompt.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
+                color: selectedPrompt.status === 'Activo' ? 'blue' : 'rgb(242, 185, 179)', //rgb(4, 178, 217)
                 multiLine: true
             });
 
@@ -244,23 +243,23 @@ async function toggleStatus(selectedPrompt) {
             type: 'negative',
             position: 'top',
             textColor: 'white',
-            color: 'red',
+            color: 'rgb(242, 185, 179)',
             multiLine: true
         });
     }
 }
 
 async function restore(idPrompt) {
-    try{
+    try {
         const response = await responsePromptApi(idPrompt);
-        if(response.status <= 300){
-            notifySuccess({message:"Prompt restablecido correctamente"});
+        if (response.status <= 300) {
+            notifySuccess({ message: 'Prompt restablecido correctamente' });
             await getPrompts();
-        }else{
+        } else {
             throw new Error('Error al restablecer el prompt');
         }
-    }catch{
-        notifyError({message:"No se logro restablecer el prompt"})
+    } catch {
+        notifyError({ message: 'No se logro restablecer el prompt' });
     }
 }
 

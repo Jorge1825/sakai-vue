@@ -16,7 +16,7 @@
                     <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
 
                     <!-- Botón de colapsar con fondo rojo y color de ícono blanco -->
-                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
+                    <q-btn icon="expand_less" :style="{ backgroundColor: 'rgb(242, 185, 179)', color: 'white' }" @click="collapseAll" />
                 </div>
             </div>
             <!-- Tabla de diagnosticos -->
@@ -169,7 +169,7 @@
 </template>
 <script setup>
 import { createDiagnosticApi, editDiagnosticApi, toggleActiveDiagnosticApi } from '@/api/diagnostics'; //ROLES
-import { getQualificationsByEnterprise, getQualificationsByEnterpriseExcel } from '@/api/qualifications';
+import { getQualificationsByEnterprise } from '@/api/qualifications';
 import { storeAuth } from '@/store/auth';
 import { generateDiagnostic } from '@/utils/generateDiagnostic';
 import { Notify } from 'quasar';
@@ -207,7 +207,6 @@ async function getDiagnostic() {
     try {
         const { data } = await getQualificationsByEnterprise(enterprise.value.value);
         diagnostics.value = data.length ? data : [];
-
     } catch (error) {
         console.error(error);
     }
@@ -254,7 +253,7 @@ async function saveDiagnostic() {
             await getDiagnostic();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar el diagnostico.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar el diagnostico.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     } else {
         const diagnosticApi = {
@@ -275,7 +274,7 @@ async function saveDiagnostic() {
             await getDiagnostic();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear el diagnostico.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear el diagnostico.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     }
 }
@@ -302,7 +301,7 @@ async function toggleStatus(selectedDiagnostic) {
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedDiagnostic.status ? 'blue' : 'red', //rgb(4, 178, 217)
+                color: selectedDiagnostic.status ? 'blue' : 'rgb(242, 185, 179)', //rgb(4, 178, 217)
                 multiLine: true
             });
 
@@ -318,7 +317,7 @@ async function toggleStatus(selectedDiagnostic) {
             type: 'negative',
             position: 'top',
             textColor: 'white',
-            color: 'red',
+            color: 'rgb(242, 185, 179)',
             multiLine: true
         });
     }
@@ -413,7 +412,7 @@ async function viewDiagnostic(selectedDiagnostic) {
     });
 
     dataTable.value = data.sort((a, b) => a.numberRequirement - b.numberRequirement);
-    
+
     console.log(dataTable.value);
     await generateDiagnostic(dataTable.value);
 }

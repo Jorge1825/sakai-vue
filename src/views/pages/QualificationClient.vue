@@ -5,18 +5,18 @@
             <div class="row q-my-md">
                 <div class="col-6">
                     <div class="text-h5" style="color: rgb(4, 178, 217); text-transform: uppercase">
-                        <strong>Evaluar Normas y Requerimientos</strong>
+                        <strong>Requerimientos</strong>
                     </div>
                 </div>
                 <div class="col-12 flex justify-end">
                     <!-- Botón de agregar con fondo azul claro y color de ícono blanco -->
-                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" />
+                    <!-- <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" /> -->
 
                     <!-- Botón de expandir con fondo azul claro y color de ícono blanco -->
-                    <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
+                    <!-- <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" /> -->
 
                     <!-- Botón de colapsar con fondo rojo y color de ícono blanco -->
-                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
+                    <!-- <q-btn icon="expand_less" :style="{ backgroundColor: 'rgb(242, 185, 179)', color: 'white' }" @click="collapseAll" /> -->
                 </div>
             </div>
             <!-- Tabla de empresas -->
@@ -51,7 +51,7 @@
                         <q-btn
                             icon="visibility"
                             :style="{
-                                backgroundColor: slotProps.data.evidence ? 'rgb(4, 178, 217)' : 'red',
+                                backgroundColor: slotProps.data.evidence ? 'rgb(4, 178, 217)' : 'rgb(242, 185, 179)',
                                 color: 'white'
                             }"
                             @click="renderFile(slotProps.data.evidence?.name)"
@@ -66,7 +66,7 @@
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
 
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
-                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editQualification(slotProps.data)" dense round />
+                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="evaluateQualification(slotProps.data)" dense round />
                         </div>
                     </template>
                 </Column>
@@ -95,11 +95,12 @@
                         <q-card-section>
                             <div class="row full-width q-pb-lg q-pt-md justify-center flex">
                                 <div class="col-6">
-                                    <q-select v-model="norm" :options="norms" label="Norma" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Norma requerida']" @update:model-value="getRequirements()" />
+                                    <q-select disable v-model="norm" :options="norms" label="Norma" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Norma requerida']" @update:model-value="getRequirements()" />
                                 </div>
 
                                 <div class="col-6">
                                     <q-select
+                                        disable
                                         :disable="!norm"
                                         v-model="requirement"
                                         :options="requirements"
@@ -125,7 +126,9 @@
                                         </q-item>
                                         <q-item tag="label" v-ripple v-for="input in inputs" :key="input._id">
                                             <q-item-section side top>
-                                                <q-checkbox v-model="input.selected" />
+                                                <q-checkbox 
+                                                disable
+                                                v-model="input.selected" />
                                             </q-item-section>
 
                                             <q-item-section>
@@ -136,41 +139,6 @@
                                                 <q-item-label> Cartas, cursos, ceritificaciones </q-item-label>
                                             </q-item-section>
                                         </q-item>
-
-                                        <!-- <q-item tag="label" v-ripple>
-                                            <q-item-section side top>
-                                                <q-checkbox v-model="check1" />
-                                            </q-item-section>
-
-                                            <q-item-section>
-                                                <q-item-label > Notify me about updates to apps or games that I downloaded </q-item-label>
-                                            </q-item-section>
-
-                                            <q-item-section side class="text-lg">
-                                                <q-item-label > Cartas, cursos, ceritificaciones </q-item-label>
-                                            </q-item-section>
-                                        </q-item>
-
-                                        <q-item tag="label" v-ripple>
-                                            <q-item-section side top>
-                                                <q-checkbox v-model="check2" />
-                                            </q-item-section>
-
-                                            <q-item-section>
-                                                <q-item-label > Auto-update apps at anytime. Data charges may apply </q-item-label>
-                                            </q-item-section>
-                                        </q-item>
-
-                                        <q-item tag="label" v-ripple>
-                                            <q-item-section side top>
-                                                <q-checkbox v-model="check3" />
-                                            </q-item-section>
-
-                                            <q-item-section>
-                                                <q-item-label>Auto-add widgets</q-item-label>
-                                                <q-item-label > Automatically add home screen widgets </q-item-label>
-                                            </q-item-section>
-                                        </q-item> -->
                                     </q-list>
                                 </div>
                                 <div class="col-12 justify-center flex q-py-lg">
@@ -196,27 +164,24 @@
         <div class="container bg-white" style="min-width: 450px; max-width: 85vw; min-height: 30vh; max-height: 90vh">
             <div class="watermark-container justify-center flex">
                 <q-card class="justify-center flex bg-transparent full-width">
-                    
                     <q-card-section>
                         <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">EVIDENCIA</div>
                     </q-card-section>
 
-                    <iframe src="http://localhost:4600/api/v1/folder/dacaccdd-7079-4bbf-8e7c-59fe40155df5.pdf"
-                    width="800" height="600"/>
+                    <iframe src="http://localhost:4600/api/v1/folder/dacaccdd-7079-4bbf-8e7c-59fe40155df5.pdf" width="800" height="600" />
 
                     <q-btn icon="close" class="q-mr-sm" @click="viewDocument = false" />
                 </q-card>
- 
             </div>
         </div>
     </q-dialog>
 </template>
 
 <script setup>
-import { getFileApi, getFilesApi } from '@/api/files';
+import { getFileApi } from '@/api/files';
 import { getNormEnterpriseApi } from '@/api/norms';
 import { getQualificationsApi, processRequirementsApi } from '@/api/qualifications';
-import { getRequirementsByNormApi } from '@/api/requirements';
+import { getRequirementsByNormAndEnterpriseApi } from '@/api/requirements';
 import { notifyError, notifySuccess } from '@/config/notifications';
 import { storeAuth } from '@/store/auth';
 import { Notify } from 'quasar';
@@ -342,7 +307,7 @@ onBeforeMount(async () => {
 
 async function getRequirements() {
     try {
-        const { data } = await getRequirementsByNormApi(norm.value.value);
+        const { data } = await getRequirementsByNormAndEnterpriseApi(norm.value.value, enterprise.value.value);
 
         //extraer los requirements de cada recurso y dejarlos en un array
         reqData.value = data.map((r) => r.requirements).flat();
@@ -390,6 +355,31 @@ function openDialog() {
     norm.value = null;
     requirement.value = null;
     norm.value = null;
+    qualificationDialog.value = true;
+}
+
+function evaluateQualification(data) {
+    console.log(data);
+
+    norm.value = norms.value.find((n) => n.value == data.norm._id);
+    let requeriment = [];
+    reqData.value.forEach((r) => {
+        //buscar el input que tenga el r.id
+        r.inputs.forEach((i) => {
+            if (data.id == i._id) {
+                requeriment.push(r);
+            }
+        });
+    });
+
+    requirement.value = { label: requeriment[0].title, value: requeriment[0]._id };
+    inputs.value = [
+        {
+            _id: data.id,
+            description: requeriment[0].inputs.find((i) => i._id == data.id).description,
+            selected: true
+        }
+    ];
     qualificationDialog.value = true;
 }
 
@@ -455,8 +445,7 @@ async function renderFile(nameFile) {
     viewDocument.value = true;
     const response = await getFileApi(nameFile);
 
-    if (response.status <= 300) {
-        
+    if (response.status <= 300) { 
     } else {
         notifyError({ message: 'Error al obtener el archivo.' });
     }

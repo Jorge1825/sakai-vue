@@ -16,7 +16,7 @@
                     <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
 
                     <!-- Botón de colapsar con fondo rojo y color de ícono blanco -->
-                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
+                    <q-btn icon="expand_less" :style="{ backgroundColor: 'rgb(242, 185, 179)', color: 'white' }" @click="collapseAll" />
                 </div>
             </div>
             <!-- Tabla de usuarios -->
@@ -35,7 +35,7 @@
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
                                 {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </div>
@@ -47,7 +47,7 @@
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
                             <q-btn
                                 :icon="slotProps.data.status === true ? 'clear' : 'check'"
-                                :style="{ backgroundColor: slotProps.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
+                                :style="{ backgroundColor: slotProps.data.status === true ? 'rgb(242, 185, 179)' : 'rgb(4, 178, 217)', color: 'white' }"
                                 @click="toggleStatus(slotProps.data)"
                                 dense
                                 round
@@ -64,7 +64,7 @@
                         <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
                         <p>
                             <strong>Estado:</strong>
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'">
                                 {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </p>
@@ -180,7 +180,7 @@ async function saveRequirement() {
             await fetchRequirements();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar el requisito.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar el requisito.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     } else {
         const requirementApi = {
@@ -197,7 +197,7 @@ async function saveRequirement() {
             await fetchRequirements();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear el requerimiento.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear el requerimiento.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     }
 }
@@ -224,7 +224,7 @@ async function toggleStatus(selectedRequirement) {
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedRequirement.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
+                color: selectedRequirement.status === 'Activo' ? 'blue' : 'rgb(242, 185, 179)', //rgb(4, 178, 217)
                 multiLine: true
             });
 
@@ -240,7 +240,7 @@ async function toggleStatus(selectedRequirement) {
             type: 'negative',
             position: 'top',
             textColor: 'white',
-            color: 'red',
+            color: 'rgb(242, 185, 179)',
             multiLine: true
         });
     }

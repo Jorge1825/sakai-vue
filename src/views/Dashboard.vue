@@ -5,7 +5,7 @@ import { useLayout } from '@/layout/composables/layout';
 import { ProductService } from '@/service/ProductService';
 import { storeAuth } from '@/store/auth';
 import { useQuasar } from 'quasar';
-import { onBeforeMount, onMounted, ref, watch } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 
 const { getPrimary, getSurface, isDarkTheme } = useLayout();
 
@@ -16,6 +16,7 @@ const chartData = ref(null);
 const chartOptions = ref(null);
 const user = ref(null);
 const dialog = ref(false);
+const dialog1 = ref(true);
 
 const items = ref([
     { label: 'Add New', icon: 'pi pi-fw pi-plus' },
@@ -25,10 +26,10 @@ const items = ref([
 onBeforeMount(() => {
     const useStoreAuth = storeAuth();
     user.value = useStoreAuth.getUserToken();
-    const role = useStoreAuth.getRoleToken()
+    const role = useStoreAuth.getRoleToken();
 
-    if(!user.value?.firstDiagnostic && role.name != 'ADMIN' && role.name != 'SUPERADMIN') {
-        dialog.value = true;
+    if (!user.value?.firstDiagnostic && role.name != 'ADMIN' && role.name != 'SUPERADMIN') {
+        dialog1.value = true;
     }
 
     ProductService.getProductsSmall().then((data) => (products.value = data));
@@ -368,18 +369,24 @@ watch([getPrimary, getSurface, isDarkTheme], () => {
                 <q-img src="../assets/sosteniweb/logo_negro.png" class="col-span-12" width="20rem" />
             </div>
 
-
             <div class="col-12 text-5xl text-bold text-center">¡Gracias por unirte a Sosteniweb!</div>
             <div class="col-12 text-3xl text-center q-mt-sm">Estamos listos para simplificar tu gestión y avanzar juntos</div>
         </div>
+        <q-dialog v-model="dialog1" persistent>
+            <div class="container bg-white row" style="min-width: 450px; min-height: 30vh; max-height: 90vh">
+                <div class="col-12 justify-center flex q-py-md q-pt-lg"> <q-img src="../assets/sosteniweb/sosteniweb manual.png" width="30rem" /></div>
+                <div class=" col-12  justify-center text-center items-end flex  q-px-xl text-2xl">Completa esta evaluación rápida para obtener una visión general de tu nivel de cumplimiento. Solo tomará unos minutos.</div>
+                <div class="col-12 items-end flex justify-center q-pb-xl q-pt-lg">
+                    <q-btn class="q-mx-sm" outline label="Comenzar" color="primary" 
+                    @click="dialog1 = false; dialog = true"
+                    />
+                </div>
+            </div>
+        </q-dialog>
         <q-dialog v-model="dialog" persistent>
-            <div 
-                class="container bg-white"
-                style="min-width: 450px; min-height: 30vh; max-height: 90vh"
-                :style="$q.screen.width < 1000 ? 'min-width: 100vw' : 'min-width: 50vw'"
-                 >
+            <div class="container bg-white" style="min-width: 450px; min-height: 30vh; max-height: 90vh" :style="$q.screen.width < 1000 ? 'min-width: 100vw' : 'min-width: 50vw'">
                 <div class="watermark-container justify-center flex">
-                    <FormDiagnostic  @close-dialog="closeDialog" />
+                    <FormDiagnostic @close-dialog="closeDialog" />
                 </div>
             </div>
         </q-dialog>

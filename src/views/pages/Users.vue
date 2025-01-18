@@ -45,7 +45,7 @@
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
                                 {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </div>
@@ -66,7 +66,7 @@
                             <!-- Botón que cambia de estado con colores según el estado -->
                             <q-btn
                                 :icon="slotProps.data.status === true ? 'clear' : 'check'"
-                                :style="{ backgroundColor: slotProps.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
+                                :style="{ backgroundColor: slotProps.data.status === true ? 'rgb(242, 185, 179)' : 'rgb(4, 178, 217)', color: 'white' }"
                                 @click="toggleStatus(slotProps.data)"
                                 dense
                                 round
@@ -89,7 +89,7 @@
                         <p><strong>Rol:</strong> {{ slotProps.data.role.name }}</p>
                         <p>
                             <strong>Estado:</strong>
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'">
                                 {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </p>
@@ -142,11 +142,17 @@
                                 </div>
 
                                 <div class="col-6">
-                                    <q-input lazy-rules :rules="
-                                    //contraseña es requerida si no se esta editando
-                                    user._id ? [] : [(val) => (val && val.length > 0) || 'Contraseña requerida']
-                                    
-                                    " v-model="user.password" label="Contraseña" required style="padding: 10px" />
+                                    <q-input
+                                        lazy-rules
+                                        :rules="
+                                            //contraseña es requerida si no se esta editando
+                                            user._id ? [] : [(val) => (val && val.length > 0) || 'Contraseña requerida']
+                                        "
+                                        v-model="user.password"
+                                        label="Contraseña"
+                                        required
+                                        style="padding: 10px"
+                                    />
                                 </div>
                             </div>
                         </q-card-section>
@@ -290,7 +296,7 @@ async function saveUser() {
             await getUsers();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar el usuario.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar el usuario.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     } else {
         const userApi = {
@@ -311,7 +317,7 @@ async function saveUser() {
             await getUsers();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear el usuario.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear el usuario.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     }
 }
@@ -321,7 +327,7 @@ function validateUser() {
     if (!usernameRegex.test(user.value.username)) {
         Notify.create({
             message: 'El nombre de usuario no debe contener caracteres especiales.',
-            color: 'red',
+            color: 'rgb(242, 185, 179)',
             textColor: 'white',
             position: 'top',
             classes: 'my-notification'
@@ -333,7 +339,7 @@ function validateUser() {
     if (!emailRegex.test(user.value.email)) {
         Notify.create({
             message: 'El email no es válido.',
-            color: 'red',
+            color: 'rgb(242, 185, 179)',
             textColor: 'white',
             position: 'top',
             classes: 'my-notification'
@@ -345,7 +351,7 @@ function validateUser() {
     if (!phoneRegex.test(user.value.phone)) {
         Notify.create({
             message: 'El teléfono debe contener 10 dígitos.',
-            color: 'red',
+            color: 'rgb(242, 185, 179)',
             textColor: 'white',
             position: 'top',
             classes: 'my-notification'
@@ -378,7 +384,7 @@ function editUser(selectedUser) {
 //     const index = users.value.findIndex(u => u.id === selectedUser.id);
 //     if (index !== -1) {
 //         users.value.splice(index, 1);
-//         Notify.create({ message: 'Usuario eliminado correctamente.', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+//         Notify.create({ message: 'Usuario eliminado correctamente.', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
 //     }
 // }
 //funcion activar desactivavr usuario
@@ -398,7 +404,7 @@ async function toggleStatus(selectedUser) {
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedUser.status === 'Activo' ? 'blue' : 'red',
+                color: selectedUser.status === 'Activo' ? 'blue' : 'rgb(242, 185, 179)',
                 multiLine: true
             });
 
@@ -414,7 +420,7 @@ async function toggleStatus(selectedUser) {
             type: 'negative',
             position: 'top',
             textColor: 'white',
-            color: 'red',
+            color: 'rgb(242, 185, 179)',
             multiLine: true
         });
     }

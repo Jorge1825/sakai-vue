@@ -115,13 +115,13 @@ const color = ref('text-red');
 const percent = ref(0);
 const step = ref(1);
 const questions = ref([
-    { text: '¿Tiene personal capacitado para cumplir con las funciones?', cumple: ref(false), noCumple: ref(false) },
-    { text: '¿Cuenta su equipo con certificaciones óptimas?', cumple: ref(false), noCumple: ref(false) },
-    { text: '¿Dispone de personal entrenado para las funciones?', cumple: ref(false), noCumple: ref(false) },
-    { text: '¿El equipo está debidamente certificado?', cumple: ref(false), noCumple: ref(false) },
-    { text: '¿El área de trabajo cumple con las dimensiones necesarias?', cumple: ref(false), noCumple: ref(false) },
-    { text: '¿El área de trabajo cumple con el equipo necesario?', cumple: ref(false), noCumple: ref(false) },
-    { text: '¿Cuenta con personal de salud?', cumple: ref(false), noCumple: ref(false) }
+    { id:1, text: '¿Cuentas con responsables del sistema de gestión para el diseño con licencia y para la gestión interna de tu empresa con el curso de 50 horas?', cumple: ref(false), noCumple: ref(false) },
+    { id:2, text: '¿Estas seguro que todos los trabajadores cuentan con la afiliación a la seguridad social (salud, pensión, Arl) sean de nómina, por prestación de servicios o cualquier otra modalidad de contratación?', cumple: ref(false), noCumple: ref(false) },
+    { id:3, text: '¿Elaboras y ejecutas actividades de capacitación en promoción y prevención de riesgos incluyendo los temas prioritarios en tu empresa?', cumple: ref(false), noCumple: ref(false) },
+    { id:4, text: '¿Elaboras y ejecutas actividades de capacitación en promoción y prevención de riesgos incluyendo los temas prioritarios en tu empresa', cumple: ref(false), noCumple: ref(false) },
+    { id:5, text: '¿Cuentas con las evaluaciones médicas de ingreso, anuales y de retiro de tus empleados?', cumple: ref(false), noCumple: ref(false) },
+    { id:6, text: '¿Realizas la identificación de peligros, evaluación y valoración de los riesgos con la participación de tus empleados y la evidencias en una matriz?', cumple: ref(false), noCumple: ref(false) },
+    { id:7, text: '¿Ejecutas las actividades de prevención y control de acuerdo a los resultados de los ejercicios de identificación de riesgos.?', cumple: ref(false), noCumple: ref(false) }
 ]);
 
 function close() {

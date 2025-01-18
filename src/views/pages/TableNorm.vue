@@ -14,7 +14,7 @@
                     <!-- Botón de expandir -->
                     <!-- <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" /> -->
                     <!-- Botón de colapsar -->
-                    <!-- <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" /> -->
+                    <!-- <q-btn icon="expand_less" :style="{ backgroundColor: 'rgb(242, 185, 179)', color: 'white' }" @click="collapseAll" /> -->
                 </div>
             </div>
             <!-- Tabla de requias -->
@@ -396,7 +396,7 @@ async function saveNorm() {
             await getRequirements();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar las Norma.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar las Norma.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     } else {
         //eliminar el _id de los inputs
@@ -412,7 +412,7 @@ async function saveNorm() {
             await getRequirements();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear la norma.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear la norma.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     }
 }
@@ -448,7 +448,7 @@ async function toggleStatus(selectedRequeremet) {
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedRequeremet.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
+                color: selectedRequeremet.status === 'Activo' ? 'blue' : 'rgb(242, 185, 179)', //rgb(4, 178, 217)
                 multiLine: true
             });
 
@@ -464,7 +464,7 @@ async function toggleStatus(selectedRequeremet) {
             type: 'negative',
             position: 'top',
             textColor: 'white',
-            color: 'red',
+            color: 'rgb(242, 185, 179)',
             multiLine: true
         });
     }
@@ -505,7 +505,7 @@ async function uploadFileServer() {
             type: 'negative',
             position: 'top',
             textColor: 'white',
-            color: 'red',
+            color: 'rgb(242, 185, 179)',
             multiLine: true
         });
     }
@@ -543,7 +543,7 @@ async function formatData(text) {
             type: 'negative',
             position: 'top',
             textColor: 'white',
-            color: 'red',
+            color: 'rgb(242, 185, 179)',
             multiLine: true
         });
     }

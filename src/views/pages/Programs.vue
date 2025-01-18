@@ -16,7 +16,7 @@
                     <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
 
                     <!-- Botón de colapsar con fondo rojo y color de ícono blanco -->
-                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
+                    <q-btn icon="expand_less" :style="{ backgroundColor: 'rgb(242, 185, 179)', color: 'white' }" @click="collapseAll" />
                 </div>
             </div>
             <!-- Tabla de programas -->
@@ -36,7 +36,7 @@
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
                                 {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </div>
@@ -48,7 +48,7 @@
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
                             <q-btn
                                 :icon="slotProps.data.status === true ? 'clear' : 'check'"
-                                :style="{ backgroundColor: slotProps.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
+                                :style="{ backgroundColor: slotProps.data.status === true ? 'rgb(242, 185, 179)' : 'rgb(4, 178, 217)', color: 'white' }"
                                 @click="toggleStatus(slotProps.data)"
                                 dense
                                 round
@@ -66,7 +66,7 @@
                         <p><strong>Categoría:</strong> {{ slotProps.data.category }}</p>
                         <p>
                             <strong>Estado:</strong>
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'">
                                 {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </p>
@@ -96,7 +96,7 @@
                                 <div class="col-6">
                                     <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Descripción requerida']" v-model="program.description" label="Descripción" required style="padding: 10px" autogrow />
                                 </div>
-<!--                                 <div class="col-6">
+                                <!--                                 <div class="col-6">
                                     <q-input lazy-rules :rules="[(val) => (val && val.length > 0) || 'Categoría requerida']" v-model="program.category" label="Categoría" required style="padding: 10px" autogrow />
                                 </div> -->
                                 <div class="col-6">
@@ -197,7 +197,7 @@ async function saveProgram() {
             await getProgram();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar el programa.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar el programa.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     } else {
         const programApi = {
@@ -215,7 +215,7 @@ async function saveProgram() {
             await getProgram();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear el programa.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear el programa.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     }
 }
@@ -243,7 +243,7 @@ async function toggleStatus(selectedProgram) {
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedProgram.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
+                color: selectedProgram.status === 'Activo' ? 'blue' : 'rgb(242, 185, 179)', //rgb(4, 178, 217)
                 multiLine: true
             });
 
@@ -259,7 +259,7 @@ async function toggleStatus(selectedProgram) {
             type: 'negative',
             position: 'top',
             textColor: 'white',
-            color: 'red',
+            color: 'rgb(242, 185, 179)',
             multiLine: true
         });
     }

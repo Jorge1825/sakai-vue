@@ -11,7 +11,7 @@
                 <div class="col-12 flex justify-end">
                     <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" />
                     <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
-                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
+                    <q-btn icon="expand_less" :style="{ backgroundColor: 'rgb(242, 185, 179)', color: 'white' }" @click="collapseAll" />
                 </div>
             </div>
             <DataTable
@@ -29,7 +29,7 @@
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
                                 {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </div>
@@ -40,7 +40,7 @@
                         <div class="button-group" style="text-align: center">
                             <q-btn
                                 :icon="slotProps.data.status === true ? 'clear' : 'check'"
-                                :style="{ backgroundColor: slotProps.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
+                                :style="{ backgroundColor: slotProps.data.status === true ? 'rgb(242, 185, 179)' : 'rgb(4, 178, 217)', color: 'white' }"
                                 @click="toggleStatus(slotProps.data)"
                                 dense
                                 round
@@ -56,7 +56,7 @@
                         <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
                         <p>
                             <strong>Estado:</strong>
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'">
                                 {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </p>
@@ -111,7 +111,7 @@
 </template>
 
 <script setup>
-import { createSuggestedEvidenceApi, editSuggestedEvidenceApi, getSuggestedEvidenceApi, toggleActiveSuggestedEvidenceApi, getNormDetailsApi } from '@/api/suggestedEvidences';
+import { createSuggestedEvidenceApi, editSuggestedEvidenceApi, getNormDetailsApi, getSuggestedEvidenceApi, toggleActiveSuggestedEvidenceApi } from '@/api/suggestedEvidences';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
@@ -191,7 +191,7 @@ async function saveSuggestedEvidence() {
             await getSuggestedEvidence();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar sugerencia de evidencias.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar sugerencia de evidencias.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     } else {
         const suggestedEvidenceApi = {
@@ -208,7 +208,7 @@ async function saveSuggestedEvidence() {
             await getSuggestedEvidence();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear sugerencia de evidencia.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear sugerencia de evidencia.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     }
 }
@@ -231,7 +231,7 @@ async function toggleStatus(selectedSuggestedEvidence) {
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedSuggestedEvidence.status ? 'blue' : 'red',
+                color: selectedSuggestedEvidence.status ? 'blue' : 'rgb(242, 185, 179)',
                 multiLine: true
             });
             await getSuggestedEvidence();
@@ -245,7 +245,7 @@ async function toggleStatus(selectedSuggestedEvidence) {
             type: 'negative',
             position: 'top',
             textColor: 'white',
-            color: 'red',
+            color: 'rgb(242, 185, 179)',
             multiLine: true
         });
     }

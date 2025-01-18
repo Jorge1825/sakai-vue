@@ -20,6 +20,15 @@ export const getRequirementsByNormApi = async (id) => {
         throw error;
     }
 };
+export const getRequirementsByNormAndEnterpriseApi = async (id, enterpriseId) => {
+    try {
+        const response = await axiosInstance.get(`/requirements/norm/${id}/${enterpriseId}`)
+        return response;
+    } catch (error) {
+        console.error('Error al obtener los requisitos', error);
+        throw error;
+    }
+};
 
 // Crear un nuevo requisito
 export const createRequirementApi = async (data) => {

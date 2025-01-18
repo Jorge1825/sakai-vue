@@ -35,12 +35,12 @@
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotNorms">
                         <div style="text-align: left" v-if="role.type == 'USER'">
-                            <q-badge :color="existEnterprise(slotNorms.data) ? 'blue' : 'red'" class="q-ml-xs">
+                            <q-badge :color="existEnterprise(slotNorms.data) ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
                                 {{ existEnterprise(slotNorms.data) ? 'ACTIVA' : 'INACTIVA' }}
                             </q-badge>
                         </div>
                         <div style="text-align: left" v-else>
-                            <q-badge :color="slotNorms.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
+                            <q-badge :color="slotNorms.data.status === true ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
                                 {{ status.find((s) => s.value === slotNorms.data.status).label }}
                             </q-badge>
                         </div>
@@ -53,7 +53,7 @@
                             <q-btn
                                 v-if="role.type == 'ADMIN'"
                                 :icon="slotNorms.data.status === true ? 'clear' : 'check'"
-                                :style="{ backgroundColor: slotNorms.data.status === true ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
+                                :style="{ backgroundColor: slotNorms.data.status === true ? 'rgb(242, 185, 179)' : 'rgb(4, 178, 217)', color: 'white' }"
                                 @click="toggleStatus(slotNorms.data)"
                                 dense
                                 round
@@ -63,7 +63,7 @@
                             <q-btn
                                 v-if="role.type == 'USER'"
                                 :icon="existEnterprise(slotNorms.data) ? 'check' : 'clear'"
-                                :style="{ backgroundColor: !existEnterprise(slotNorms.data) ? 'red' : 'rgb(4, 178, 217)', color: 'white' }"
+                                :style="{ backgroundColor: !existEnterprise(slotNorms.data) ? 'rgb(242, 185, 179)' : 'rgb(4, 178, 217)', color: 'white' }"
                                 @click="toggleEnterprise(slotNorms.data)"
                                 dense
                                 round
@@ -89,13 +89,13 @@
                         </p>
                         <p>
                             <strong>Estado:</strong>
-                            <q-badge :color="slotNorms.data.status === true ? 'blue' : 'red'">
+                            <q-badge :color="slotNorms.data.status === true ? 'blue' : 'rgb(242, 185, 179)'">
                                 {{ status.find((s) => s.value === slotNorms.data.status).label }}
                             </q-badge>
                         </p>
                         <p>
                             <strong>Por Defecto:</strong>
-                            <q-badge :color="slotNorms.data?.defaultNorm === true ? 'blue' : 'red'">
+                            <q-badge :color="slotNorms.data?.defaultNorm === true ? 'blue' : 'rgb(242, 185, 179)'">
                                 {{ status.find((s) => s.value === slotNorms.data?.defaultNorm)?.label }}
                             </q-badge>
                         </p>
@@ -302,7 +302,7 @@ async function toggleStatus(selectedNorm) {
 
             notifySuccess({
                 message: `Norma ${selectedNorm.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
-                color: selectedNorm.status === 'Activo' ? 'blue' : 'red'
+                color: selectedNorm.status === 'Activo' ? 'blue' : 'rgb(242, 185, 179)'
             });
 
             // Vuelve a cargar los usuarios si es necesario
@@ -317,7 +317,6 @@ async function toggleStatus(selectedNorm) {
 }
 //funcion activar desactivavr usuario
 async function toggleEnterprise(selectedNorm) {
-
     try {
         // Cambia el estado del usuario (activo/inactivo)
         const response = await toggleEnterpriseNormApi({ id: selectedNorm._id, enterprise: enterprise.value.value });
@@ -328,7 +327,7 @@ async function toggleEnterprise(selectedNorm) {
 
             notifySuccess({
                 message: `Norma ${selectedNorm.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
-                color: selectedNorm.status === 'Activo' ? 'blue' : 'red'
+                color: selectedNorm.status === 'Activo' ? 'blue' : 'rgb(242, 185, 179)'
             });
 
             // Vuelve a cargar los usuarios si es necesario
@@ -352,7 +351,7 @@ function collapseAll() {
 }
 
 function existEnterprise(data) {
-    console.log(role.value)
+    console.log(role.value);
 
     console.log(data.enterprise);
     console.log(enterprise.value);

@@ -16,7 +16,7 @@
                     <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
 
                     <!-- Botón de colapsar con fondo rojo y color de ícono blanco -->
-                    <q-btn icon="expand_less" :style="{ backgroundColor: 'red', color: 'white' }" @click="collapseAll" />
+                    <q-btn icon="expand_less" :style="{ backgroundColor: 'rgb(242, 185, 179)', color: 'white' }" @click="collapseAll" />
                 </div>
             </div>
             <!-- Tabla de empresas -->
@@ -38,7 +38,7 @@
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotProps">
                         <div style="text-align: left">
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'" class="q-ml-xs">
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
                                 {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </div>
@@ -65,7 +65,7 @@
                         <p><strong>Evidencia:</strong>{{ slotProps.data.evidence }}</p>
                         <p>
                             <strong>Estado:</strong>
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'red'">
+                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'">
                                 {{ status.find((s) => s.value === slotProps.data.status).label }}
                             </q-badge>
                         </p>
@@ -218,7 +218,7 @@ async function savePrompt() {
             await getQualifications();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al actualizar el empresa.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al actualizar el empresa.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     } else {
         const qualificationApi = {
@@ -242,7 +242,7 @@ async function savePrompt() {
             await getQualifications();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear el empresa.', type: 'negative', position: 'top', textColor: 'white', color: 'red', multiLine: true });
+            Notify.create({ message: 'Error al crear el empresa.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     }
 }
@@ -270,7 +270,7 @@ async function toggleStatus(selectedPrompt) {
                 type: 'positive',
                 position: 'top',
                 textColor: 'white',
-                color: selectedPrompt.status === 'Activo' ? 'blue' : 'red', //rgb(4, 178, 217)
+                color: selectedPrompt.status === 'Activo' ? 'blue' : 'rgb(242, 185, 179)', //rgb(4, 178, 217)
                 multiLine: true
             });
 
@@ -286,7 +286,7 @@ async function toggleStatus(selectedPrompt) {
             type: 'negative',
             position: 'top',
             textColor: 'white',
-            color: 'red',
+            color: 'rgb(242, 185, 179)',
             multiLine: true
         });
     }
@@ -307,12 +307,12 @@ async function sendToOpenAI(prompt) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: ` `, // clave API
+                Authorization: ` ` // clave API
             },
             body: JSON.stringify({
                 model: '', // Agregar modelo que se est utilizando
-                prompt: prompt,
-            }),
+                prompt: prompt
+            })
         });
 
         if (!response.ok) {
@@ -320,19 +320,18 @@ async function sendToOpenAI(prompt) {
         }
 
         const data = await response.json();
-        console.log('Respuesta de IA:', data); 
+        console.log('Respuesta de IA:', data);
         return data.choices[0].text.trim(); // Devuelve la respuesta generada
     } catch (error) {
         console.error('Error al enviar la solicitud a OpenAI:', error);
         Notify.create({
             message: 'Error al obtener respuesta de OpenAI.',
             type: 'negative',
-            position: 'top',
+            position: 'top'
         });
         return null;
     }
 }
-
 </script>
 
 <style scoped>

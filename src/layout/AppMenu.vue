@@ -37,7 +37,7 @@ const model = ref([
             { label: 'Requerimientos', icon: 'pi pi-fw pi-cog', to: '/tablenorm', users: ['ADMIN','SUPERADMIN'] },
             { label: 'Empresas ', icon: 'pi pi-fw pi-cog', to: '/enterprises', users: ['ADMIN','SUPERADMIN'] },
             { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification', users: ['ADMIN','SUPERADMIN'] },
-            { label: 'Calificar Requerimientos', icon: 'pi pi-fw pi-cog', to: 'qualificationClient', users: ['USER'] },
+            { label: 'Autoevaluación', icon: 'pi pi-fw pi-cog', to: 'qualificationClient', users: ['USER'] },
             { label: 'Documentos', icon: 'pi pi-fw pi-cog', to: '/documents', users: ['USER','ADMIN','SUPERADMIN'] },
             { label: 'Plan de trabajo', icon: 'pi pi-fw pi-cog', to: '/WorkPlans', users: ['USER','ADMIN','SUPERADMIN'] },
             { label: 'Programas', icon: 'pi pi-fw pi-cog', to: '/programs', users: ['ADMIN','SUPERADMIN'] },
