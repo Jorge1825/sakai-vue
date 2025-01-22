@@ -1,5 +1,6 @@
 
 import axiosInstance from "@/config/axios.conf";
+import { notifyError } from "@/config/notifications";
 
 export const getEnterprisesApi = async () => {
     try {

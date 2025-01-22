@@ -5,7 +5,7 @@ import { useLayout } from '@/layout/composables/layout';
 import { ProductService } from '@/service/ProductService';
 import { storeAuth } from '@/store/auth';
 import { useQuasar } from 'quasar';
-import { onBeforeMount, ref, watch } from 'vue';
+import { onBeforeMount, onMounted, ref, watch } from 'vue';
 
 const { getPrimary, getSurface, isDarkTheme } = useLayout();
 
@@ -24,18 +24,24 @@ const items = ref([
 ]);
 
 onBeforeMount(() => {
+
+
+    ProductService.getProductsSmall().then((data) => (products.value = data));
+    chartData.value = setChartData();
+    chartOptions.value = setChartOptions();
+});
+
+onMounted(() => {
     const useStoreAuth = storeAuth();
     user.value = useStoreAuth.getUserToken();
     const role = useStoreAuth.getRoleToken();
+
+    console.log('role', role);
     const firstDiagnostic = useStoreAuth.getFirstDiagnostic();
 
     if (!firstDiagnostic && role.type == 'USER') {
         dialog1.value = true;
     }
-
-    ProductService.getProductsSmall().then((data) => (products.value = data));
-    chartData.value = setChartData();
-    chartOptions.value = setChartOptions();
 });
 function setChartData() {
     return {

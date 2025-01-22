@@ -27,6 +27,7 @@ export const storeAuth = defineStore(
         const decodeToken = () => {
             if (token.value) {
                 dataToken.value = jwtDecode(token.value);
+                console.log(dataToken.value);
                 enterprises.value = dataToken.value.enterprises || [];
             }
             return dataToken.value;

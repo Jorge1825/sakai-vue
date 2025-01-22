@@ -132,7 +132,7 @@ const changeEnterprise = async () => {
 
         console.log(response.data.firstDiagnostic);
 
-        useStoreAuth.setFirstDiagnostic(response.data.firstDiagnostic);
+        await useStoreAuth.setFirstDiagnostic(response.data.firstDiagnostic);
         router.push({ path: '/' });
         window.location.reload();
     } catch (error) {
