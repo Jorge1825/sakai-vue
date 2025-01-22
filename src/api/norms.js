@@ -83,3 +83,14 @@ export const firstDiagnostic = async (data) => {
         throw error;
     }
 };
+export const getEvaluationExpress = async (id) => {
+    try {
+        // Hacer la petición PUT al endpoint de activar/desactivar prompt
+        const response = await axiosInstance.get(`/norms/express/${id}`);
+
+        return response;
+    } catch (error) {
+        console.error('Error al obtener las evaluaciones express', error);
+        throw error;
+    }
+}

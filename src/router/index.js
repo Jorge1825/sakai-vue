@@ -14,6 +14,7 @@ import { storeAuth } from '@/store/auth';
 import Documents from '@/views/pages/Documents.vue';
 import Diagnostics from '@/views/pages/Diagnostics.vue';
 import SuggestedEvidences from '@/views/pages/SuggestedEvidences.vue';
+import Express from '@/views/pages/Express.vue';
 
 const checkAuth = () => {
     const cookie = Cookies.get('access_token');
@@ -177,6 +178,11 @@ const router = createRouter({
                     path: '/qualificationClient',
                     name: 'QualificationClient',
                     component: QualificationClient
+                },
+                {
+                    path: '/express',
+                    name: 'EvaluationExpress',
+                    component:Express
                 },
                 {
                     path: '/prompts',
