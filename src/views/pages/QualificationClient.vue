@@ -129,8 +129,8 @@
                                     />
                                 </div>
 
-                                <div class="col-10 q-mt-md">
-                                    <table class="tablereq">
+                                <div class="col-10 q-mt-md" style="overflow-y: auto; max-height: 400px;">
+                                    <table class="tablereq ">
                                         <thead>
                                             <tr>
                                                 <th>Selección</th>
@@ -155,11 +155,14 @@
 
 
                                 </div>
+                                <div class="col-12 justify-center text-center flex q-py-lg">
+                                    Solo se admite un archivo, si necesita cargar más evidencias todo en un solo archivo pdf.
+                                </div>
                                 <div class="col-12 justify-center flex q-py-lg">
                                     {{ file?.name || 'No se ha seleccionado un archivo' }}
                                 </div>
                                 <div class="col-12 justify-center flex items-center">
-                                    <input type="file" id="inputFile" @change="selectFile" style="display: none" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" />
+                                    <input type="file" id="inputFile" @change="selectFile" style="display: none" accept=".pdf,.txt,.jpg,.jpeg,.png" />
                                     <q-btn :disable="!norm || !requirement || !inputs.length" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
                                 </div>
                             </div>
@@ -373,6 +376,14 @@ async function getNorms() {
 }
 
 const selectFile = (event) => {
+
+    //solo aceptar archivos pdf, txt, jpg, jpeg, png
+
+    if (!['application/pdf', 'text/plain', 'image/jpeg', 'image/png', 'image/jpg'].includes(event.target.files[0].type)) {
+        notifyError({ message: 'El archivo seleccionado no tiene un formato válido.' });
+        return;
+    }
+
     file.value = event.target.files[0];
 };
 
