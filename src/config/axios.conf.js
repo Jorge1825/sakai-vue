@@ -15,6 +15,7 @@ spinnerOverlay.style.zIndex = '1000';
 spinnerOverlay.style.display = 'none';  // Oculto inicialmente
 spinnerOverlay.style.justifyContent = 'center';
 spinnerOverlay.style.alignItems = 'center';
+spinnerOverlay.style.zIndex = '9999';
 
 // Spinner (nueva estructura con divs)
 const spinner = document.createElement('div');
@@ -105,7 +106,7 @@ function hideDefault() {
 
 // Crear la instancia de Axios
 const axiosInstance = axios.create({
-  baseURL: "https://sosteniweb.com/api/v1",
+  baseURL: "http://localhost:4600/api/v1",
 });
 
 axiosInstance.defaults.withCredentials = true;

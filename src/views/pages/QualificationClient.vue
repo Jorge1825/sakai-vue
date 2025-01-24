@@ -31,6 +31,11 @@
                 :rowsPerPageOptions="[5, 10, 25, 50, 100]"
             >
                 <!-- <Column field="name" header="NOMBRE" :sortable="true" style="width: 10%" /> -->
+                <Column field="indicator" header="INDICADOR" :sortable="true" style="width: 10%">
+                    <template #body="slotProps">
+                        {{ slotProps.data?.indicator }}
+                    </template>
+                </Column>
                 <Column field="requirement" header="REQUISITO" :sortable="true" style="width: 10%">
                     <template #body="slotProps">
                         {{ slotProps.data?.description }}
@@ -55,6 +60,17 @@
                                 color: 'white'
                             }"
                             @click="renderFile(slotProps.data.evidence?.name)"
+                            dense
+                            round
+                            class="q-mr-md"
+                        />
+                        <q-btn
+                            icon="cloud_download"
+                            :style="{
+                                backgroundColor: slotProps.data.evidence ? 'rgb(4, 178, 217)' : 'rgb(242, 185, 179)',
+                                color: 'white'
+                            }"
+                            @click="downloadFile(slotProps.data.evidence?.name)"
                             dense
                             round
                         />
@@ -114,32 +130,30 @@
                                 </div>
 
                                 <div class="col-10 q-mt-md">
-                                    <q-list bordered padding>
-                                        <q-item-label header>Descripción de los Requisitos</q-item-label>
+                                    <table class="tablereq">
+                                        <thead>
+                                            <tr>
+                                                <th>Selección</th>
+                                                <th>Descripción</th>
+                                                <th>Evidencias sugeridas</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="input in inputs" :key="input._id">
+                                                <td class="col-value">
+                                                    <q-checkbox disable v-model="input.selected" />
+                                                </td>
+                                                <td class="col-req-description">
+                                                    {{ input.description }}
+                                                </td>
+                                                <td class="col-req-description">
+                                                    <q-item-label v-html="renderSuggested(input.suggestedEvidence)"> </q-item-label>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
 
-                                        <q-item tag="label" v-ripple>
-                                            <q-item-section side top> Selección </q-item-section>
 
-                                            <q-item-section top class="text-center"> Descripción </q-item-section>
-
-                                            <q-item-section side top> Evidencias sugerencias </q-item-section>
-                                        </q-item>
-                                        <q-item tag="label" v-ripple v-for="input in inputs" :key="input._id">
-                                            <q-item-section side top>
-                                                <q-checkbox 
-                                                disable
-                                                v-model="input.selected" />
-                                            </q-item-section>
-
-                                            <q-item-section>
-                                                <q-item-label> {{ input.description }} </q-item-label>
-                                            </q-item-section>
-
-                                            <q-item-section side class="text-lg">
-                                                <q-item-label> Cartas, cursos, ceritificaciones </q-item-label>
-                                            </q-item-section>
-                                        </q-item>
-                                    </q-list>
                                 </div>
                                 <div class="col-12 justify-center flex q-py-lg">
                                     {{ file?.name || 'No se ha seleccionado un archivo' }}
@@ -163,14 +177,14 @@
     <q-dialog v-model="viewDocument" persistent>
         <div class="container bg-white" style="min-width: 450px; max-width: 85vw; min-height: 30vh; max-height: 90vh">
             <div class="watermark-container justify-center flex">
-                <q-card class="justify-center flex bg-transparent full-width">
+                <q-card class="justify-center flex bg-transparent full-width" v-if="documentUrl">
                     <q-card-section>
                         <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">EVIDENCIA</div>
                     </q-card-section>
 
-                    <iframe src="http://localhost:4600/api/v1/folder/dacaccdd-7079-4bbf-8e7c-59fe40155df5.pdf" width="800" height="600" />
+                    <iframe :src="documentUrl" width="800" height="600" />
 
-                    <q-btn icon="close" class="q-mr-sm" @click="viewDocument = false" />
+                    <q-btn icon="close" class="q-mr-sm" @click="viewDocument = false; documentUrl = null" />
                 </q-card>
             </div>
         </div>
@@ -299,6 +313,19 @@ const status = ref([
 const useStoreAuth = storeAuth();
 const enterprise = ref();
 
+const renderSuggested = (suggested) => {
+    console.log(suggested);
+
+    //bucar todos los \n y reemplazarlos por <br>
+
+
+    if (suggested) {
+        return suggested.replace(/\n/g, '<br><br>');
+    } else {
+        return 'No hay evidencia sugerida';
+    }
+};
+
 onBeforeMount(async () => {
     enterprise.value = useStoreAuth.getSelectedCompany();
     await getQualifications();
@@ -360,6 +387,7 @@ function openDialog() {
 
 function evaluateQualification(data) {
     console.log(data);
+    file.value = null;
 
     norm.value = norms.value.find((n) => n.value == data.norm._id);
     let requeriment = [];
@@ -373,13 +401,23 @@ function evaluateQualification(data) {
     });
 
     requirement.value = { label: requeriment[0].title, value: requeriment[0]._id };
+
+    //validar si suggestedEvidence es un array
+    
     inputs.value = [
         {
             _id: data.id,
             description: requeriment[0].inputs.find((i) => i._id == data.id).description,
+            indicator: data.indicator,
             selected: true
         }
     ];
+    if (Array.isArray(data.suggestedEvidence)) {
+        
+        inputs.value[0].suggestedEvidence = data.suggestedEvidence[0]
+    } else{
+        inputs.value[0].suggestedEvidence = data.suggestedEvidence;
+    }
     qualificationDialog.value = true;
 }
 
@@ -442,14 +480,38 @@ async function renderFile(nameFile) {
         notifyError({ message: 'No se ha seleccionado un archivo.' });
         return;
     }
-    viewDocument.value = true;
     const response = await getFileApi(nameFile);
 
     if (response.status <= 300) { 
+        documentUrl.value = URL.createObjectURL(response.data);
+        
+        //abrir otra ventana con el archivo
+        window.open(documentUrl.value, '_blank');
+
     } else {
         notifyError({ message: 'Error al obtener el archivo.' });
     }
 }
+
+async function downloadFile(nameFile) {
+    if (!nameFile) {
+        notifyError({ message: 'No se ha seleccionado un archivo.' });
+        return;
+    }
+    const response = await getFileApi(nameFile);
+
+    if (response.status <= 300) {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', nameFile);
+        document.body.appendChild(link);
+        link.click();
+    } else {
+        notifyError({ message: 'Error al obtener el archivo.' });
+    }
+}
+
 // Funciones para expandir y colapsar
 function expandAll() {
     expandedRows.value = qualifications.value.reduce((acc, p) => (acc[p._id] = true) && acc, {});

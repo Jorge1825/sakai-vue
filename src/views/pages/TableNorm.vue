@@ -86,7 +86,7 @@
                                 </div>
                             </div>
                         </q-card-section>
-                        <q-card-section>
+                        <!-- <q-card-section>
                             <div class="row full-width q-pb-lg q-pt-md">
                                 <div class="col-12">
                                     <q-select v-model="suggestedEvidence" :options="suggestedEvidences" label="Sugerencia de evidencia" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Sugerencia requerida']" />
@@ -96,7 +96,7 @@
                                     <q-btn :disabled="!suggestedEvidence" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
                                 </div>
                             </div>
-                        </q-card-section>
+                        </q-card-section> -->
                     </q-form>
                 </q-card>
                 <div class="watermark"></div>
@@ -130,7 +130,7 @@
     <q-dialog v-model="formatDialog" persistent>
         <div class="container bg-white" style="min-width: 450px; max-width: 85vw; min-height: 45vh; max-height: 90vh">
             <div class="watermark-container justify-center flex">
-                <q-card class="justify-center flex bg-transparent full-width">
+                <q-card class="justify-center flex bg-transparent full-width q-pa-lg">
                     <q-form @submit.prevent.stop="saveNorm" novalidate class="q-pa-md full-width">
                         <q-card-section>
                             <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
@@ -180,8 +180,14 @@
                                                             <q-input v-model="req.title" dense autogrow />
                                                         </td>
                                                         <td class="col-req-description">
-                                                            <template v-for="input in req.inputs" :key="input._id">
-                                                                <q-input v-model="input.description" dense autogrow>
+                                                            <template v-for="(input,index) in req.inputs" :key="input._id">
+                                                                <span class="hidden">  
+                                                                    {{ input.indicator = req.number + '.' + (index + 1) }}
+
+                                                                </span>
+                                                                <q-input v-model="input.description" dense autogrow
+                                                                :hint="input.indicator" 
+                                                                >
                                                                     <template v-slot:append>
                                                                         <q-btn round dense flat icon="minimize" color="red" @click="removeInput(req._id, input._id)" />
                                                                     </template>
@@ -200,7 +206,7 @@
                                                         </td>
                                                         <td class="col-evidence">
                                                             <template v-for="input in req.inputs" :key="input._id">
-                                                                <q-select v-model="input.suggestedEvidence" :options="suggestedEvidences" dense />
+                                                                <q-input v-model="input.suggestedEvidence" dense autogrow />
                                                             </template>
                                                         </td>
                                                         <td class="col-actions">
@@ -228,6 +234,24 @@
                                 </tfoot>
                             </table>
                         </q-card-section>
+                        <q-card-section>
+                            <div class="row full-width">
+                                <div class="col-12">Nota: Para una correcta generación de evidencias por favor ubicar adecuadamente los requisitos primero y luego solitar las evidencias por IA</div>
+                                <div class="col-2 justify-center flex items-center q-py-lg text-lg">Generar evidencias por IA:</div>
+                                <div class="col-3 justify-start flex items-center q-py-lg q-px-md">
+                                    <!-- <input type="file" id="inputFileEvidence" @change="selectFileEvidence" style="display: none" accept=".pdf" /> -->
+                                    <q-btn label="Generar Evidencias" color="primary" @click="selectFileEvidence" />
+                                    <!-- <span class="text-sm text-grey-8">Solo se aceptan archivos PDF</span> -->
+                                </div>
+                                <div class="col-3 justify-start flex items-center">
+                                    <span v-if="fileEvidence">{{ fileEvidence.name }}</span>
+                                </div>
+
+                                <!-- <div class="col-12 justify-center flex items-center q-py-lg">
+                                    <q-btn :disabled="!norm" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
+                                </div> -->
+                            </div>
+                        </q-card-section>
 
                         <q-card-actions align="right">
                             <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="formatDialog = false" />
@@ -243,8 +267,8 @@
 
 <script setup>
 import { getNormsApi } from '@/api/norms';
-import { createRequirementApi, editRequirementApi, formatDataRequirement, getRequirementsApi } from '@/api/requirements';
-import { getSuggestedEvidenceApi } from '@/api/suggestedEvidences';
+import { createRequirementApi, editRequirementApi, formatDataRequirement, generateRequirementFile, getRequirementsApi } from '@/api/requirements';
+import { generateEvidencesApi, getSuggestedEvidenceApi } from '@/api/suggestedEvidences';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 const requis = ref([
@@ -271,11 +295,12 @@ const renovationOptions = ref([
 ]);
 const suggestedEvidences = ref([]);
 let file = ref(null);
+let fileEvidence = ref(null);
 let textResponse = ref('');
 let dataFormat = ref({
     number: '7',
 
-    /* 
+    /*
 Acciones preventivas y correctivas con base en los resultados del SG-SST (10%)	7.1.1 Definir acciones de Promoción y Prevención con base en resultados del Sistema de Gestión de Seguridad y Salud en el Trabajo SG-SST
 	7.1.2 Toma de medidas correctivas, preventivas y de mejora
 	7.1.3 Ejecución de acciones preventivas, correctivas y de mejora de la investigación de incidentes, accidentes de trabajo y enfermedad laboral
@@ -333,10 +358,98 @@ const uploadFile = () => {
     input.click();
 };
 
+const uploadFileEvidence = () => {
+    const input = document.getElementById('inputFileEvidence');
+    input.click();
+};
+
 // Función que maneja la selección del archivo
 const selectFile = (event) => {
     file.value = event.target.files[0];
     uploadFileServer();
+};
+
+const selectFileEvidence = async () => {
+   
+    //generar un array con todos los inputs de todos los requisitos
+    let inputsReq = [];
+
+    dataFormat.value.requirements.forEach((r) => {
+        r.inputs.forEach((i) => {
+            inputsReq.push({
+                description: i.description,
+                _id: i._id
+            });
+        });
+    });
+
+    const formData = new FormData();
+    // formData.append('file', fileEvidence.value);
+    formData.append('inputs', JSON.stringify(inputsReq));
+
+    try {
+        // Cambia el estado del usuario (activo/inactivo)
+        const response = await generateEvidencesApi(formData);
+
+/* 
+ {
+    data: {
+      message: 'Evidencias generadas exitosamente',
+      response: Array(11) [
+        {
+          evidence: [
+            'Acta de nombramiento del responsable del SG-SST', 
+              'Copia del certificado de aprobación del curso de 50 horas en SST del responsable del SG-SST',
+            
+              'Descripción del perfil profesional del responsable del SG-SST incluyendo experiencia y formación'
+          ],
+          id: '6755cc2421306b1a0f73c055',
+          title: 
+            'Responsable del Sistema de Gestión de Seguridad y Salud en el Trabajo SG-SST'
+        },
+        {
+          evidence: [
+            'Matriz de responsabilidades del SG-SST', 
+              'Descripción de las funciones y tareas de cada miembro del equipo del SG-SST',
+            'Manual de procedimientos del SG-SST'
+          ],
+          id: '6755cc2421306b1a0f73c056',
+          title: 
+            'Responsabilidades en el Sistema de Gestión de Seguridad y Salud en el Trabajo – SG-SST'
+        },
+
+*/
+        //asignar las evidencias a cada input
+        dataFormat.value.requirements.forEach((r) => {
+            r.inputs.forEach((i) => {
+                const evidence = response.data.response.find((e) => e.id == i._id);
+                i.suggestedEvidence = evidence?.evidence.join('\n');
+            });
+        });
+
+
+        // Mostrar notificación de éxito
+        Notify.create({
+            message: `Generación de evidencias exitosa, espere mientras se procesa la información.`,
+            type: 'positive',
+            position: 'top',
+            textColor: 'white',
+            color: 'blue',
+            multiLine: true
+        });
+    } catch (error) {
+        fileEvidence.value = null;
+        console.error(error);
+        Notify.create({
+            message: 'Hubo un error al extraer el archivo.',
+            type: 'negative',
+            position: 'top',
+            textColor: 'white',
+            color: 'rgb(242, 185, 179)',
+            multiLine: true
+        });
+    }
+
 };
 
 async function getRequirements() {
@@ -374,13 +487,13 @@ function openDialog() {
 
 function hideDialog() {
     formatDialog.value = false;
+    fileEvidence.value = null;
 }
 
 async function saveNorm() {
     //dejar solo value de suggestedEvidence y renovation
     dataFormat.value.requirements.forEach((r) => {
         r.inputs.forEach((i) => {
-            i.suggestedEvidence = i.suggestedEvidence?.value || null;
             i.renovation = i.renovation?.value || null;
         });
     });
@@ -424,7 +537,6 @@ function editRequirement(isReq) {
     //buscar el suggestedEvidence y el renovation en el array de suggestedEvidences y renovationOptions
     dataFormat.value.requirements.forEach((r) => {
         r.inputs.forEach((i) => {
-            i.suggestedEvidence = suggestedEvidences.value.find((s) => s.value == i.suggestedEvidence);
             i.renovation = renovationOptions.value.find((s) => s.value == i.renovation);
         });
     });
@@ -561,6 +673,7 @@ function collapseAll() {
 function closeResponse() {
     responseIADialog.value = false;
     formatDialog.value = true;
+    fileEvidence.value = null;
 }
 
 function addInput(id) {

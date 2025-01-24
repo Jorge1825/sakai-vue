@@ -50,3 +50,17 @@ export const getNormDetailsApi = async (norm) => {
         throw error;
     }
 };
+
+export const generateEvidencesApi = async (data) => {
+    try {
+        const response = await axiosInstance.post(`/suggestedEvidences/generateEvidences`, data,{
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response;
+    } catch (error) {
+        console.error('Error al obtener los detalles de la norma', error);
+        throw error;
+    }
+};
