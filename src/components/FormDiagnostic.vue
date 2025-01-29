@@ -61,7 +61,7 @@
                         <div class="col-12 row q-mt-md">
                             <div class="col-12 text-xl text-bold">Resultados obtenidos:</div>
 
-                            <div class="col-10 text-lg" :class="color">Nivel de cumplimiendo basico requerido</div>
+                            <div class="col-10 text-lg" :class="color">Nivel de cumplimiendo basico</div>
                             <div class="col-2 text-lg" :class="color">{{ percent }} %</div>
                         </div>
                         <div class="q-mt-xl text-lg">

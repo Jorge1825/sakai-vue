@@ -1,9 +1,12 @@
 <script setup>
-import { ref } from 'vue';
+import FormProfile from '@/components/FormProfile.vue';
 import Cookies from 'js-cookie';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+
+let dialog = ref(false);
 
 function logout() {
     Cookies.remove('access_token');
@@ -11,36 +14,56 @@ function logout() {
     // Redirige al login
     router.push({ name: 'login' });
 }
+
+function profile() {
+    dialog.value = true;
+}
+
+function closeDialog() {
+    dialog.value = false;
+}
 </script>
 <template>
     <div
-        class="config-panel hidden absolute top-[3.25rem] right-0 w-64 p-4 bg-surface-0 dark:bg-surface-900 border border-surface rounded-border origin-top shadow-[0px_3px_5px_rgba(0,0,0,0.02),0px_0px_2px rgba(0,0,0,0.05),0px_1px_4px rgba(0,0,0,0.08)]">
+        class="config-panel hidden absolute top-[3.25rem] right-0 w-64 p-4 bg-surface-0 dark:bg-surface-900 border border-surface rounded-border origin-top shadow-[0px_3px_5px_rgba(0,0,0,0.02),0px_0px_2px rgba(0,0,0,0.05),0px_1px_4px rgba(0,0,0,0.08)]"
+    >
         <!-- Contenedor flex para alinear la imagen y el texto -->
         <div class="flex items-center justify-center mb-4">
             <img src="/src/assets/sosteniweb/logo_negro.png" alt="Logo" class="logo-image" />
             <h2 class="ml-2"><b>SOSTENIWEB</b></h2>
         </div>
         <div class="flex flex-col gap-4">
-            <!-- <span class="text-sm text-muted-color font-semibold">Perfil</span>
+            <span class="text-sm text-muted-color font-semibold">Perfil</span>
             <div class="pt-2 flex gap-2 flex-wrap justify-between">
-                <q-btn @click="logout()" class="full-width" :style="{
-                    backgroundColor: 'rgb(4, 178, 217)',
-                    color: 'white',
-                    borderRadius: '20px'
-                }" label="ver perfil" />
-            </div> -->
+                <q-btn
+                    @click="profile()"
+                    class="full-width"
+                    :style="{
+                        backgroundColor: 'rgb(4, 178, 217)',
+                        color: 'white',
+                        borderRadius: '20px'
+                    }"
+                    label="ver perfil"
+                />
+            </div>
 
             <div>
                 <span class="text-sm text-muted-color font-semibold">Acciones</span>
                 <!-- agregar el botón de cerrar sesión -->
                 <div class="pt-2 flex gap-2 flex-wrap justify-between">
-                    <q-btn @click="logout" class="full-width" unelevated rounded color="negative"
-                        label="Cerrar Sesión" />
+                    <q-btn @click="logout" class="full-width" unelevated rounded color="negative" label="Cerrar Sesión" />
                 </div>
-
             </div>
         </div>
     </div>
+
+    <q-dialog v-model="dialog" persistent>
+        <div class="container bg-white" style="min-width: 400px;">
+            <div class="watermark-container justify-center flex">
+                <FormProfile @close-dialog="closeDialog" />
+            </div>
+        </div>
+    </q-dialog>
 </template>
 
 <style scoped>

@@ -59,20 +59,10 @@
                                 backgroundColor: slotProps.data.evidence ? 'rgb(4, 178, 217)' : 'rgb(242, 185, 179)',
                                 color: 'white'
                             }"
-                            @click="renderFile(slotProps.data.evidence?.name)"
+                            @click="viewFiles(slotProps.data.evidence)"
                             dense
                             round
                             class="q-mr-md"
-                        />
-                        <q-btn
-                            icon="cloud_download"
-                            :style="{
-                                backgroundColor: slotProps.data.evidence ? 'rgb(4, 178, 217)' : 'rgb(242, 185, 179)',
-                                color: 'white'
-                            }"
-                            @click="downloadFile(slotProps.data.evidence?.name)"
-                            dense
-                            round
                         />
                     </template>
                 </Column>
@@ -110,11 +100,11 @@
 
                         <q-card-section>
                             <div class="row full-width q-pb-lg q-pt-md justify-center flex">
-                                <div class="col-6">
+                                <div class="col-4">
                                     <q-select disable v-model="norm" :options="norms" label="Norma" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Norma requerida']" @update:model-value="getRequirements()" />
                                 </div>
 
-                                <div class="col-6">
+                                <div class="col-5">
                                     <q-select
                                         disable
                                         :disable="!norm"
@@ -129,8 +119,12 @@
                                     />
                                 </div>
 
-                                <div class="col-10 q-mt-md" style="overflow-y: auto; max-height: 400px;">
-                                    <table class="tablereq ">
+                                <div class="col-3">
+                                    <q-select v-model="year" :options="yearOptions" label="Año Evaluado" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Año requerido']" />
+                                </div>
+
+                                <div class="col-10 q-mt-md" style="overflow-y: auto; max-height: 400px">
+                                    <table class="tablereq">
                                         <thead>
                                             <tr>
                                                 <th>Selección</th>
@@ -152,17 +146,23 @@
                                             </tr>
                                         </tbody>
                                     </table>
-
-
                                 </div>
-                                <div class="col-12 justify-center text-center flex q-py-lg">
-                                    Solo se admite un archivo, si necesita cargar más evidencias todo en un solo archivo pdf.
-                                </div>
+
                                 <div class="col-12 justify-center flex q-py-lg">
-                                    {{ file?.name || 'No se ha seleccionado un archivo' }}
+                                    <template v-for="file in files">
+                                        <div class="col-12 justify-center flex items-center">
+                                            <q-chip removable @remove="files.splice(files.indexOf(file), 1)">
+                                                <q-icon name="attachment" />
+                                                <q-chip-main>
+                                                    {{ file?.name }}
+                                                </q-chip-main>
+                                            </q-chip>
+                                        </div>
+                                    </template>
+                                    <template v-if="!files.length"> No se ha seleccionado un archivo </template>
                                 </div>
                                 <div class="col-12 justify-center flex items-center">
-                                    <input type="file" id="inputFile" @change="selectFile" style="display: none" accept=".pdf,.txt,.jpg,.jpeg,.png" />
+                                    <input multiple type="file" id="inputFile" @change="selectFile" style="display: none" accept=".pdf,.txt,.jpg,.jpeg,.png" />
                                     <q-btn :disable="!norm || !requirement || !inputs.length" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
                                 </div>
                             </div>
@@ -180,14 +180,57 @@
     <q-dialog v-model="viewDocument" persistent>
         <div class="container bg-white" style="min-width: 450px; max-width: 85vw; min-height: 30vh; max-height: 90vh">
             <div class="watermark-container justify-center flex">
-                <q-card class="justify-center flex bg-transparent full-width" v-if="documentUrl">
+                <q-card class="justify-center flex bg-transparent full-width">
                     <q-card-section>
-                        <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">EVIDENCIA</div>
+                        <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">EVIDENCIAS CARGADAS</div>
+                    </q-card-section>
+                    <q-card-section v-for="evidence in evidencesView" class="row justify-center flex q-gutter-x-md q-gutter-y-md">
+                        <div class="col-10">
+                            Fecha de carga: {{ evidence.date }}
+                            <hr />
+                        </div>
+
+                        <div class="col-10 col-sm-5" v-for="file in evidence.evidences">
+                            <q-card class="my-card bg-grey-11" flat bordered>
+                                <div class="q-pa-sm text-center bg-grey-1">
+                                    <div>{{ file.originalname }}</div>
+                                </div>
+                                <div class="justify-center flex">
+                                    <q-icon :name="'description'" size="10rem" class="text-primary" />
+                                </div>
+                                <div class="justify-center flex q-py-sm">
+                                    <q-btn
+                                        icon="visibility"
+                                        :style="{
+                                            backgroundColor:'rgb(4, 178, 217)',
+                                            color: 'white'
+                                        }"
+                                        @click="renderFile(file?.name)"
+                                        dense
+                                        round
+                                        class="q-mr-md"
+                                    />
+                                    <q-btn
+                                        icon="cloud_download"
+                                        :style="{
+                                            backgroundColor:'rgb(4, 178, 217)',
+                                            color: 'white'
+                                        }"
+                                        @click="downloadFile(file?.name)"
+                                        dense
+                                        round
+                                    />
+                                </div>
+                            </q-card>
+                        </div>
                     </q-card-section>
 
-                    <iframe :src="documentUrl" width="800" height="600" />
+                    <q-card-section>
+                        <div class="col-12 justify-center flex q-py-xs">
+                            <q-btn class="q-mx-sm" outline label="Cerrar" color="negative" @click="viewDocument = false" />
+                        </div>
+                    </q-card-section>
 
-                    <q-btn icon="close" class="q-mr-sm" @click="viewDocument = false; documentUrl = null" />
                 </q-card>
             </div>
         </div>
@@ -207,8 +250,8 @@ import { onBeforeMount, ref } from 'vue';
 const qualifications = ref([]);
 const qualificationDialog = ref(false);
 const viewDocument = ref(false);
-const documentUrl = ref(null);
-const file = ref(null);
+const evidencesView = ref([]);
+const files = ref([]);
 const norm = ref(null);
 const norms = ref([null]);
 const reqData = ref([]);
@@ -216,6 +259,9 @@ const requirement = ref(null);
 const requirements = ref([]);
 const inputs = ref([]);
 const expandedRows = ref([]);
+const year = ref(new Date().getFullYear());
+//crear array de años desde 2020 hasta el año actual
+const yearOptions = ref(Array.from({ length: new Date().getFullYear() - 2022 }, (_, i) => 2023 + i).reverse());
 //Declarar las variables reactias para cada chekbox
 
 let dataFormat = ref({
@@ -321,7 +367,6 @@ const renderSuggested = (suggested) => {
 
     //bucar todos los \n y reemplazarlos por <br>
 
-
     if (suggested) {
         return suggested.replace(/\n/g, '<br><br>');
     } else {
@@ -376,19 +421,18 @@ async function getNorms() {
 }
 
 const selectFile = (event) => {
+    for (let i = 0; i < event.target.files.length; i++) {
+        if (!['application/pdf', 'text/plain', 'image/jpeg', 'image/png', 'image/jpg'].includes(event.target.files[i].type)) {
+            notifyError({ message: 'Uno de los archivos seleccionados no tiene un formato válido.' });
+            return;
+        }
 
-    //solo aceptar archivos pdf, txt, jpg, jpeg, png
-
-    if (!['application/pdf', 'text/plain', 'image/jpeg', 'image/png', 'image/jpg'].includes(event.target.files[0].type)) {
-        notifyError({ message: 'El archivo seleccionado no tiene un formato válido.' });
-        return;
+        files.value.push(event.target.files[i]);
     }
-
-    file.value = event.target.files[0];
 };
 
 function openDialog() {
-    file.value = null;
+    files.value = [];
     inputs.value = [];
     norm.value = null;
     requirement.value = null;
@@ -398,7 +442,7 @@ function openDialog() {
 
 function evaluateQualification(data) {
     console.log(data);
-    file.value = null;
+    files.value = [];
 
     norm.value = norms.value.find((n) => n.value == data.norm._id);
     let requeriment = [];
@@ -414,7 +458,7 @@ function evaluateQualification(data) {
     requirement.value = { label: requeriment[0].title, value: requeriment[0]._id };
 
     //validar si suggestedEvidence es un array
-    
+
     inputs.value = [
         {
             _id: data.id,
@@ -424,9 +468,8 @@ function evaluateQualification(data) {
         }
     ];
     if (Array.isArray(data.suggestedEvidence)) {
-        
-        inputs.value[0].suggestedEvidence = data.suggestedEvidence[0]
-    } else{
+        inputs.value[0].suggestedEvidence = data.suggestedEvidence[0];
+    } else {
         inputs.value[0].suggestedEvidence = data.suggestedEvidence;
     }
     qualificationDialog.value = true;
@@ -443,17 +486,20 @@ const uploadFile = () => {
 
 async function uploadFileServer() {
     try {
-        if (!file.value) {
+        if (!files.value) {
             notifyError({ message: 'Debe seleccionar un archivo.' });
             return;
         }
 
         const formData = new FormData();
-        formData.append('file', file.value);
+        files.value.forEach((file) => {
+            formData.append('files', file);
+        });
         formData.append('normId', norm.value.value);
         formData.append('enterpriseId', enterprise.value.value);
         formData.append('requirementId', requirement.value.value);
         formData.append('inputs', JSON.stringify(inputs.value.filter((i) => i.selected).map((i) => i._id)));
+        formData.append('year', year.value);
 
         const response = await processRequirementsApi(formData);
 
@@ -493,15 +539,36 @@ async function renderFile(nameFile) {
     }
     const response = await getFileApi(nameFile);
 
-    if (response.status <= 300) { 
-        documentUrl.value = URL.createObjectURL(response.data);
-        
-        //abrir otra ventana con el archivo
-        window.open(documentUrl.value, '_blank');
+    if (response.status <= 300) {
+        const documentUrl = URL.createObjectURL(response.data);
 
+        //abrir otra ventana con el archivo
+        window.open(documentUrl, '_blank');
     } else {
         notifyError({ message: 'Error al obtener el archivo.' });
     }
+}
+
+async function viewFiles(evidences) {
+    evidencesView.value = [];
+    //agrupar las evidencias por día
+    const data = evidences.reduce((acc, evidence) => {
+        const date = new Date(evidence.date).toLocaleDateString();
+        if (!acc[date]) {
+            acc[date] = [];
+        }
+        acc[date].push(evidence);
+        return acc;
+    }, {});
+
+    for (const key in data) {
+        evidencesView.value.push({
+            date: key,
+            evidences: data[key]
+        });
+    }
+
+    viewDocument.value = true;
 }
 
 async function downloadFile(nameFile) {

@@ -289,9 +289,12 @@ const status = ref([
     { label: 'INACTIVO', value: false }
 ]);
 const renovationOptions = ref([
+    { label: 'Año fiscal', value: 0 },
     { label: 'Anual', value: 1 },
     { label: 'Bienal', value: 2 },
-    { label: 'Trienal', value: 3 }
+    { label: 'Trienal', value: 3 },
+    { label: 'Semanal', value: 4 },
+    { label: 'Mensual', value: 5 },
 ]);
 const suggestedEvidences = ref([]);
 let file = ref(null);
@@ -804,6 +807,14 @@ function addReq(idCurrentReq) {
 
 .col-renovation {
     width: 25px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.col-evidence {
+    width: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
