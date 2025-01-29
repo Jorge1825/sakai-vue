@@ -202,7 +202,7 @@
                                     <q-btn
                                         icon="visibility"
                                         :style="{
-                                            backgroundColor:'rgb(4, 178, 217)',
+                                            backgroundColor: 'rgb(4, 178, 217)',
                                             color: 'white'
                                         }"
                                         @click="renderFile(file?.name)"
@@ -213,7 +213,7 @@
                                     <q-btn
                                         icon="cloud_download"
                                         :style="{
-                                            backgroundColor:'rgb(4, 178, 217)',
+                                            backgroundColor: 'rgb(4, 178, 217)',
                                             color: 'white'
                                         }"
                                         @click="downloadFile(file?.name)"
@@ -230,7 +230,6 @@
                             <q-btn class="q-mx-sm" outline label="Cerrar" color="negative" @click="viewDocument = false" />
                         </div>
                     </q-card-section>
-
                 </q-card>
             </div>
         </div>
@@ -504,7 +503,19 @@ async function uploadFileServer() {
         const response = await processRequirementsApi(formData);
 
         if (response.status <= 300) {
-            Notify.create({ message: 'Norma evaluada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            console.log(response.data.errors);
+            /* 
+            [ 'La evidencia para el requisito 1.1.1 no es válida' 
+            */
+
+            if (response?.data?.errors?.length > 0) {
+                response.data.errors.forEach((error) => {
+                    notifyError({ message: error });
+                });
+            } else {
+                Notify.create({ message: 'Norma evaluada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            }
+
             await getQualifications();
             hideDialog();
         } else {
