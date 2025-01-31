@@ -516,6 +516,10 @@ async function uploadFileServer() {
                 Notify.create({ message: 'Norma evaluada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             }
 
+            if(response.data?.finished){
+                notifySuccess({ message: 'Tú diagnóstico está listo para ser revisado.', color: 'green' });
+            }
+
             await getQualifications();
             hideDialog();
         } else {
@@ -690,9 +694,9 @@ function collapseAll() {
 
 .col-req-description {
     max-width: 300px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
 }
 
 .col-value {
