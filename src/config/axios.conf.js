@@ -106,7 +106,8 @@ function hideDefault() {
 
 // Crear la instancia de Axios
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:4600/api/v1",
+  // baseURL: "https://sosteniweb.com/api/v1",
+  baseURL: "http://localhost:4500/api/v1",
 });
 
 axiosInstance.defaults.withCredentials = true;

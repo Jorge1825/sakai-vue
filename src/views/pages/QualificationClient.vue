@@ -190,7 +190,7 @@
                             <hr />
                         </div>
 
-                        <div class="col-10 col-sm-5" v-for="file in evidence.evidences">
+                        <div class="col-10 col-sm-5 col-md-3" v-for="file in evidence.evidences">
                             <q-card class="my-card bg-grey-11" flat bordered>
                                 <div class="q-pa-sm text-center bg-grey-1">
                                     <div>{{ file.originalname }}</div>

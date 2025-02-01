@@ -1,10 +1,10 @@
 
 import axiosInstance from "@/config/axios.conf";
 
-export const getFilesApi = async () => {
+export const getFilesApi = async (enterprise) => {
     try {
 
-        const response = await axiosInstance.get('/folder/get-data');
+        const response = await axiosInstance.get(`/folder/get-data/${enterprise}`);
 
         return response;
     } catch (error) {
