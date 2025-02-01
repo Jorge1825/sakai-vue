@@ -402,6 +402,9 @@ async function getQualifications() {
     try {
         const { data } = await getQualificationsApi(enterprise.value.value);
         qualifications.value = Array.isArray(data) ? data : [];
+        //ordenar los datos por el indicador
+        qualifications.value?.sort((a, b) => a.indicator.localeCompare(b.indicator));
+
     } catch (error) {
         console.error('Error al obtener datos de qualifications:', error);
         qualifications.value = []; // Asigna un array vacío para evitar futuros errores
