@@ -27,30 +27,22 @@ onBeforeMount(() => {
     useStoreAuth.setFirstDiagnostic(enterprise.value.firstDiagnostic);
 });
 
-const model = ref([
-    {
-        label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/', users: ['ADMIN', 'SUPERADMIN', 'USER'] }],
-        users: ['ADMIN', 'SUPERADMIN', 'USER']
-    },
-    {
-        label: 'Administración',
-        items: [
-            { label: 'Empresas ', icon: 'pi pi-fw pi-cog', to: '/enterprises', users: ['ADMIN', 'SUPERADMIN'] },
-            { label: 'Usuarios', icon: 'pi pi-fw pi-id-card', to: '/users', users: ['ADMIN', 'SUPERADMIN'] },
-            { label: 'Roles', icon: 'pi pi-fw pi-list', to: '/roles', users: ['ADMIN', 'SUPERADMIN'] },
+const itemsFull = [
+            { label: 'Empresas ', icon: 'pi pi-fw pi-cog', to: '/enterprises', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 1, orderUser: 0 },
+            { label: 'Usuarios', icon: 'pi pi-fw pi-id-card', to: '/users', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 2, orderUser: 0 },
+            { label: 'Roles', icon: 'pi pi-fw pi-list', to: '/roles', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 3, orderUser: 0 },
             // { label: 'Requerimientos',icon: 'pi pi-fw pi-file', to: '/requirements, users: ['ADMIN','SUPERADMIN']'},
-            { label: 'Normas', icon: 'pi pi-fw pi-cog', to: '/norms', users: ['ADMIN', 'SUPERADMIN', 'USER'] },
-            { label: 'Evaluaciones Express', icon: 'pi pi-fw pi-cog', to: '/express', users: ['ADMIN', 'SUPERADMIN'] },
-            { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification', users: ['ADMIN', 'SUPERADMIN'] },
-            { label: 'Documentos', icon: 'pi pi-fw pi-cog', to: '/documents', users: ['USER', 'ADMIN', 'SUPERADMIN'] },
-            { label: 'Plan de trabajo', icon: 'pi pi-fw pi-cog', to: '/WorkPlans', users: ['USER', 'ADMIN', 'SUPERADMIN'] },
-            { label: 'Programas', icon: 'pi pi-fw pi-cog', to: '/programs', users: ['ADMIN', 'SUPERADMIN'] },
-            { label: 'Prompts', icon: 'pi pi-fw pi-cog', to: '/prompts', users: ['ADMIN', 'SUPERADMIN'] },
-            { label: 'Requerimientos', icon: 'pi pi-fw pi-cog', to: '/tablenorm', users: ['ADMIN', 'SUPERADMIN'] },
-            { label: 'Autoevaluación', icon: 'pi pi-fw pi-cog', to: 'qualificationClient', users: ['USER'] },
+            { label: 'Normas', icon: 'pi pi-fw pi-cog', to: '/norms', users: ['ADMIN', 'SUPERADMIN', 'USER'], orderAdmin: 4, orderUser: 1 },
+            { label: 'Evaluaciones Express', icon: 'pi pi-fw pi-cog', to: '/express', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 5, orderUser: 0 },
+            { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 6, orderUser: 0 },
+            { label: 'Documentos', icon: 'pi pi-fw pi-cog', to: '/documents', users: ['USER', 'ADMIN', 'SUPERADMIN'], orderAdmin: 7, orderUser: 4 },
+            { label: 'Plan de trabajo', icon: 'pi pi-fw pi-cog', to: '/WorkPlans', users: ['USER', 'ADMIN', 'SUPERADMIN'], orderAdmin: 8, orderUser: 5 },
+            { label: 'Programas', icon: 'pi pi-fw pi-cog', to: '/programs', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 9, orderUser: 0 },
+            { label: 'Prompts', icon: 'pi pi-fw pi-cog', to: '/prompts', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 10, orderUser: 0 },
+            { label: 'Requerimientos', icon: 'pi pi-fw pi-cog', to: '/tablenorm', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 11, orderUser: 2 },
+            { label: 'Autoevaluación', icon: 'pi pi-fw pi-cog', to: 'qualificationClient', users: ['USER'], orderAdmin: 12, orderUser: 2 },
             // { label: 'Sugerencia de evidencias', icon: 'pi pi-fw pi-cog', to: '/suggestedEvidences', users: ['ADMIN', 'SUPERADMIN'] },
-            { label: 'Diagnostico', icon: 'pi pi-fw pi-cog', to: '/diagnostic', users: ['USER', 'ADMIN', 'SUPERADMIN'] }
+            { label: 'Diagnostico', icon: 'pi pi-fw pi-cog', to: '/diagnostic', users: ['USER', 'ADMIN', 'SUPERADMIN'], orderAdmin: 13, orderUser: 3 }
             // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout', users: ['ADMIN','SUPERADMIN'] },
             // { label: 'Input', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
             // { label: 'Button', icon: 'pi pi-fw pi-mobile', to: '/uikit/button', class: 'rotated-icon' },
@@ -66,7 +58,18 @@ const model = ref([
             // { label: 'Chart', icon: 'pi pi-fw pi-chart-bar', to: '/uikit/charts' },
             // { label: 'Timeline', icon: 'pi pi-fw pi-calendar', to: '/uikit/timeline' },
             // { label: 'Misc', icon: 'pi pi-fw pi-circle', to: '/uikit/misc' }
-        ],
+        ]
+
+const model = ref([
+    {
+        label: 'Home',
+        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/', users: ['ADMIN', 'SUPERADMIN', 'USER'] }],
+        users: ['ADMIN', 'SUPERADMIN', 'USER']
+    },
+    {
+        label: 'Administración',
+        items: itemsFull.sort((a, b) => a.orderUser - b.orderUser),
+
         users: ['ADMIN', 'SUPERADMIN', 'USER']
     },
     {

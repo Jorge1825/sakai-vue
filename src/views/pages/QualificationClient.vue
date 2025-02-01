@@ -402,8 +402,14 @@ async function getQualifications() {
     try {
         const { data } = await getQualificationsApi(enterprise.value.value);
         qualifications.value = Array.isArray(data) ? data : [];
-        //ordenar los datos por el indicador
-        qualifications.value?.sort((a, b) => a.indicator.localeCompare(b.indicator));
+
+        qualifications.value?.sort((a, b) => {
+            let aIndicator = a.indicator.split('.').map((i) => i.padStart(2, '0')).join('');
+            let bIndicator = b.indicator.split('.').map((i) => i.padStart(2, '0')).join('');
+
+            return aIndicator - bIndicator;
+        });
+
 
     } catch (error) {
         console.error('Error al obtener datos de qualifications:', error);
