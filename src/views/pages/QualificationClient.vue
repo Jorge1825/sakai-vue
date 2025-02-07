@@ -401,6 +401,7 @@ async function listRequirements() {
 async function getQualifications() {
     try {
         const { data } = await getQualificationsApi(enterprise.value.value);
+        console.log(data);
         qualifications.value = Array.isArray(data) ? data : [];
 
         qualifications.value?.sort((a, b) => {
@@ -409,6 +410,8 @@ async function getQualifications() {
 
             return aIndicator - bIndicator;
         });
+
+        console.log(qualifications.value);
 
 
     } catch (error) {

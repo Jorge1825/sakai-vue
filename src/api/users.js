@@ -2,10 +2,10 @@
 import axiosInstance from "@/config/axios.conf";
 import { notifyError, notifySuccess } from "@/config/notifications";
 
-export const getUsersApi = async () => {
+export const getUsersApi = async (enterprises) => {
     try {
 
-        const response = await axiosInstance.get('/users');
+        const response = await axiosInstance.post('/users', { enterprises });
 
         return response;
     } catch (error) {

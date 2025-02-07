@@ -10,7 +10,7 @@
                 </div>
                 <div class="col-12 flex justify-end">
                     <!-- Botón de agregar con fondo azul claro y color de ícono blanco -->
-                    <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" />
+                    <!-- <q-btn icon="add" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog" class="q-mr-sm" /> -->
 
                     <!-- Botón de expandir con fondo azul claro y color de ícono blanco -->
                     <q-btn icon="expand_more" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="expandAll" class="q-mr-sm" />
@@ -30,50 +30,47 @@
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
             >
-                <Column field="name" header="NOMBRE" :sortable="true" style="width: 20%" />
-                <Column field="description" header="DESCRIPCIÓN" style="width: 20%" />
-                <Column field="norm" header="NORMA" style="width: 20%" />
-                <Column field="pendingRequirementsCount" header="CANTIDAD DE REQUISITOS PENDIENTES" style="width: 15%" />
-                <Column field="generationDate" header="FECHA DE GENERACIÓN" style="width: 10%" />
-                <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
+                <!-- <Column field="name" header="NOMBRE" :sortable="true" style="width: 10%" /> -->
+                <Column field="indicator" header="INDICADOR" :sortable="true" style="width: 10%">
                     <template #body="slotProps">
-                        <div style="text-align: left">
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
-                                {{ status.find((s) => s.value === slotProps.data.status).label }}
-                            </q-badge>
-                        </div>
+                        {{ slotProps.data?.indicator }}
                     </template>
+                </Column>
+                <Column field="requirement" header="REQUISITO" :sortable="true" style="width: 10%">
+                    <template #body="slotProps">
+                        {{ slotProps.data?.description }}
+                    </template>
+                </Column>
+                <Column field="norm" header="NORMA " :sortable="true" style="width: 15%">
+                    <template #body="slotProps">
+                        {{ slotProps.data?.norm?.name }}
+                    </template>
+                </Column>
+                <Column field="dateCompliance" header="FECHA DE CUMPLIMIENTO" :sortable="true" style="width: 15%">
+                    <template #body="slotProps">
+                        {{ slotProps.data?.norm?.name }}
+                    </template>
+                </Column>
+
+                <Column field="owner" header="ENCARGADO" :sortable="true" style="width: 15%">
+                    <template #body="slotProps"> Esto es una prueba </template>
                 </Column>
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotProps">
                         <div class="button-group">
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
-                            <q-btn
-                                :icon="slotProps.data.status === true ? 'clear' : 'check'"
-                                :style="{ backgroundColor: slotProps.data.status === true ? 'rgb(242, 185, 179)' : 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="toggleStatus(slotProps.data)"
-                                dense
-                                round
-                                class="q-mr-xs"
-                            />
+
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
-                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editWorkPlan(slotProps.data)" dense round />
+                            <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="openDialog(slotProps.data)" dense round />
                         </div>
                     </template>
                 </Column>
                 <template #expansion="slotProps">
                     <div class="p-4">
-                        <h5>Detalles del plan de trabajo: {{ slotProps.data.name }}</h5>
-                        <p><strong>Descripción:</strong> {{ slotProps.data.description }}</p>
-                        <p><strong>Norma:</strong> {{ slotProps.data.norm }}</p>
-                        <p><strong>Cantidad de requisitos pendientes:</strong> {{ slotProps.data.pendingRequirementsCount }}</p>
-                        <p><strong>Fecha de generación:</strong> {{ formatDate(slotProps.data.generationDate) }}</p>
-                        <p>
-                            <strong>Estado:</strong>
-                            <q-badge :color="slotProps.data.status === true ? 'blue' : 'rgb(242, 185, 179)'">
-                                {{ status.find((s) => s.value === slotProps.data.status).label }}
-                            </q-badge>
-                        </p>
+                        <p><strong>Description:</strong>{{ slotProps.data.description }}</p>
+                        <p><strong>Norma:</strong> {{ slotProps.data?.norm?.name }}</p>
+                        <p><strong>Calificación:</strong> {{ slotProps.data?.evaluation }}</p>
+                        <p><strong>Evidencia:</strong>{{ slotProps.data?.evidence }}</p>
                     </div>
                 </template>
             </DataTable>
@@ -89,216 +86,88 @@
                         <q-card-section>
                             <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">RESOLUCIÓN 0312</div>
                         </q-card-section>
-                        <!-- [ -->
-                        <!-- {
-      quantity: 11,
-      idRequirement: '675967435f09f3a852efe10a',
-      nameRequirement: 'RECURSOS',
-      numberRequirement: '1',
-      norm: 'RESOLUCIÓN 0312',
-      normId: '6724ccc736a2e8c68d2c27fa',
-      items: [
-        {
-          quantity: 8,
-          reqChild: {
-            id: '6755cc2421306b1a0f73c054',
-            number: '1.1',
-            description: 
-              'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
-            title: 'Recursos para el SG-SST'
-          },
-          items: Array(8) [
-            {
-              reqChild: {
-                id: '6755cc2421306b1a0f73c054',
-                number: '1.1',
-                description: 
-                  'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
-                title: 'Recursos para el SG-SST'
-              },
-              norm: 'RESOLUCIÓN 0312',
-              normId: '6724ccc736a2e8c68d2c27fa',
-              nameRequirement: 'RECURSOS',
-              numberRequirement: '1',
-              idRequirement: '675967435f09f3a852efe10a',
-              item: 
-                'Responsable del Sistema de Gestión de Seguridad y Salud en el Trabajo SG-SST',
-              value: '0.5',
-              percentageWeight: '0.5',
-              fullyComplies: 0,
-              doesNotComply: 0,
-              justifies: 0,
-              doesNotJustify: 0
-            },
-            {
-              reqChild: {
-                id: '6755cc2421306b1a0f73c054',
-                number: '1.1',
-                description: 
-                  'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
-                title: 'Recursos para el SG-SST'
-              },
-              norm: 'RESOLUCIÓN 0312',
-              normId: '6724ccc736a2e8c68d2c27fa',
-              nameRequirement: 'RECURSOS',
-              numberRequirement: '1',
-              idRequirement: '675967435f09f3a852efe10a',
-              item: 
-                'Responsabilidades en el Sistema de Gestión de Seguridad y Salud en el Trabajo – SG-SST',
-              value: '0.5',
-              percentageWeight: '0.5',
-              fullyComplies: 0,
-              doesNotComply: 0,
-              justifies: 0,
-              doesNotJustify: 0
-            },
-            {
-              reqChild: {
-                id: '6755cc2421306b1a0f73c054',
-                number: '1.1',
-                description: 
-                  'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
-                title: 'Recursos para el SG-SST'
-              },
-              norm: 'RESOLUCIÓN 0312',
-              normId: '6724ccc736a2e8c68d2c27fa',
-              nameRequirement: 'RECURSOS',
-              numberRequirement: '1',
-              idRequirement: '675967435f09f3a852efe10a',
-              item: 
-                'Asignación de recursos para el Sistema de Gestión en Seguridad y Salud en el Trabajo – SG-SST',
-              value: '0.5',
-              percentageWeight: '0.5',
-              fullyComplies: 0,
-              doesNotComply: 0,
-              justifies: 0,
-              doesNotJustify: 0
-            },
-            {
-              reqChild: {
-                id: '6755cc2421306b1a0f73c054',
-                number: '1.1',
-                description: 
-                  'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
-                title: 'Recursos para el SG-SST'
-              },
-              norm: 'RESOLUCIÓN 0312',
-              normId: '6724ccc736a2e8c68d2c27fa',
-              nameRequirement: 'RECURSOS',
-              numberRequirement: '1',
-              idRequirement: '675967435f09f3a852efe10a',
-              item: 'Afiliación al Sistema General de Riesgos Laborales',
-              value: '0.5',
-              percentageWeight: '0.5',
-              fullyComplies: 0,
-              doesNotComply: 0,
-              justifies: 0,
-              doesNotJustify: 0
-            },
-            {
-              reqChild: {
-                id: '6755cc2421306b1a0f73c054',
-                number: '1.1',
-                description: 
-                  'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
-                title: 'Recursos para el SG-SST'
-              },
-              norm: 'RESOLUCIÓN 0312',
-              normId: '6724ccc736a2e8c68d2c27fa',
-              nameRequirement: 'RECURSOS',
-              numberRequirement: '1',
-              idRequirement: '675967435f09f3a852efe10a',
-              item: 'Pago de pensión trabajadores alto riesgo',
-              value: '0.5',
-              percentageWeight: '0.5',
-              fullyComplies: 0,
-              doesNotComply: 0,
-              justifies: 0,
-              doesNotJustify: 0
-            },
-            {
-              reqChild: {
-                id: '6755cc2421306b1a0f73c054',
-                number: '1.1',
-                description: 
-                  'Recursos financieros, técnicos,  humanos y de otra índole requeridos para coordinar y desarrollar el Sistema de Gestión de la Seguridad y la Salud en el Trabajo (SG-SST) (4%)',
-                title: 'Recursos para el SG-SST'
-              },
-              norm: 'RESOLUCIÓN 0312',
-              normId: '6724ccc736a2e8c68d2c27fa',
-              nameRequirement: 'RECURSOS',
-              numberRequirement: '1',
-              idRequirement: '675967435f09f3a852efe10a',
-              item: 'Conformación COPASST / Vigía',
-              value: '0.5',
-              percentageWeight: '0.5',
-              fullyComplies: 0,
-              doesNotComply: 0,
-              justifies: 0,
-              doesNotJustify: 0
-            },
-                               -->
-                        <table class="full-width table-work">
-                            <thead>
-                                <tr>
-                                    <th class="text-left">Item</th>
-                                    <th class="text-left">Criterios de la empresa</th>
-                                    <th class="text-left">Plan de acción (Actividades)</th>
-                                    <th class="text-left">Responsable</th>
-                                    <th class="text-left">Fechas de cumplimiento</th>
-                                    <th class="text-left">Recursos</th>
-                                    <th class="text-left">Soportes sugeridos</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>E1.1.1 Asignación de persona que diseñe e implemente el Sistema de Gestión de SST (4%)</td>
-                                    <td>
-                                        Esta actividad podrá ser realizada profesionales en SST y profesionales con posgrado en SST, que cuenten con licencia vigente en Seguridad y Salud en el Trabajo vigente y el curso de capacitación virtual de
-                                        cincuenta (50) horas.
-                                    </td>
-                                    <td>
-                                        <ul>
-                                            <li>Realizar el diseño del Sistema de Gestión de SST.</li>
-                                            <li>Implementar el Sistema de Gestión de SST.</li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul>
-                                            <li>Responsable del Sistema de Gestión de Seguridad y Salud en el Trabajo SG-SST.</li>
-                                            <li>Responsabilidades en el Sistema de Gestión de Seguridad y Salud en el Trabajo – SG-SST.</li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul>
-                                            <li>01-01-2025 - año fiscal</li>
-                                            <li>01-01-2025 - año fiscal</li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul>
-                                            <li>Administrativos y financieros</li>
-                                            <li>Administrativos y financieros</li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul>
-                                            <li>Evidencias de competencias y certificados de aprobación del curso de 50 y 20 horas.</li>
-                                            <li>Evidencias de competencias y certificados de aprobación del curso de 50 y 20 horas.</li>
-                                        </ul>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>E1.1.2 Asignación de persona que diseñe e implemente el Sistema de Gestión de SST (4%)</td>
-                                    <td>Mantener a disposición de la Entidad que lo requiera la documentación que soporte el perfil de la persona que se encargó de realizar el diseño del SGSST.</td>
-                                    <td>VZH</td>
-                                    <td>01-01-2025 - año fiscal</td>
-                                    <td>Administrativos y financieros</td>
-                                    <td>Evidencias de competencias y certificados de aprobación del curso de 50 y 20 horas.</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="table-container">
+                            <table class="full-width">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Indicador</th>
+                                        <th class="text-left">Requisito</th>
+                                        <th class="text-left">Criterios</th>
+                                        <th class="text-left">Plan de acción (Actividades)</th>
+                                        <th class="text-left">Responsable</th>
+                                        <th class="text-left">Plazo de cumplimiento</th>
+                                        <th class="text-left">Renovación</th>
+                                        <th class="text-left">Soportes sugeridos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 150px; max-width: 150px; min-width: 150px">E1.1.1 Asignación de persona que diseñe e implemente el Sistema de Gestión de SST (4%)</td>
+                                        <td style="width: 200px; max-width: 200px; min-width: 200px">
+                                            Esta actividad podrá ser realizada profesionales en SST y profesionales con posgrado en SST, que cuenten con licencia vigente en Seguridad y Salud en el Trabajo vigente y el curso de capacitación virtual de
+                                            cincuenta (50) horas.
+                                        </td>
+                                        <td style="width: 200px; max-width: 200px; min-width: 200px">
+                                            <template v-for="(input, index) in workPlan.criteria">
+                                                <q-input class="q-mt-md q-mx-xs" v-model="input.value" dense outlined :label="'Criterio ' + (index + 1)" autogrow>
+                                                    <template v-slot:append>
+                                                        <q-btn round dense flat icon="minimize" color="red" @click="removeInputCriteria(index)" />
+                                                    </template>
+                                                </q-input>
+                                            </template>
+                                            <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputCriteria()" />
+                                        </td>
 
+                                        <td style="width: 200px; max-width: 200px; min-width: 200px">
+                                            <template v-for="(input, index) in workPlan.activities">
+                                                <q-input class="q-mt-md q-mx-xs" v-model="input.value" dense outlined :label="'Actividad ' + (index + 1)" autogrow>
+                                                    <template v-slot:append>
+                                                        <q-btn round dense flat icon="minimize" color="red" @click="removeInputActivities(index)" />
+                                                    </template>
+                                                </q-input>
+                                            </template>
+                                            <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputActivities()" />
+                                        </td>
+                                        <td style="width: 200px; max-width: 200px; min-width: 200px">
+                                            <template v-for="(input, index) in workPlan.responsibleness">
+                                                <q-select class="q-mt-md q-mx-xs" dense outlined :label="'Responsable ' + (index + 1)" :options="users" v-model="input.value">
+                                                    <template v-slot:append>
+                                                        <q-btn round dense flat icon="minimize" color="red" @click="removeInputResponsibleness(index)" />
+                                                    </template>
+                                                </q-select>
+                                            </template>
+                                            <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputResponsibleness()" />
+                                        </td>
+                                        <td style="width: 150px; max-width: 150px; min-width: 150px">
+                                            <q-input class="q-mt-md q-mx-xs" outlined dense v-model="workPlan.dateCompliance" mask="date" :rules="['date']">
+                                                <template v-slot:append>
+                                                    <q-icon name="event" class="cursor-pointer">
+                                                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                                            <q-date v-model="workPlan.dateCompliance">
+                                                                <div class="row items-center justify-end">
+                                                                    <q-btn v-close-popup label="Close" color="primary" flat />
+                                                                </div>
+                                                            </q-date>
+                                                        </q-popup-proxy>
+                                                    </q-icon>
+                                                </template>
+                                            </q-input>
+                                        </td>
+                                        <td style="width: 100px; max-width: 100px; min-width: 100px">Semanal</td>
+                                        <td style="width: 200px; max-width: 200px; min-width: 200px">
+                                            <template v-for="(input, index) in workPlan.suggestedEvidence" :key="index">
+                                                <q-input class="q-mt-md q-mx-xs" v-model="input.value" dense outlined :label="'Soporte ' + (index + 1)" autogrow>
+                                                    <template v-slot:append>
+                                                        <q-btn round dense flat icon="minimize" color="red" @click="removeInputSuggestedEvidence(index)" />
+                                                    </template>
+                                                </q-input>
+                                            </template>
+                                            <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputSuggestedEvidence()" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <q-card-actions align="right">
                             <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
                             <q-btn class="q-mx-sm" outline label="Guardar" color="primary" type="submit" />
@@ -312,54 +181,81 @@
 </template>
 
 <script setup>
-import { createWorkPlanApi, editWorkPlanApi, getWorkPlanApi, toggleActiveWorkPlanApi } from '@/api/worksPlans.js'; //ROLES
+import { getUsersApi } from '@/api/users';
+import { createWorkPlanApi, editWorkPlanApi, getWorkPlanApi } from '@/api/worksPlans.js'; //ROLES
+import { storeAuth } from '@/store/auth';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
 const workPlans = ref([]);
-const workPlanDialog = ref(true);
-const workPlan = ref({
-    id: null,
-    name: '',
-    description: '',
-    norm: '',
-    generationDate: '',
-    pendingRequirementsCount: 0,
-    status: true
-});
+const workPlanDialog = ref(false);
+const workPlan = ref();
 const expandedRows = ref([]);
 const status = ref([
     { label: 'ACTIVO', value: true },
     { label: 'INACTIVO', value: false }
 ]);
 
+const useStoreAuth = storeAuth();
+const enterprise = ref(null);
 onBeforeMount(async () => {
-    await getWorkPlan();
+    enterprise.value = useStoreAuth.getSelectedCompany();
+    await getWorksPlan();
+    await getUsers();
 });
+let dataUsers = ref([]);
+let users = ref([]);
 
-async function getWorkPlan() {
+async function getUsers() {
     try {
-        const { data } = await getWorkPlanApi();
-        console.log(data);
-        workPlans.value = data.length ? data : [];
-
-        console.log(workPlans.value);
+        const { data } = await getUsersApi([enterprise.value.value]);
+        dataUsers.value = data.length ? data : [];
+        users.value = dataUsers.value.map((user) => ({ label: user.username, value: user._id }));
     } catch (error) {
         console.error(error);
     }
 }
 
-function openDialog() {
+async function getWorksPlan() {
+    try {
+        const { data } = await getWorkPlanApi(enterprise.value.value);
+        workPlans.value = Array.isArray(data) ? data : [];
+
+        workPlans.value?.sort((a, b) => {
+            let aIndicator = a.indicator
+                .split('.')
+                .map((i) => i.padStart(2, '0'))
+                .join('');
+            let bIndicator = b.indicator
+                .split('.')
+                .map((i) => i.padStart(2, '0'))
+                .join('');
+
+            return aIndicator - bIndicator;
+        });
+
+        console.log(workPlans.value);
+    } catch (error) {
+        console.error('Error al obtener datos de qualifications:', error);
+        workPlans.value = []; // Asigna un array vacío para evitar futuros errores
+    }
+}
+
+function openDialog(req) {
+    console.log(req);
+    //separar al actividades sugeridas por cada salto de linea con n
+    if (req?.suggestedEvidence) {
+        req.suggestedEvidence = req.suggestedEvidence[0].split('\n').map((e) => ({ value: e }));
+    }
+
     workPlan.value = {
-        // Reinicar el objeto usuario
-        id: null,
-        name: '',
-        description: '',
-        norm: '',
-        generationDate: '',
-        pendingRequirementsCount: 0,
-        status: status.value[0]
+        ...req,
+        criteria: [{ value: '' }],
+        activities: [{ value: '' }],
+        responsibleness: [],
+        dateCompliance: ''
     };
+
     workPlanDialog.value = true;
 }
 
@@ -370,92 +266,80 @@ function hideDialog() {
 async function saveWorkPlan() {
     console.log(workPlan.value);
 
-    if (workPlan.value._id) {
-        const workPlanApi = {
-            id: workPlan.value._id,
-            name: workPlan.value.name,
-            description: workPlan.value.description,
-            norm: workPlan.value.norm,
-            generationDate: workPlan.value.generationDate,
-            pendingRequirementsCount: workPlan.value.pendingRequirementsCount,
-            status: workPlan.value.status.value
-        };
+    // if (workPlan.value._id) {
+    //     const workPlanApi = {
+    //         id: workPlan.value._id,
+    //         name: workPlan.value.name,
+    //         description: workPlan.value.description,
+    //         norm: workPlan.value.norm,
+    //         generationDate: workPlan.value.generationDate,
+    //         pendingRequirementsCount: workPlan.value.pendingRequirementsCount,
+    //         status: workPlan.value.status.value
+    //     };
 
-        const response = await editWorkPlanApi(workPlanApi);
+    //     const response = await editWorkPlanApi(workPlanApi);
 
-        if (response.status <= 300) {
-            Notify.create({ message: 'Plan de trabajo actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getWorkPlan();
-            hideDialog();
-        } else {
-            Notify.create({ message: 'Error al actualizar el plan de trabajo.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
-        }
-    } else {
-        const workPlanApi = {
-            name: workPlan.value.name,
-            description: workPlan.value.description,
-            norm: workPlan.value.norm,
-            generationDate: workPlan.value.generationDate,
-            pendingRequirementsCount: workPlan.value.pendingRequirementsCount,
-            status: workPlan.value.status.value
-        };
+    //     if (response.status <= 300) {
+    //         Notify.create({ message: 'Plan de trabajo actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
 
-        const response = await createWorkPlanApi(workPlanApi);
-        console.log(response);
+    //         hideDialog();
+    //     } else {
+    //         Notify.create({ message: 'Error al actualizar el plan de trabajo.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
+    //     }
+    // } else {
+    //     const workPlanApi = {
+    //         name: workPlan.value.name,
+    //         description: workPlan.value.description,
+    //         norm: workPlan.value.norm,
+    //         generationDate: workPlan.value.generationDate,
+    //         pendingRequirementsCount: workPlan.value.pendingRequirementsCount,
+    //         status: workPlan.value.status.value
+    //     };
 
-        if (response.status <= 300) {
-            Notify.create({ message: 'Plan de trabajo creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-            await getWorkPlan();
-            hideDialog();
-        } else {
-            Notify.create({ message: 'Error al crear el plan de trabajo.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
-        }
-    }
+    //     const response = await createWorkPlanApi(workPlanApi);
+    //     console.log(response);
+
+    //     if (response.status <= 300) {
+    //         Notify.create({ message: 'Plan de trabajo creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+
+    //         hideDialog();
+    //     } else {
+    //         Notify.create({ message: 'Error al crear el plan de trabajo.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
+    //     }
+    // }
 }
 
-function editWorkPlan(selectedWorkPlan) {
-    workPlan.value = { ...selectedWorkPlan };
-    workPlan.value.status = status.value.find((s) => s.value === selectedWorkPlan.status);
-    workPlanDialog.value = true;
-    console.log(workPlan.value);
+function addInputCriteria() {
+    workPlan.value.criteria.push({ value: '' });
 }
 
-//funcion activar desactivavr usuario
-async function toggleStatus(selectedWorkPlan) {
-    try {
-        // Cambia el estado del usuario (activo/inactivo)
-        const response = await toggleActiveWorkPlanApi(selectedWorkPlan._id);
+function removeInputCriteria(index) {
+    workPlan.value.criteria.splice(index, 1);
+}
 
-        if (response.status <= 300) {
-            // Actualiza el estado localmente después de recibir respuesta del backend
-            selectedWorkPlan.status = selectedWorkPlan.status === 'Activo' ? 'Inactivo' : 'Activo';
+function addInputActivities() {
+    workPlan.value.activities.push({ value: '' });
+}
 
-            // Mostrar notificación de éxito
-            Notify.create({
-                message: `Plan de trabajo ${selectedWorkPlan.status === 'Activo' ? 'activado' : 'desactivado'} correctamente.`,
-                type: 'positive',
-                position: 'top',
-                textColor: 'white',
-                color: selectedWorkPlan.status === 'Activo' ? 'blue' : 'rgb(242, 185, 179)', //rgb(4, 178, 217)
-                multiLine: true
-            });
+function removeInputActivities() {
+    workPlan.value.activities.push({ value: '' });
+}
 
-            // Vuelve a cargar los usuarios si es necesario
-            await getWorkPlan();
-        } else {
-            throw new Error('Error al actualizar el estado del plan de trabajo.');
-        }
-    } catch (error) {
-        console.error(error);
-        Notify.create({
-            message: 'Hubo un error al cambiar el estado de la actvidad.',
-            type: 'negative',
-            position: 'top',
-            textColor: 'white',
-            color: 'rgb(242, 185, 179)',
-            multiLine: true
-        });
-    }
+function addInputResponsibleness() {
+    console.log(workPlan.value.responsibleness);
+    workPlan.value.responsibleness.push({ value: '' });
+}
+
+function removeInputResponsibleness(index) {
+    workPlan.value.responsibleness.splice(index, 1);
+}
+
+function removeInputSuggestedEvidence(index) {
+    workPlan.value.suggestedEvidence.splice(index, 1);
+}
+
+function addInputSuggestedEvidence() {
+    workPlan.value.suggestedEvidence.push({ value: '' });
 }
 
 // Funciones para expandir y colapsar
@@ -493,12 +377,8 @@ function collapseAll() {
     z-index: -1;
 }
 
-.table-work {
-    /*  
-    auto scrolll
-    */
-
-    overflow: auto;
+.table-container {
+    overflow-x: auto;
 }
 
 .table-work,
@@ -509,18 +389,5 @@ th,
 td {
     text-align: center;
     border: 0.5px solid;
-}
-
-ul {
-    /* border: 0.1px solid rgb(142, 142, 142); */
-    padding: 0;
-    list-style: none;
-    border-spacing: 10px; /* Espaciado entre los elementos */
-}
-
-li {
-    border: 0.1px solid rgb(142, 142, 142);
-    padding: 10px; /* Espaciado interno de los elementos */
-    margin-bottom: 15px;
 }
 </style>

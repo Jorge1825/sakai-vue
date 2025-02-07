@@ -137,7 +137,7 @@
                                 <div class="col-6">
                                     <q-select v-model="user.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
-                                <div class="col-6">
+                                <div class="col-6" v-if="role?.type == 'SUPERADMIN'">
                                     <q-select v-model="user.subscription" :options="['Suscrito', 'No Suscrito']" label="Suscripción" required style="padding: 10px" />
                                 </div>
 
@@ -173,9 +173,11 @@
 import { getEnterprisesApi } from '@/api/enterprises';
 import { getRolesApi } from '@/api/roles';
 import { createUserApi, editUserApi, getUsersApi, toggleActiveUserApi } from '@/api/users';
+import { storeAuth } from '@/store/auth';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
+const useStoreAuth = storeAuth();
 const users = ref([]);
 const userDialog = ref(false);
 const user = ref({
@@ -196,41 +198,48 @@ const status = ref([
     { label: 'INACTIVO', value: false }
 ]);
 
-const roles = ref([
-    { label: 'SUPER ADMINISTRADOR', value: 'SUPERADMIN' },
+let roles = ref([
     { label: 'ADMINISTRADOR', value: 'ADMIN' },
     { label: 'USUARIO', value: 'USER' }
 ]);
 
-const exampleUsers = [
-    { id: 1, username: 'Jeferson1', email: 'Jeferson1@gmail.com', phone: '1234567890', role: 'Admin', status: 'Activo', subscription: 'Suscrito' },
-    { id: 2, username: 'Jeferson2', email: 'Jeferson2@gmail.com', phone: '1234567891', role: 'User', status: 'Inactivo', subscription: 'No Suscrito' },
-    { id: 3, username: 'Jeferson3', email: 'Jeferson3@gmail.com', phone: '1234567892', role: 'User', status: 'Activo', subscription: 'Suscrito' }
-];
+let role = ref(null);
+let enterprisesId = ref([]);
 
 onBeforeMount(async () => {
+    role.value = useStoreAuth.getRoleToken();
+    enterprisesId.value = useStoreAuth.getCompanyIds();
     await getUsers();
     await getRoles();
     await getEnterprises();
+
 });
 
 async function getUsers() {
     try {
-        const { data } = await getUsersApi();
-        users.value = data.length ? data : exampleUsers;
+        let enterprisesIds = enterprisesId.value?.map((e) => e._id) || null;
+        if(role.value?.type == 'SUPERADMIN'){
+            enterprisesIds = null
+        }
+        const { data } = await getUsersApi(enterprisesIds);
+        users.value = data.length ? data : [];
     } catch (error) {
         console.error(error);
-        users.value = exampleUsers;
+
     }
 }
 
 async function getRoles() {
     try {
         const { data } = await getRolesApi();
-        roles.value = data.map((r) => ({ label: r.name, value: r._id }));
+        roles.value = data.map((r) => ({ label: r.name, value: r._id, type: r.type }));
+        if(role.value?.type != 'SUPERADMIN'){
+            roles.value = roles.value.filter((r) => r.type != 'SUPERADMIN');
+        }
+
     } catch (error) {
         console.error(error);
-        users.value = exampleUsers;
+
     }
 }
 
@@ -238,9 +247,13 @@ async function getEnterprises() {
     try {
         const { data } = await getEnterprisesApi();
         enterprises.value = data.map((e) => ({ label: e.name, value: e._id }));
+
+        if(role.value?.type != 'SUPERADMIN'){
+            enterprises.value = enterprisesId.value.map((e) => ({ label: e.name, value: e._id }));
+        }
     } catch (error) {
         console.error(error);
-        users.value = exampleUsers;
+
     }
 }
 

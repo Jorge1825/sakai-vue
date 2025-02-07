@@ -1,10 +1,10 @@
 
 import axiosInstance from "@/config/axios.conf";
 
-export const getWorkPlanApi = async () => {
+export const getWorkPlanApi = async (id) => {
     try {
 
-        const response = await axiosInstance.get('/worksPlans');
+        const response = await axiosInstance.get('/worksPlans/'+id);
 
         return response;
     } catch (error) {

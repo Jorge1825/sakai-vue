@@ -24,23 +24,23 @@ onBeforeMount(() => {
 
     enterprise.value =  enterpriseLocal || enterprises.value[0] || null;
     useStoreAuth.setCompany(enterprise.value);
-    useStoreAuth.setFirstDiagnostic(enterprise.value.firstDiagnostic);
+    useStoreAuth.setFirstDiagnostic(enterprise.value?.firstDiagnostic);
 });
 
 const itemsFull = [
-            { label: 'Empresas ', icon: 'pi pi-fw pi-cog', to: '/enterprises', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 1, orderUser: 0 },
-            { label: 'Usuarios', icon: 'pi pi-fw pi-id-card', to: '/users', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 2, orderUser: 0 },
-            { label: 'Roles', icon: 'pi pi-fw pi-list', to: '/roles', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 3, orderUser: 0 },
+            { label: 'Empresas ', icon: 'pi pi-fw pi-cog', to: '/enterprises', users: ['SUPERADMIN'], orderAdmin: 1, orderUser: 0 },
+            { label: 'Usuarios', icon: 'pi pi-fw pi-id-card', to: '/users', users: ['ADMIN','SUPERADMIN'], orderAdmin: 2, orderUser: 0 },
+            { label: 'Roles', icon: 'pi pi-fw pi-list', to: '/roles', users: ['SUPERADMIN'], orderAdmin: 3, orderUser: 0 },
             // { label: 'Requerimientos',icon: 'pi pi-fw pi-file', to: '/requirements, users: ['ADMIN','SUPERADMIN']'},
             { label: 'Normas', icon: 'pi pi-fw pi-cog', to: '/norms', users: ['ADMIN', 'SUPERADMIN', 'USER'], orderAdmin: 4, orderUser: 1 },
-            { label: 'Evaluaciones Express', icon: 'pi pi-fw pi-cog', to: '/express', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 5, orderUser: 0 },
-            { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 6, orderUser: 0 },
+            { label: 'Evaluaciones Express', icon: 'pi pi-fw pi-cog', to: '/express', users: ['SUPERADMIN'], orderAdmin: 5, orderUser: 0 },
+            { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification', users: ['SUPERADMIN'], orderAdmin: 6, orderUser: 0 },
             { label: 'Documentos', icon: 'pi pi-fw pi-cog', to: '/documents', users: ['USER', 'ADMIN', 'SUPERADMIN'], orderAdmin: 7, orderUser: 4 },
             { label: 'Plan de trabajo', icon: 'pi pi-fw pi-cog', to: '/WorkPlans', users: ['USER', 'ADMIN', 'SUPERADMIN'], orderAdmin: 8, orderUser: 5 },
-            { label: 'Programas', icon: 'pi pi-fw pi-cog', to: '/programs', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 9, orderUser: 0 },
-            { label: 'Prompts', icon: 'pi pi-fw pi-cog', to: '/prompts', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 10, orderUser: 0 },
-            { label: 'Requerimientos', icon: 'pi pi-fw pi-cog', to: '/tablenorm', users: ['ADMIN', 'SUPERADMIN'], orderAdmin: 11, orderUser: 2 },
-            { label: 'Autoevaluación', icon: 'pi pi-fw pi-cog', to: 'qualificationClient', users: ['USER'], orderAdmin: 12, orderUser: 2 },
+            { label: 'Programas', icon: 'pi pi-fw pi-cog', to: '/programs', users: ['SUPERADMIN'], orderAdmin: 9, orderUser: 0 },
+            { label: 'Prompts', icon: 'pi pi-fw pi-cog', to: '/prompts', users: ['SUPERADMIN'], orderAdmin: 10, orderUser: 0 },
+            { label: 'Requerimientos', icon: 'pi pi-fw pi-cog', to: '/tablenorm', users: ['SUPERADMIN'], orderAdmin: 11, orderUser: 2 },
+            { label: 'Autoevaluación', icon: 'pi pi-fw pi-cog', to: 'qualificationClient', users: ['USER','ADMIN',], orderAdmin: 12, orderUser: 2 },
             // { label: 'Sugerencia de evidencias', icon: 'pi pi-fw pi-cog', to: '/suggestedEvidences', users: ['ADMIN', 'SUPERADMIN'] },
             { label: 'Diagnostico', icon: 'pi pi-fw pi-cog', to: '/diagnostic', users: ['USER', 'ADMIN', 'SUPERADMIN'], orderAdmin: 13, orderUser: 3 }
             // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout', users: ['ADMIN','SUPERADMIN'] },
@@ -103,7 +103,7 @@ const model = ref([
                     // to: '/auth/access'
                     // }
                 ],
-                users: ['ADMIN', 'SUPERADMIN']
+                users: ['SUPERADMIN']
             }
             // {
             // label: 'Crud',
@@ -121,7 +121,7 @@ const model = ref([
             // to: '/pages/empty'
             // }
         ],
-        users: ['ADMIN', 'SUPERADMIN']
+        users: ['SUPERADMIN']
     }
 ]);
 
@@ -153,7 +153,7 @@ const changeEnterprise = async () => {
                 <li v-if="item.separator" class="menu-separator"></li>
             </template>
         </template>
-        <div class="q-py-md" v-if="role?.type === 'USER'">
+        <div class="q-py-md" v-if="role?.type == 'USER' || role?.type == 'ADMIN'">
             <h1 class="text-center">Bienvenid@ {{ user.username }}</h1>
             <p class="text-xs text-center q-my-sm">Empresa:</p>
             <q-select rounded outlined bottom-slots dense borderless v-model="enterprise" :options="enterprises" @update:model-value="changeEnterprise()" />

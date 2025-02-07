@@ -36,7 +36,6 @@ onMounted(() => {
     user.value = useStoreAuth.getUserToken();
     const role = useStoreAuth.getRoleToken();
 
-    console.log('role', role);
     const firstDiagnostic = useStoreAuth.getFirstDiagnostic();
 
     if (!firstDiagnostic && role.type == 'USER') {
