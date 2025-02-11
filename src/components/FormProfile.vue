@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        <div class="col-12">
+        <div class="col-12" v-if="!role?.type == 'SUPERADMIN'">
             <q-card class="q-mt-md bg-grey-1 row">
                 <q-card-section class="col-6">
                     <div class="text-h6 text-center text-primary text-body1" style="font-weight: bold">EMPRESA</div>
@@ -32,10 +32,16 @@
                         {{ convertRiskLevel(enterprise?.riskLevel) }}
                     </div>
                 </q-card-section>
-                <q-card-section class="col-12">
-                    <div class="text-h6 text-center text-primary text-body1" style="font-weight: bold">Numero de empleados</div>
+                <q-card-section class="col-6">
+                    <div class="text-h6 text-center text-primary text-body1" style="font-weight: bold">Numero de empleados por nómina</div>
                     <div class="text-h6 text-center q-mt-md" style="font-weight: bold; font-size: 16px">
-                        {{ enterprise?.numberEmployees }}
+                        {{ enterprise?.employsContracted }}
+                    </div>
+                </q-card-section>
+                <q-card-section class="col-6">
+                    <div class="text-h6 text-center text-primary text-body1" style="font-weight: bold">Numero de contratistas</div>
+                    <div class="text-h6 text-center q-mt-md" style="font-weight: bold; font-size: 16px">
+                        {{ enterprise?.employsService }}
                     </div>
                 </q-card-section>
             </q-card>
@@ -65,12 +71,16 @@ const useStoreAuth = storeAuth();
 
 let company = ref();
 let user = ref();
+let role = ref();
 let enterprise = ref();
 
 onBeforeMount(async () => {
     // console.log(questions);
     company.value = useStoreAuth.getSelectedCompany();
     user.value = useStoreAuth.decodeToken();
+    role.value = useStoreAuth.getRoleToken();
+
+    console.log(role.value);
 
 
     try {
