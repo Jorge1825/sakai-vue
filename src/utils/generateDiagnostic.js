@@ -1,6 +1,6 @@
 import { utils, writeFileXLSX } from 'xlsx';
 
-export async function generateDiagnostic(dataRow) {
+export async function generateDiagnostic(dataRow, dataTotals){
     const dataExcel = [
         [
             'NOMBRE DEL CLIENTE',
@@ -50,7 +50,7 @@ export async function generateDiagnostic(dataRow) {
     });
 
     dataExcel.push(['', '', '', '', '', '', '', '', '']);
-    dataExcel.push(['TOTALES', '', '', '', '0000000', '10', '9', '0', '14']);
+    dataExcel.push(['TOTALES', '', '', '', dataTotals.total, dataTotals.cumple, dataTotals.noCumple, dataTotals.justifica, dataTotals.noJustifica]);
     dataExcel.push(['Cuando se cumple con el ítem del estándar la calificación será la máxima del respectivo ítem, de lo contrario su calificación será igual a cero (0).', '', '', '', '', '', '', '', '']);
     dataExcel.push([
         'Si el estándar No Aplica, se deberá justificar la situación y se calificará con el porcentaje máximo del ítem indicado para cada estándar. En caso de no justificarse, la calificación el estándar será igual a cero (0)',
@@ -76,11 +76,11 @@ export async function generateDiagnostic(dataRow) {
     ]);
     dataExcel.push(['', '', '', '', '', '', '', '', '']);
     dataExcel.push(['', '', '', '', '', '', '', '', '']);
-    dataExcel.push(['EL NIVEL DE SU EVALUACIÓN ES:', '', '', '', '', 'TEST', '', '', '']);
+    dataExcel.push(['EL NIVEL DE SU EVALUACIÓN ES:', '', '', '', '', ' ', '', '', '']);
     dataExcel.push(['', '', '', '', '', '', '', '', '']);
-    dataExcel.push(['FIRMA RESPONSABLE DEL DISEÑO DEL SG-SST', '', '', '', '', 'FIRMA DEL EMPLEADOR O CONTRATANTE  ', '', '', '']);
+    dataExcel.push(['FIRMA RESPONSABLE DEL DISEÑO DEL SG-SST', '', '', '', '', '  ', '', '', '']);
     dataExcel.push(['', '', '', '', '', '', '', '', '']);
-    dataExcel.push(['VALENTINA ZULUAGA HENAO SS2018060400878', '', '', '', '', 'TEST', '', '', '']);
+    dataExcel.push(['VALENTINA ZULUAGA HENAO SS2018060400878', '', '', '', '', ' ', '', '', '']);
 
     const wb = utils.book_new();
     const ws = utils.aoa_to_sheet(dataExcel);

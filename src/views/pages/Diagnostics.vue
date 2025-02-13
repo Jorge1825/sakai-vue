@@ -168,7 +168,7 @@
     </q-dialog>
 </template>
 <script setup>
-import { createDiagnosticApi, editDiagnosticApi, toggleActiveDiagnosticApi } from '@/api/diagnostics'; //ROLES
+import { createDiagnosticApi, editDiagnosticApi } from '@/api/diagnostics'; //ROLES
 import { getQualificationsByEnterprise } from '@/api/qualifications';
 import { storeAuth } from '@/store/auth';
 import { generateDiagnostic } from '@/utils/generateDiagnostic';
@@ -279,50 +279,6 @@ async function saveDiagnostic() {
     }
 }
 
-function editDiagnostic(selectedDiagnostic) {
-    diagnostic.value = { ...selectedDiagnostic };
-    diagnosticDialog.value = true;
-    console.log(diagnostic.value);
-}
-
-//funcion activar desactivavr usuario
-async function toggleStatus(selectedDiagnostic) {
-    try {
-        // Cambia el estado del usuario (activo/inactivo)
-        const response = await toggleActiveDiagnosticApi(selectedDiagnostic._id);
-
-        if (response.status <= 300) {
-            // Actualiza el estado localmente después de recibir respuesta del backend
-            selectedDiagnostic.status = !selectedDiagnostic.status;
-
-            // Mostrar notificación de éxito
-            Notify.create({
-                message: `Diagnostico ${selectedDiagnostic.status ? 'activado' : 'desactivado'} correctamente.`,
-                type: 'positive',
-                position: 'top',
-                textColor: 'white',
-                color: selectedDiagnostic.status ? 'blue' : 'rgb(242, 185, 179)', //rgb(4, 178, 217)
-                multiLine: true
-            });
-
-            // Vuelve a cargar los usuarios si es necesario
-            await getDiagnostic();
-        } else {
-            throw new Error('Error al actualizar el estado del diagnostico.');
-        }
-    } catch (error) {
-        console.error(error);
-        Notify.create({
-            message: 'Hubo un error al cambiar el estado de la actividad.',
-            type: 'negative',
-            position: 'top',
-            textColor: 'white',
-            color: 'rgb(242, 185, 179)',
-            multiLine: true
-        });
-    }
-}
-
 // Funciones para expandir y colapsar
 function expandAll() {
     expandedRows.value = diagnostics.value.reduce((acc, p) => (acc[p._id] = true) && acc, {});
@@ -334,6 +290,13 @@ function collapseAll() {
 
 async function viewDiagnostic(selectedDiagnostic) {
     let data = [];
+    let dataTotals = {
+        total: selectedDiagnostic.total,
+        cumple: selectedDiagnostic.cumple,
+        noCumple: selectedDiagnostic.noCumple,
+        justifica: selectedDiagnostic.justifica,
+        noJustifica: selectedDiagnostic.noJustifica
+    }
 
     selectedDiagnostic.requirements.forEach((requirement) => {
         const req = selectedDiagnostic?.namesRequirement.find((name) => name._id == requirement.requirement);
@@ -413,8 +376,8 @@ async function viewDiagnostic(selectedDiagnostic) {
 
     dataTable.value = data.sort((a, b) => a.numberRequirement - b.numberRequirement);
 
-    console.log(dataTable.value);
-    await generateDiagnostic(dataTable.value);
+
+    await generateDiagnostic(dataTable.value, dataTotals);
 }
 </script>
 
