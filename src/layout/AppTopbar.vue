@@ -1,9 +1,11 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
+import { useQuasar } from 'quasar';
 import AppConfigurator from './AppConfigurator.vue';
 import Profile from './Profile.vue';
 
 const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout();
+const $q = useQuasar();
 </script>
 
 <template>
@@ -13,9 +15,9 @@ const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout();
                 <i class="pi pi-bars"></i>
             </button>
             <router-link to="/" class="layout-topbar-logo">
-                <img src="../assets/sosteniweb/logo_negro.png" alt="Logo Sosteniweb" class="logo" />
+                <img v-if="$q.screen.width > 600" src="../assets/sosteniweb/logo_negro.png" alt="Logo Sosteniweb" class="logo" />
 
-                <span>SOSTENIWEB</span>
+                <span :style="$q.screen.width > 550 ? 'font-size: 1.2rem' : 'font-size: .8rem'">SOSTENIWEB</span>
             </router-link>
         </div>
 
@@ -38,7 +40,7 @@ const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout();
                     <button
                         v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
                         type="button"
-                        class="layout-topbar-action "
+                        class="layout-topbar-action"
                     >
                         <i class="pi pi-user"></i>
                     </button>
@@ -74,7 +76,7 @@ const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout();
 </template>
 <style scoped>
 .logo {
-  width: 50px;
-  height: auto;
+    width: 50px;
+    height: auto;
 }
 </style>
