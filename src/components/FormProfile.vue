@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        <div class="col-12" v-if="!role?.type == 'SUPERADMIN'">
+        <div class="col-12" v-if="role?.type != 'SUPERADMIN'">
             <q-card class="q-mt-md bg-grey-1 row">
                 <q-card-section class="col-6">
                     <div class="text-h6 text-center text-primary text-body1" style="font-weight: bold">EMPRESA</div>
