@@ -291,8 +291,8 @@ const status = ref([
 const renovationOptions = ref([
     { label: 'Año fiscal', value: 0 },
     { label: 'Anual', value: 1 },
-    { label: 'Bienal', value: 2 },
-    { label: 'Trienal', value: 3 },
+    { label: 'Bimensual', value: 2 },
+    { label: 'Trimensual', value: 3 },
     { label: 'Semanal', value: 4 },
     { label: 'Mensual', value: 5 },
 ]);

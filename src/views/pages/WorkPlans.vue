@@ -48,12 +48,12 @@
                 </Column>
                 <Column field="dateCompliance" header="FECHA DE CUMPLIMIENTO" :sortable="true" style="width: 15%">
                     <template #body="slotProps">
-                        {{ slotProps.data?.norm?.name }}
+                        {{ formatDate(slotProps.data?.dateCompliance) }}
                     </template>
                 </Column>
 
-                <Column field="owner" header="ENCARGADO" :sortable="true" style="width: 15%">
-                    <template #body="slotProps"> Esto es una prueba </template>
+                <Column field="owner" header="ENCARGADOS" :sortable="true" style="width: 15%">
+                    <template #body="slotProps"> {{ getResponsibleness(slotProps.data?.responsibleness) }}</template>
                 </Column>
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotProps">
@@ -79,14 +79,22 @@
 
     <!-- Modal para agregar/editar plan de trabajo -->
     <q-dialog v-model="workPlanDialog" persistent>
-        <div class="container bg-white" style="width: 800px; max-width: 80vw; min-width: 400px">
+        <div class="container bg-white" style="width: 80vw; max-width: 80vw; min-width: 400px">
             <div class="watermark-container justify-center flex">
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-form @submit.prevent.stop="saveWorkPlan" novalidate class="q-pa-md full-width">
                         <q-card-section>
                             <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">RESOLUCIÓN 0312</div>
                         </q-card-section>
-                        <div class="table-container">
+                        <div class="w-full q-px-md">
+                            <div class="text-bold">Objetivo</div>
+                            <q-input v-model="workPlan.goal" outlined dense autogrow />
+                        </div>
+                        <div class="w-full q-px-md q-mt-md">
+                            <div class="text-bold">Meta:</div>
+                            <q-input v-model="workPlan.objective" outlined dense autogrow />
+                        </div>
+                        <div class="table-container q-mt-xl">
                             <table class="full-width">
                                 <thead>
                                     <tr>
@@ -102,10 +110,11 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td style="width: 150px; max-width: 150px; min-width: 150px">E1.1.1 Asignación de persona que diseñe e implemente el Sistema de Gestión de SST (4%)</td>
+                                        <td style="width: 150px; max-width: 150px; min-width: 150px">
+                                            {{ workPlan.indicator }}
+                                        </td>
                                         <td style="width: 200px; max-width: 200px; min-width: 200px">
-                                            Esta actividad podrá ser realizada profesionales en SST y profesionales con posgrado en SST, que cuenten con licencia vigente en Seguridad y Salud en el Trabajo vigente y el curso de capacitación virtual de
-                                            cincuenta (50) horas.
+                                            {{ workPlan.description }}
                                         </td>
                                         <td style="width: 200px; max-width: 200px; min-width: 200px">
                                             <template v-for="(input, index) in workPlan.criteria">
@@ -143,7 +152,7 @@
                                                 <template v-slot:append>
                                                     <q-icon name="event" class="cursor-pointer">
                                                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                                                            <q-date v-model="workPlan.dateCompliance">
+                                                            <q-date v-model="workPlan.dateCompliance" :options="optionsDate">
                                                                 <div class="row items-center justify-end">
                                                                     <q-btn v-close-popup label="Close" color="primary" flat />
                                                                 </div>
@@ -153,16 +162,18 @@
                                                 </template>
                                             </q-input>
                                         </td>
-                                        <td style="width: 100px; max-width: 100px; min-width: 100px">Semanal</td>
+                                        <td style="width: 100px; max-width: 100px; min-width: 100px">
+                                            {{ calculatedRenovation(workPlan.renovation) }}
+                                        </td>
                                         <td style="width: 200px; max-width: 200px; min-width: 200px">
                                             <template v-for="(input, index) in workPlan.suggestedEvidence" :key="index">
-                                                <q-input class="q-mt-md q-mx-xs" v-model="input.value" dense outlined :label="'Soporte ' + (index + 1)" autogrow>
-                                                    <template v-slot:append>
+                                                <q-input disable class="q-mt-md q-mx-xs" v-model="input.value" dense outlined :label="'Soporte ' + (index + 1)" autogrow>
+                                                    <!-- <template v-slot:append>
                                                         <q-btn round dense flat icon="minimize" color="red" @click="removeInputSuggestedEvidence(index)" />
-                                                    </template>
+                                                    </template> -->
                                                 </q-input>
                                             </template>
-                                            <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputSuggestedEvidence()" />
+                                            <!-- <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputSuggestedEvidence()" /> -->
                                         </td>
                                     </tr>
                                 </tbody>
@@ -182,7 +193,7 @@
 
 <script setup>
 import { getUsersApi } from '@/api/users';
-import { createWorkPlanApi, editWorkPlanApi, getWorkPlanApi } from '@/api/worksPlans.js'; //ROLES
+import { editWorkPlanApi, getWorkPlanApi } from '@/api/worksPlans.js'; //ROLES
 import { storeAuth } from '@/store/auth';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
@@ -194,6 +205,15 @@ const expandedRows = ref([]);
 const status = ref([
     { label: 'ACTIVO', value: true },
     { label: 'INACTIVO', value: false }
+]);
+
+const renovationOptions = ref([
+    { label: 'Año fiscal', value: 0 },
+    { label: 'Anual', value: 1 },
+    { label: 'Bimensual', value: 2 },
+    { label: 'Trimensual', value: 3 },
+    { label: 'Semanal', value: 4 },
+    { label: 'Mensual', value: 5 }
 ]);
 
 const useStoreAuth = storeAuth();
@@ -233,16 +253,25 @@ async function getWorksPlan() {
 
             return aIndicator - bIndicator;
         });
-
-        console.log(workPlans.value);
     } catch (error) {
         console.error('Error al obtener datos de qualifications:', error);
         workPlans.value = []; // Asigna un array vacío para evitar futuros errores
     }
 }
 
-function openDialog(req) {
-    console.log(req);
+function getResponsibleness(responsibleness) {
+    if (!responsibleness || !responsibleness.length) return '';
+
+    return responsibleness.map((r) => dataUsers.value.find((u) => u._id == r.value)?.username).join(', ');
+}
+
+function calculatedRenovation(value) {
+    return renovationOptions.value.find((r) => r.value == value)?.label;
+}
+
+function openDialog(data) {
+    const req = { ...data };
+
     //separar al actividades sugeridas por cada salto de linea con n
     if (req?.suggestedEvidence) {
         req.suggestedEvidence = req.suggestedEvidence[0].split('\n').map((e) => ({ value: e }));
@@ -252,11 +281,29 @@ function openDialog(req) {
         ...req,
         criteria: [{ value: '' }],
         activities: [{ value: '' }],
-        responsibleness: [],
-        dateCompliance: ''
+        responsibleness: req?.responsibleness?.map((r) => ({ value: r })),
+        dateCompliance: req?.dateCompliance ? formatDate(req.dateCompliance) : null,
+        goal: req?.goal,
+        objective: req?.objective
     };
 
+    if (req?.criteria && req.criteria.length) {
+        workPlan.value.criteria = req.criteria.map((c) => ({ value: c }));
+        workPlan.value.activities = req.activities.map((a) => ({ value: a }));
+    }
+
     workPlanDialog.value = true;
+}
+
+function formatDate(date) {
+    if (!date) return '';
+
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+
+    return `${year}/${month}/${day}`;
 }
 
 function hideDialog() {
@@ -264,49 +311,43 @@ function hideDialog() {
 }
 
 async function saveWorkPlan() {
-    console.log(workPlan.value);
 
-    // if (workPlan.value._id) {
-    //     const workPlanApi = {
-    //         id: workPlan.value._id,
-    //         name: workPlan.value.name,
-    //         description: workPlan.value.description,
-    //         norm: workPlan.value.norm,
-    //         generationDate: workPlan.value.generationDate,
-    //         pendingRequirementsCount: workPlan.value.pendingRequirementsCount,
-    //         status: workPlan.value.status.value
-    //     };
+    console.log(workPlan.value.responsibleness);
+    const data = {
+        requirement: workPlan.value.requirement,
+        id: workPlan.value.id,
+        idQualification: workPlan.value.idQualification,
+        goal: workPlan.value.goal,
+        objective: workPlan.value.objective,
+        dateCompliance: workPlan.value.dateCompliance,
+        activities: workPlan.value.activities.map((a) => a.value),
+        criteria: workPlan.value.criteria.map((c) => c.value),
+        responsibleness: workPlan.value.responsibleness.map((r) => r.value)
+    };
 
-    //     const response = await editWorkPlanApi(workPlanApi);
+    console.log(data);
 
-    //     if (response.status <= 300) {
-    //         Notify.create({ message: 'Plan de trabajo actualizado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+    try {
+        await editWorkPlanApi(data);
 
-    //         hideDialog();
-    //     } else {
-    //         Notify.create({ message: 'Error al actualizar el plan de trabajo.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
-    //     }
-    // } else {
-    //     const workPlanApi = {
-    //         name: workPlan.value.name,
-    //         description: workPlan.value.description,
-    //         norm: workPlan.value.norm,
-    //         generationDate: workPlan.value.generationDate,
-    //         pendingRequirementsCount: workPlan.value.pendingRequirementsCount,
-    //         status: workPlan.value.status.value
-    //     };
+        Notify.create({
+            message: 'Plan de trabajo actualizado correctamente',
+            color: 'positive',
+            position: 'top',
+            timeout: 2000
+        });
 
-    //     const response = await createWorkPlanApi(workPlanApi);
-    //     console.log(response);
-
-    //     if (response.status <= 300) {
-    //         Notify.create({ message: 'Plan de trabajo creado correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
-
-    //         hideDialog();
-    //     } else {
-    //         Notify.create({ message: 'Error al crear el plan de trabajo.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
-    //     }
-    // }
+        workPlanDialog.value = false;
+        await getWorksPlan();
+    } catch (error) {
+        console.error('Error al guardar el plan de trabajo:', error);
+        Notify.create({
+            message: 'Error al guardar el plan de trabajo',
+            color: 'negative',
+            position: 'top',
+            timeout: 2000
+        });
+    }
 }
 
 function addInputCriteria() {
@@ -326,7 +367,6 @@ function removeInputActivities() {
 }
 
 function addInputResponsibleness() {
-    console.log(workPlan.value.responsibleness);
     workPlan.value.responsibleness.push({ value: '' });
 }
 
@@ -349,6 +389,16 @@ function expandAll() {
 
 function collapseAll() {
     expandedRows.value = [];
+}
+
+function optionsDate(date) {
+    //solo se puede seleccionar fechas mayores a la actual
+    const dateCurrent = new Date();
+    const year = dateCurrent.getFullYear();
+    const month = dateCurrent.getMonth() + 1;
+    const day = dateCurrent.getDate();
+
+    return date > `${year}/${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`;
 }
 </script>
 
