@@ -53,10 +53,11 @@
                 </Column>
                 <Column field="evidence" header="EVIDENCIAS" :sortable="true" style="width: 15%">
                     <template #body="slotProps">
+
                         <q-btn
                             icon="visibility"
                             :style="{
-                                backgroundColor: slotProps.data.evidence ? 'rgb(4, 178, 217)' : 'rgb(242, 185, 179)',
+                                backgroundColor: slotProps.data?.evidence && slotProps.data?.evidence?.length > 0 ? 'rgb(4, 178, 217)' : 'rgb(242, 185, 179)',
                                 color: 'white'
                             }"
                             @click="viewFiles(slotProps.data.evidence)"
@@ -182,7 +183,7 @@
             <div class="watermark-container justify-center flex">
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-card-section>
-                        <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">EVIDENCIAS CARGADAS</div>
+                        <div class="text-h6 text-center text-primary w-full" style="font-weight: bold; font-size: 24px">EVIDENCIAS CARGADAS</div>
                     </q-card-section>
                     <q-card-section v-for="evidence in evidencesView" class="row justify-center flex q-gutter-x-md q-gutter-y-md">
                         <div class="col-10">
@@ -225,7 +226,7 @@
                         </div>
                     </q-card-section>
 
-                    <q-card-section>
+                    <q-card-section class="w-full">
                         <div class="col-12 justify-center flex q-py-xs">
                             <q-btn class="q-mx-sm" outline label="Cerrar" color="negative" @click="viewDocument = false" />
                         </div>
@@ -577,6 +578,11 @@ async function renderFile(nameFile) {
 }
 
 async function viewFiles(evidences) {
+
+    if (!evidences || evidences.length == 0) {
+        return;
+    }
+
     evidencesView.value = [];
     //agrupar las evidencias por día
     const data = evidences.reduce((acc, evidence) => {

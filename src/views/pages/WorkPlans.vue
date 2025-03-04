@@ -84,7 +84,11 @@
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-form @submit.prevent.stop="saveWorkPlan" novalidate class="q-pa-md full-width">
                         <q-card-section>
-                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">RESOLUCIÓN 0312</div>
+                            <div class="text-h6 text-center text-primary" style="font-weight: bold; font-size: 24px">
+                                RESOLUCIÓN 0312
+
+                                {{ workPlan?.title ? ` - ${workPlan.title}` : '' }}
+                            </div>
                         </q-card-section>
                         <div class="w-full q-px-md">
                             <div class="text-bold">Objetivo</div>
@@ -281,10 +285,11 @@ function openDialog(data) {
         ...req,
         criteria: [{ value: '' }],
         activities: [{ value: '' }],
-        responsibleness: req?.responsibleness?.map((r) => ({ value: r })),
+        responsibleness: req?.responsibleness?.map((r) => ({ value: r })) || [{ value: '' }],
         dateCompliance: req?.dateCompliance ? formatDate(req.dateCompliance) : null,
         goal: req?.goal,
-        objective: req?.objective
+        objective: req?.objective,
+        title: req?.title,
     };
 
     if (req?.criteria && req.criteria.length) {
