@@ -28,13 +28,13 @@
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
             >
-                <Column field="number" header="NUMBERO" :sortable="true" style="width: 5%" />
+                <Column field="number" header="NUMERO" :sortable="true" style="width: 5%" />
                 <Column field="norm" header="NORMA" style="width: 15%">
                     <template #body="slotNorms">
                         {{ slotNorms.data?.norm?.name }}
                     </template>
                 </Column>
-                <Column field="title" header="TITULO" style="width: 80%" />
+                <Column field="title" header="TITULO" style="width: 30%" />
                 <!-- <Column field="renovation" header="RENOVACIÓN" style="width: 5%">
                     <template #body="slotProps">
                         <div style="text-align: left">
@@ -54,6 +54,10 @@
                     </template>
                 </Column> -->
                 <!-- Columna para el botón "ojo" en cada fila -->
+
+                <Column field="objective" header="OBJETIVO" style="width: 25%" />
+                <Column field="goal" header="META" style="width: 25%" />
+
                 <Column header="ACCIONES" style="width: 10%">
                     <template #body="slotNorms">
                         <q-btn icon="visibility" :style="{ color: 'rgb(4, 178, 217)' }" @click="editRequirement(slotNorms.data?._id)" dense round />
@@ -142,6 +146,18 @@
                                 }}
                             </div>
                         </q-card-section>
+                        <q-card-section>
+                            <div class="row full-width q-pb-lg q-pt-md">
+                                <div class="w-full q-px-md">
+                                    <div class="text-bold">Objetivo</div>
+                                    <q-input v-model="goal" outlined dense autogrow />
+                                </div>
+                                <div class="w-full q-px-md q-mt-md">
+                                    <div class="text-bold">Meta:</div>
+                                    <q-input v-model="objective" outlined dense autogrow />
+                                </div>
+                            </div>
+                        </q-card-section>
 
                         <q-card-section class="overflow-auto">
                             <table class="tablereq overflow-auto">
@@ -180,14 +196,11 @@
                                                             <q-input v-model="req.title" dense autogrow />
                                                         </td>
                                                         <td class="col-req-description">
-                                                            <template v-for="(input,index) in req.inputs" :key="input._id">
-                                                                <span class="hidden">  
-                                                                    {{ input.indicator = req.number + '.' + (index + 1) }}
-
+                                                            <template v-for="(input, index) in req.inputs" :key="input._id">
+                                                                <span class="hidden">
+                                                                    {{ (input.indicator = req.number + '.' + (index + 1)) }}
                                                                 </span>
-                                                                <q-input v-model="input.description" dense autogrow
-                                                                :hint="input.indicator" 
-                                                                >
+                                                                <q-input v-model="input.description" dense autogrow :hint="input.indicator">
                                                                     <template v-slot:append>
                                                                         <q-btn round dense flat icon="minimize" color="red" @click="removeInput(req._id, input._id)" />
                                                                     </template>
@@ -237,10 +250,10 @@
                         <q-card-section>
                             <div class="row full-width">
                                 <div class="col-12">Nota: Para una correcta generación de evidencias por favor ubicar adecuadamente los requisitos primero y luego solitar las evidencias por IA</div>
-                                <div class="col-2 justify-center flex items-center q-py-lg text-lg">Generar evidencias por IA:</div>
-                                <div class="col-3 justify-start flex items-center q-py-lg q-px-md">
+                                <div class="col-4 justify-center flex items-center q-py-lg text-lg">Generar evidencias, meta y objetivo por IA:</div>
+                                <div class="col-4 justify-start flex items-center q-py-lg q-px-md">
                                     <!-- <input type="file" id="inputFileEvidence" @change="selectFileEvidence" style="display: none" accept=".pdf" /> -->
-                                    <q-btn label="Generar Evidencias" color="primary" @click="selectFileEvidence" />
+                                    <q-btn label="Generar Información IA" color="primary" @click="selectFileEvidence" />
                                     <!-- <span class="text-sm text-grey-8">Solo se aceptan archivos PDF</span> -->
                                 </div>
                                 <div class="col-3 justify-start flex items-center">
@@ -294,12 +307,14 @@ const renovationOptions = ref([
     { label: 'Bimensual', value: 2 },
     { label: 'Trimensual', value: 3 },
     { label: 'Semanal', value: 4 },
-    { label: 'Mensual', value: 5 },
+    { label: 'Mensual', value: 5 }
 ]);
 const suggestedEvidences = ref([]);
 let file = ref(null);
 let fileEvidence = ref(null);
 let textResponse = ref('');
+let goal = ref('');
+let objective = ref('');
 let dataFormat = ref({
     number: '7',
 
@@ -373,7 +388,6 @@ const selectFile = (event) => {
 };
 
 const selectFileEvidence = async () => {
-   
     //generar un array con todos los inputs de todos los requisitos
     let inputsReq = [];
 
@@ -394,34 +408,8 @@ const selectFileEvidence = async () => {
         // Cambia el estado del usuario (activo/inactivo)
         const response = await generateEvidencesApi(formData);
 
-/* 
- {
-    data: {
-      message: 'Evidencias generadas exitosamente',
-      response: Array(11) [
-        {
-          evidence: [
-            'Acta de nombramiento del responsable del SG-SST', 
-              'Copia del certificado de aprobación del curso de 50 horas en SST del responsable del SG-SST',
-            
-              'Descripción del perfil profesional del responsable del SG-SST incluyendo experiencia y formación'
-          ],
-          id: '6755cc2421306b1a0f73c055',
-          title: 
-            'Responsable del Sistema de Gestión de Seguridad y Salud en el Trabajo SG-SST'
-        },
-        {
-          evidence: [
-            'Matriz de responsabilidades del SG-SST', 
-              'Descripción de las funciones y tareas de cada miembro del equipo del SG-SST',
-            'Manual de procedimientos del SG-SST'
-          ],
-          id: '6755cc2421306b1a0f73c056',
-          title: 
-            'Responsabilidades en el Sistema de Gestión de Seguridad y Salud en el Trabajo – SG-SST'
-        },
+        console.log(response);
 
-*/
         //asignar las evidencias a cada input
         dataFormat.value.requirements.forEach((r) => {
             r.inputs.forEach((i) => {
@@ -429,7 +417,9 @@ const selectFileEvidence = async () => {
                 i.suggestedEvidence = evidence?.evidence.join('\n');
             });
         });
-
+        
+        goal.value = response.data?.responseGoal?.goal;   
+        objective.value = response.data?.responseGoal?.objective;
 
         // Mostrar notificación de éxito
         Notify.create({
@@ -452,7 +442,6 @@ const selectFileEvidence = async () => {
             multiLine: true
         });
     }
-
 };
 
 async function getRequirements() {
@@ -504,7 +493,9 @@ async function saveNorm() {
         const response = await editRequirementApi({
             ...dataFormat.value,
             id: dataFormat.value._id,
-            norm: norm.value.value
+            norm: norm.value.value,
+            goal: goal.value,
+            objective: objective.value
         });
 
         if (response.status <= 300) {
@@ -521,7 +512,12 @@ async function saveNorm() {
             r.inputs.forEach((i) => delete i._id);
         });
 
-        const response = await createRequirementApi({ norm: norm.value.value, ...dataFormat.value });
+        const response = await createRequirementApi({
+            norm: norm.value.value,
+            ...dataFormat.value,
+            goal: goal.value,
+            objective: objective.value
+        });
         console.log(response);
         if (response.status <= 300) {
             Notify.create({ message: 'Norma creada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
@@ -534,6 +530,8 @@ async function saveNorm() {
 }
 
 function editRequirement(isReq) {
+    goal.value = '';
+    objective.value = '';
     dataFormat.value = requis.value.find((r) => r._id === isReq);
     norm.value = norms.value.find((n) => n.value === dataFormat.value.norm._id);
 

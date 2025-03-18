@@ -90,21 +90,21 @@
                                 {{ workPlan?.title ? ` - ${workPlan.title}` : '' }}
                             </div>
                         </q-card-section>
-                        <div class="w-full q-px-md">
+                        <!-- <div class="w-full q-px-md">
                             <div class="text-bold">Objetivo</div>
                             <q-input v-model="workPlan.goal" outlined dense autogrow />
                         </div>
                         <div class="w-full q-px-md q-mt-md">
                             <div class="text-bold">Meta:</div>
                             <q-input v-model="workPlan.objective" outlined dense autogrow />
-                        </div>
+                        </div> -->
                         <div class="table-container q-mt-xl">
                             <table class="full-width">
                                 <thead>
                                     <tr>
                                         <th class="text-left">Indicador</th>
                                         <th class="text-left">Requisito</th>
-                                        <th class="text-left">Criterios</th>
+                                        <!-- <th class="text-left">Criterios</th> -->
                                         <th class="text-left">Plan de acción (Actividades)</th>
                                         <th class="text-left">Responsable</th>
                                         <th class="text-left">Plazo de cumplimiento</th>
@@ -120,7 +120,7 @@
                                         <td style="width: 200px; max-width: 200px; min-width: 200px">
                                             {{ workPlan.description }}
                                         </td>
-                                        <td style="width: 200px; max-width: 200px; min-width: 200px">
+                                        <!-- <td style="width: 200px; max-width: 200px; min-width: 200px">
                                             <template v-for="(input, index) in workPlan.criteria">
                                                 <q-input class="q-mt-md q-mx-xs" v-model="input.value" dense outlined :label="'Criterio ' + (index + 1)" autogrow>
                                                     <template v-slot:append>
@@ -129,7 +129,7 @@
                                                 </q-input>
                                             </template>
                                             <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputCriteria()" />
-                                        </td>
+                                        </td> -->
 
                                         <td style="width: 200px; max-width: 200px; min-width: 200px">
                                             <template v-for="(input, index) in workPlan.activities">
@@ -171,13 +171,13 @@
                                         </td>
                                         <td style="width: 200px; max-width: 200px; min-width: 200px">
                                             <template v-for="(input, index) in workPlan.suggestedEvidence" :key="index">
-                                                <q-input disable class="q-mt-md q-mx-xs" v-model="input.value" dense outlined :label="'Soporte ' + (index + 1)" autogrow>
-                                                    <!-- <template v-slot:append>
+                                                <q-input class="q-mt-md q-mx-xs" v-model="input.value" dense outlined :label="'Soporte ' + (index + 1)" autogrow>
+                                                    <template v-slot:append>
                                                         <q-btn round dense flat icon="minimize" color="red" @click="removeInputSuggestedEvidence(index)" />
-                                                    </template> -->
+                                                    </template>
                                                 </q-input>
                                             </template>
-                                            <!-- <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputSuggestedEvidence()" /> -->
+                                            <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputSuggestedEvidence()" />
                                         </td>
                                     </tr>
                                 </tbody>
@@ -287,8 +287,8 @@ function openDialog(data) {
         activities: [{ value: '' }],
         responsibleness: req?.responsibleness?.map((r) => ({ value: r })) || [{ value: '' }],
         dateCompliance: req?.dateCompliance ? formatDate(req.dateCompliance) : null,
-        goal: req?.goal,
-        objective: req?.objective,
+        // goal: req?.goal,
+        // objective: req?.objective,
         title: req?.title,
     };
 
@@ -317,17 +317,17 @@ function hideDialog() {
 
 async function saveWorkPlan() {
 
-    console.log(workPlan.value.responsibleness);
     const data = {
         requirement: workPlan.value.requirement,
         id: workPlan.value.id,
         idQualification: workPlan.value.idQualification,
-        goal: workPlan.value.goal,
-        objective: workPlan.value.objective,
+        // goal: workPlan.value.goal,
+        // objective: workPlan.value.objective,
         dateCompliance: workPlan.value.dateCompliance,
         activities: workPlan.value.activities.map((a) => a.value),
         criteria: workPlan.value.criteria.map((c) => c.value),
-        responsibleness: workPlan.value.responsibleness.map((r) => r.value)
+        responsibleness: workPlan.value.responsibleness.map((r) => r.value),
+        suggestedEvidence: workPlan.value.suggestedEvidence.map((s) => s.value)?.join('\n'),
     };
 
     console.log(data);
