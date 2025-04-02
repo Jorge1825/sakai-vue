@@ -79,7 +79,7 @@
 
     <!-- Modal para agregar/editar plan de trabajo -->
     <q-dialog v-model="workPlanDialog" persistent>
-        <div class="container bg-white" style="width: 80vw; max-width: 80vw; min-width: 400px">
+        <div class="container bg-white" style="width: 90vw; max-width: 90vw; min-width: 400px">
             <div class="watermark-container justify-center flex">
                 <q-card class="justify-center flex bg-transparent full-width">
                     <q-form @submit.prevent.stop="saveWorkPlan" novalidate class="q-pa-md full-width">
@@ -114,10 +114,10 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td style="width: 150px; max-width: 150px; min-width: 150px">
+                                        <td style="width: 80px; max-width: 80px; min-width: 80px">
                                             {{ workPlan.indicator }}
                                         </td>
-                                        <td style="width: 200px; max-width: 200px; min-width: 200px">
+                                        <td style="width: 180px; max-width: 180px; min-width: 180px">
                                             {{ workPlan.description }}
                                         </td>
                                         <!-- <td style="width: 200px; max-width: 200px; min-width: 200px">
@@ -131,7 +131,7 @@
                                             <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputCriteria()" />
                                         </td> -->
 
-                                        <td style="width: 200px; max-width: 200px; min-width: 200px">
+                                        <td style="width: 180px; max-width: 180px; min-width: 180px">
                                             <template v-for="(input, index) in workPlan.activities">
                                                 <q-input class="q-mt-md q-mx-xs" v-model="input.value" dense outlined :label="'Actividad ' + (index + 1)" autogrow>
                                                     <template v-slot:append>
@@ -141,7 +141,7 @@
                                             </template>
                                             <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputActivities()" />
                                         </td>
-                                        <td style="width: 200px; max-width: 200px; min-width: 200px">
+                                        <td style="width: 150px; max-width: 150px; min-width: 150px">
                                             <template v-for="(input, index) in workPlan.responsibleness">
                                                 <q-select class="q-mt-md q-mx-xs" dense outlined :label="'Responsable ' + (index + 1)" :options="users" v-model="input.value">
                                                     <template v-slot:append>
@@ -151,7 +151,7 @@
                                             </template>
                                             <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputResponsibleness()" />
                                         </td>
-                                        <td style="width: 150px; max-width: 150px; min-width: 150px">
+                                        <td style="width: 120px; max-width: 120px; min-width: 120px">
                                             <q-input class="q-mt-md q-mx-xs" outlined dense v-model="workPlan.dateCompliance" mask="date" :rules="['date']">
                                                 <template v-slot:append>
                                                     <q-icon name="event" class="cursor-pointer">
@@ -166,7 +166,7 @@
                                                 </template>
                                             </q-input>
                                         </td>
-                                        <td style="width: 100px; max-width: 100px; min-width: 100px">
+                                        <td style="width: 80px; max-width: 80px; min-width: 80px">
                                             {{ calculatedRenovation(workPlan.renovation) }}
                                         </td>
                                         <td style="width: 200px; max-width: 200px; min-width: 200px">
@@ -367,8 +367,8 @@ function addInputActivities() {
     workPlan.value.activities.push({ value: '' });
 }
 
-function removeInputActivities() {
-    workPlan.value.activities.push({ value: '' });
+function removeInputActivities(index) {
+    workPlan.value.activities.splice(index, 1);
 }
 
 function addInputResponsibleness() {

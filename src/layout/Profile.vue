@@ -1,10 +1,26 @@
 <script setup>
 import FormProfile from '@/components/FormProfile.vue';
 import Cookies from 'js-cookie';
-import { ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+let year = ref();
+let years = ref([]);
+
+onBeforeMount(() => {
+    // Obtener el año actual
+    const currentYear = new Date().getFullYear();
+
+    // Crear un array de años desde 2023 hasta el año actual
+    years.value = Array.from({ length: currentYear - 2023 }, (_, i) => currentYear - i);
+
+    //obtener el año guardado en el local storage
+    let yearLocal = localStorage.getItem('year') || null;
+    year.value = yearLocal ? JSON.parse(yearLocal) : currentYear;
+
+
+});
 
 let dialog = ref(false);
 
@@ -22,6 +38,14 @@ function profile() {
 function closeDialog() {
     dialog.value = false;
 }
+
+function changeYear() {
+   //guardar el año en el local storage
+    localStorage.setItem('year', year.value);
+    // Redirigir a la página de inicio
+    router.push({ path: '/' });
+    window.location.reload();
+}
 </script>
 <template>
     <div
@@ -33,8 +57,12 @@ function closeDialog() {
             <h2 class="ml-2"><b>SOSTENIWEB</b></h2>
         </div>
         <div class="flex flex-col gap-4">
+            <span class="text-sm text-muted-color font-semibold">Año evaluado</span>
+            <div class="flex flex-wrap justify-between">
+                <q-select class="full-width" rounded outlined bottom-slots dense borderless options-dense v-model="year" :options="years" @update:model-value="changeYear()" />
+            </div>
             <span class="text-sm text-muted-color font-semibold">Perfil</span>
-            <div class="pt-2 flex gap-2 flex-wrap justify-between">
+            <div class="flex flex-wrap justify-between">
                 <q-btn
                     @click="profile()"
                     class="full-width"
@@ -58,7 +86,7 @@ function closeDialog() {
     </div>
 
     <q-dialog v-model="dialog" persistent>
-        <div class="container bg-white" style="min-width: 400px;">
+        <div class="container bg-white" style="min-width: 400px">
             <div class="watermark-container justify-center flex">
                 <FormProfile @close-dialog="closeDialog" />
             </div>
