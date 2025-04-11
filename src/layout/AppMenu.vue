@@ -13,6 +13,13 @@ const user = ref();
 const enterprises = ref();
 const enterprise = ref();
 onBeforeMount(() => {
+
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'logout-event') {
+            window.location.reload();
+        }
+    });
+
     user.value = useStoreAuth.getUserToken();
     role.value = useStoreAuth.getRoleToken();
     enterprises.value = useStoreAuth.getCompanyIds()?.map((enterprise) => {
@@ -137,6 +144,7 @@ const changeEnterprise = async () => {
         console.log(response.data.firstDiagnostic);
 
         await useStoreAuth.setFirstDiagnostic(response.data.firstDiagnostic);
+        localStorage.setItem('logout-event', Date.now());
         router.push({ path: '/' });
         window.location.reload();
     } catch (error) {

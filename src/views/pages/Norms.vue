@@ -71,7 +71,7 @@
                             />
 
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
-                            <q-btn v-if="role.type == 'ADMIN'" icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editNorm(slotNorms.data)" dense round />
+                            <q-btn v-if="role.type == 'SUPERADMIN'" icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="editNorm(slotNorms.data)" dense round />
                         </div>
                     </template>
                 </Column>
@@ -183,6 +183,8 @@ const prompts = ref([]);
 
 onBeforeMount(async () => {
     role.value = useStoreAuth.getRoleToken();
+
+    console.log(role.value);
     enterprise.value = useStoreAuth.getSelectedCompany();
     console.log(enterprise.value);
     await getNorms();

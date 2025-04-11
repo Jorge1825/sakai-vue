@@ -9,6 +9,12 @@ let year = ref();
 let years = ref([]);
 
 onBeforeMount(() => {
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'logout-event') {
+            window.location.reload();
+        }
+    });
+
     // Obtener el año actual
     const currentYear = new Date().getFullYear();
 
@@ -18,14 +24,15 @@ onBeforeMount(() => {
     //obtener el año guardado en el local storage
     let yearLocal = localStorage.getItem('year') || null;
     year.value = yearLocal ? JSON.parse(yearLocal) : currentYear;
-
-
 });
 
 let dialog = ref(false);
 
 function logout() {
     Cookies.remove('access_token');
+
+    // Notificar a todas las pestañas que deben redirigirse al login
+    localStorage.setItem('logout-event', Date.now());
 
     // Redirige al login
     router.push({ name: 'login' });
@@ -40,8 +47,9 @@ function closeDialog() {
 }
 
 function changeYear() {
-   //guardar el año en el local storage
+    //guardar el año en el local storage
     localStorage.setItem('year', year.value);
+    localStorage.setItem('logout-event', Date.now());
     // Redirigir a la página de inicio
     router.push({ path: '/' });
     window.location.reload();

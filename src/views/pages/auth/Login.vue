@@ -21,6 +21,13 @@ let showRecoverPasswordModal = ref(false);
 const recoverEmail = ref('');
 
 onBeforeMount(() => {
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'logout-event') {
+            //recargar la pestaña actual
+            window.location.reload();
+        }
+    });
+
     const userData = useAuth.getUser();
 
     if (userData) {
@@ -49,6 +56,7 @@ async function signIn() {
             }
 
             errorMessage.value = ''; // Limpiar el mensaje de error si es exitoso
+            localStorage.setItem('logout-event', Date.now());
             router.push({ name: 'dashboard' }); // Redirigir al dashboard
         } else if (status === 401) {
             errorMessage.value = '2 v3131c2Correo o contraseña incorrectos. Inténtalo de nuevo.';

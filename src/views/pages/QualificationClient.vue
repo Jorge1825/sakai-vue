@@ -31,7 +31,7 @@
                 :rowsPerPageOptions="[5, 10, 25, 50, 100]"
             >
                 <!-- <Column field="name" header="NOMBRE" :sortable="true" style="width: 10%" /> -->
-                <Column field="indicator" header="INDICADOR" :sortable="true" style="width: 10%">
+                <Column field="indicator" header="NUMERAL" :sortable="true" style="width: 10%">
                     <template #body="slotProps">
                         {{ slotProps.data?.indicator }}
                     </template>
@@ -46,18 +46,13 @@
                         {{ slotProps.data?.norm?.name }}
                     </template>
                 </Column>
-                <Column field="qualificaction" header="EVALUACIÓN" :sortable="true" style="width: 15%">
-                    <template #body="slotProps">
-                        {{ calculateQualification(slotProps.data) }}
-                    </template>
-                </Column>
+
                 <Column field="evidence" header="EVIDENCIAS" :sortable="true" style="width: 15%">
                     <template #body="slotProps">
-
                         <q-btn
                             icon="visibility"
                             :style="{
-                                backgroundColor: slotProps.data?.evidence && slotProps.data?.evidence?.length > 0 ? 'rgb(4, 178, 217)' : 'rgb(242, 185, 179)',
+                                backgroundColor: slotProps.data?.evidence && slotProps.data?.evidence?.length > 0 ? 'rgb(2, 232, 124)' : 'rgb(242, 185, 179)',
                                 color: 'white'
                             }"
                             @click="viewFiles(slotProps.data.evidence)"
@@ -67,7 +62,7 @@
                         />
                     </template>
                 </Column>
-                <Column header="ACCIONES" style="width: 10%">
+                <Column header="EVALUAR REQUISITO" style="width: 10%">
                     <template #body="slotProps">
                         <div class="button-group">
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
@@ -75,6 +70,11 @@
                             <!-- Botón de edición con fondo azul claro y sin cambiar el color del icono -->
                             <q-btn icon="edit" :style="{ backgroundColor: 'rgb(4, 178, 217)', color: 'white' }" @click="evaluateQualification(slotProps.data)" dense round />
                         </div>
+                    </template>
+                </Column>
+                <Column field="qualificaction" header="EVALUACIÓN" :sortable="true" style="width: 15%">
+                    <template #body="slotProps">
+                        {{ calculateQualification(slotProps.data) }}
                     </template>
                 </Column>
                 <template #expansion="slotProps">
@@ -164,7 +164,7 @@
                                 </div>
                                 <div class="col-12 justify-center flex items-center">
                                     <input multiple type="file" id="inputFile" @change="selectFile" style="display: none" accept=".pdf,.txt,.jpg,.jpeg,.png" />
-                                    <q-btn :disable="!norm || !requirement || !inputs.length" class="q-mx-sm flex" filled label="Cargar Archivo" color="primary" @click="uploadFile" />
+                                    <q-btn :disable="!norm || !requirement || !inputs.length" class="q-mx-sm flex" filled label="Cargar Evidencia" color="primary" @click="uploadFile" />
                                 </div>
                             </div>
                         </q-card-section>
@@ -406,15 +406,19 @@ async function getQualifications() {
         qualifications.value = Array.isArray(data) ? data : [];
 
         qualifications.value?.sort((a, b) => {
-            let aIndicator = a.indicator.split('.').map((i) => i.padStart(2, '0')).join('');
-            let bIndicator = b.indicator.split('.').map((i) => i.padStart(2, '0')).join('');
+            let aIndicator = a.indicator
+                .split('.')
+                .map((i) => i.padStart(2, '0'))
+                .join('');
+            let bIndicator = b.indicator
+                .split('.')
+                .map((i) => i.padStart(2, '0'))
+                .join('');
 
             return aIndicator - bIndicator;
         });
 
         console.log(qualifications.value);
-
-
     } catch (error) {
         console.error('Error al obtener datos de qualifications:', error);
         qualifications.value = []; // Asigna un array vacío para evitar futuros errores
@@ -529,7 +533,7 @@ async function uploadFileServer() {
                 Notify.create({ message: 'Norma evaluada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             }
 
-            if(response.data?.finished){
+            if (response.data?.finished) {
                 notifySuccess({ message: 'Tú diagnóstico está listo para ser revisado.', color: 'green' });
             }
 
@@ -578,7 +582,6 @@ async function renderFile(nameFile) {
 }
 
 async function viewFiles(evidences) {
-
     if (!evidences || evidences.length == 0) {
         return;
     }

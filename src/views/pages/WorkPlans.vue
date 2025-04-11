@@ -31,7 +31,7 @@
                 :rowsPerPageOptions="[5, 10, 25]"
             >
                 <!-- <Column field="name" header="NOMBRE" :sortable="true" style="width: 10%" /> -->
-                <Column field="indicator" header="INDICADOR" :sortable="true" style="width: 10%">
+                <Column field="indicator" header="NUMERAL" :sortable="true" style="width: 10%">
                     <template #body="slotProps">
                         {{ slotProps.data?.indicator }}
                     </template>
@@ -102,7 +102,7 @@
                             <table class="full-width">
                                 <thead>
                                     <tr>
-                                        <th class="text-left">Indicador</th>
+                                        <th class="text-left">Numeral</th>
                                         <th class="text-left">Requisito</th>
                                         <!-- <th class="text-left">Criterios</th> -->
                                         <th class="text-left">Plan de acción (Actividades)</th>
@@ -274,11 +274,27 @@ function calculatedRenovation(value) {
 }
 
 function openDialog(data) {
+    let defaultSuggestedEvidence = [
+        'Firma por parte de los empleados de la comunicación y entendimiento de las responsabilidadas, autoridad y rendición de cuentas de cada rol dentro del Sistema de gestión'
+    ];
     const req = { ...data };
+
+    console.log('req', req);
+
 
     //separar al actividades sugeridas por cada salto de linea con n
     if (req?.suggestedEvidence) {
         req.suggestedEvidence = req.suggestedEvidence[0].split('\n').map((e) => ({ value: e }));
+        console.log('suggestedEvidence', req.suggestedEvidence);
+    }
+
+    if (req.indicator == '1.1.1') {
+        defaultSuggestedEvidence.forEach((e) => {
+            const exist = req.suggestedEvidence.some((s) => s.value === e);;
+            if (!exist) {
+                req.suggestedEvidence.push({ value: e });
+            }
+        });
     }
 
     workPlan.value = {
@@ -289,7 +305,7 @@ function openDialog(data) {
         dateCompliance: req?.dateCompliance ? formatDate(req.dateCompliance) : null,
         // goal: req?.goal,
         // objective: req?.objective,
-        title: req?.title,
+        title: req?.title
     };
 
     if (req?.criteria && req.criteria.length) {
@@ -316,7 +332,6 @@ function hideDialog() {
 }
 
 async function saveWorkPlan() {
-
     const data = {
         requirement: workPlan.value.requirement,
         id: workPlan.value.id,
@@ -327,7 +342,7 @@ async function saveWorkPlan() {
         activities: workPlan.value.activities.map((a) => a.value),
         criteria: workPlan.value.criteria.map((c) => c.value),
         responsibleness: workPlan.value.responsibleness.map((r) => r.value),
-        suggestedEvidence: workPlan.value.suggestedEvidence.map((s) => s.value)?.join('\n'),
+        suggestedEvidence: workPlan.value.suggestedEvidence.map((s) => s.value)?.join('\n')
     };
 
     console.log(data);
