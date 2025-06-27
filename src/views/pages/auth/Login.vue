@@ -46,13 +46,20 @@ async function signIn() {
         // Si el login es exitoso
         if (data.token && status <= 300) {
             if (checked.value) {
+                useAuth.removeUser();
+                useAuth.removeCompany()
                 useAuth.saveUser({
                     email: email.value,
                     password: password.value,
                     checked: checked.value
                 });
+                useAuth.loadToken()
+                useAuth.decodeToken();
             } else {
                 useAuth.removeUser();
+                useAuth.removeCompany()
+                useAuth.loadToken()
+                useAuth.decodeToken();
             }
 
             errorMessage.value = ''; // Limpiar el mensaje de error si es exitoso

@@ -128,7 +128,7 @@ onBeforeMount(async () => {
 
 async function getExpress() {
     try {
-        const { data } = await getEvaluationExpress(company.value.value);
+        const { data } = await getEvaluationExpress(company?.value?.value);
         console.log(data);
         express.value = data.length ? data : [];
     } catch (error) {

@@ -44,6 +44,18 @@
                         {{ enterprise?.employsService }}
                     </div>
                 </q-card-section>
+                <q-card-section class="col-6">
+                    <div class="text-h6 text-center text-primary text-body1" style="font-weight: bold">Departamento</div>
+                    <div class="text-h6 text-center q-mt-md" style="font-weight: bold; font-size: 16px">
+                        {{ enterprise?.department }}
+                    </div>
+                </q-card-section>
+                <q-card-section class="col-6">
+                    <div class="text-h6 text-center text-primary text-body1" style="font-weight: bold">Ciudad</div>
+                    <div class="text-h6 text-center q-mt-md" style="font-weight: bold; font-size: 16px">
+                        {{ enterprise?.city }}
+                    </div>
+                </q-card-section>
             </q-card>
         </div>
 

@@ -76,8 +76,17 @@ export const storeAuth = defineStore(
         }
 
         const removeUser = () => {
+            console.log('removeUser');
+            token.value = '';
             localStorage.removeItem('user');
         }
+
+        const removeCompany = () => {
+            console.log('removeCompany');
+            selectedCompany.value = null;
+            localStorage.removeItem('selectedCompany');
+        }
+
 
         const getUser = () => {
             return JSON.parse(localStorage.getItem('user'));
@@ -104,6 +113,7 @@ export const storeAuth = defineStore(
             hasRole,
             saveUser,
             removeUser,
+            removeCompany,
             getUser,
             setFirstDiagnostic,
             getFirstDiagnostic,

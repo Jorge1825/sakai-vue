@@ -382,6 +382,9 @@ onBeforeMount(async () => {
 
 async function getRequirements() {
     try {
+
+        console.log('norm', norm.value);
+        console.log('enterprise', enterprise.value);
         const { data } = await getRequirementsByNormAndEnterpriseApi(norm.value.value, enterprise.value.value);
 
         //extraer los requirements de cada recurso y dejarlos en un array
@@ -429,7 +432,9 @@ async function getNorms() {
     try {
         const { data } = await getNormEnterpriseApi(enterprise.value.value);
         norms.value = data.length ? data?.map((r) => ({ label: r.name, value: r._id })) : [];
+        console.log(norms.value);
         norm.value = norms.value[0];
+        console.log(norms.value);
         await getRequirements();
     } catch (error) {
         console.error(error);

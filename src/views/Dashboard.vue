@@ -38,7 +38,7 @@ onMounted(() => {
 
     const firstDiagnostic = useStoreAuth.getFirstDiagnostic();
 
-    if (!firstDiagnostic && role.type == 'USER') {
+    if (!firstDiagnostic && role.type == 'ADMIN') {
         dialog1.value = true;
     }
 });

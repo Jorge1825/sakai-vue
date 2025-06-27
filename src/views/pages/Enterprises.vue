@@ -157,6 +157,27 @@
                                     />
                                 </div>
                                 <div class="col-6">
+                                    <q-input
+                                        lazy-rules
+                                        v-model.number="enterprise.department"
+                                        label="Departamento"
+                                        type="text"
+                                        required
+                                        style="padding: 10px"
+                                        
+                                    />
+                                </div>
+                                <div class="col-6">
+                                    <q-input
+                                        lazy-rules
+                                        v-model.number="enterprise.city"
+                                        label="Ciudad"
+                                        type="text"
+                                        required
+                                        style="padding: 10px"
+                                    />
+                                </div>
+                                <div class="col-6">
                                     <q-select v-model="enterprise.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
@@ -203,6 +224,8 @@ const enterprise = ref({
     address: '',
     employsService: null,
     employsContracted: null,
+    department: '',
+    city: '',
     email: '',
     phone: '',
     riskLevel: riskLevels.value[0],
@@ -249,7 +272,9 @@ function openDialog() {
         status: status.value[0],
         norms: [],
         employsContracted: null,
-        employsService: null
+        employsService: null,
+        department: '',
+        city: ''
         };
     enterpriseDialog.value = true;
 }
@@ -273,7 +298,9 @@ async function saveEnterprise() {
             status: enterprise.value.status.value,
             norms: enterprise.value.norms?.map((norm) => norm.value),
             employsService: enterprise.value.employsService,
-            employsContracted: enterprise.value.employsContracted
+            employsContracted: enterprise.value.employsContracted,
+            department:enterprise.value.department,
+            city: enterprise.value.city
         };
 
         const response = await editEnterpriseApi(enterpriseApi);
@@ -297,7 +324,9 @@ async function saveEnterprise() {
             riskLevel: enterprise.value.riskLevel.value,
             norms: enterprise.value.norms?.map((norm) => norm.value),
             employsService: enterprise.value.employsService,
-            employsContracted: enterprise.value.employsContracted
+            employsContracted: enterprise.value.employsContracted,
+            department:enterprise.value.department,
+            city: enterprise.value.city
         };
 
         const response = await createEnterpriseApi(enterpriseApi);

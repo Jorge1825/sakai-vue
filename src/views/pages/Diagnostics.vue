@@ -60,7 +60,7 @@
                         <q-chip :color="'green'" :label="`${slotProps.data?.noJustifica}`" />
                     </template>
                 </Column>
-                <Column header="ACCIONES" style="width: 10%">
+                <Column header="DIAGNÓSTICO DESCARGABLE" style="width: 10%">
                     <template #body="slotProps">
                         <div class="button-group">
                             <!-- Botón de ojo para ver detalles del diagnostico -->
