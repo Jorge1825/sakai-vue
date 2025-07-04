@@ -142,7 +142,7 @@
                                         type="number"
                                         required
                                         style="padding: 10px"
-                                        :rules="[(val) => (val && val?.toString().length > 0) || 'Número de empleados requerido']"
+                                   
                                     />
                                 </div>
                                 <div class="col-6">
@@ -333,11 +333,11 @@ async function saveEnterprise() {
         console.log(response);
 
         if (response.status <= 300) {
-            Notify.create({ message: 'Calificacion creada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
+            Notify.create({ message: 'Empresa creada correctamente.', type: 'positive', position: 'top', textColor: 'white', color: 'blue', multiLine: true });
             await getEnterprises();
             hideDialog();
         } else {
-            Notify.create({ message: 'Error al crear el calificacion.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
+            Notify.create({ message: 'Error al crear la empresa.', type: 'negative', position: 'top', textColor: 'white', color: 'rgb(242, 185, 179)', multiLine: true });
         }
     }
 }
