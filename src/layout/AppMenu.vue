@@ -44,7 +44,7 @@ const itemsFull = [
             { label: 'Calificaciones', icon: 'pi pi-fw pi-cog', to: '/qualification', users: ['SUPERADMIN'], orderAdmin: 6, orderUser: 0 },
             { label: 'Documentos', icon: 'pi pi-fw pi-cog', to: '/documents', users: ['USER', 'ADMIN', 'SUPERADMIN'], orderAdmin: 7, orderUser: 5 },
             { label: 'Plan de trabajo', icon: 'pi pi-fw pi-cog', to: '/WorkPlans', users: ['USER', 'ADMIN', 'SUPERADMIN'], orderAdmin: 8, orderUser: 6 },
-            { label: 'Programas', icon: 'pi pi-fw pi-cog', to: '/programs', users: ['SUPERADMIN'], orderAdmin: 9, orderUser: 0 },
+            { label: 'Programas', icon: 'pi pi-fw pi-cog', to: '/programs', users: ['USER', 'ADMIN'], orderAdmin: 9, orderUser: 0 },
             { label: 'Prompts', icon: 'pi pi-fw pi-cog', to: '/prompts', users: ['SUPERADMIN'], orderAdmin: 10, orderUser: 0 },
             { label: 'Requerimientos', icon: 'pi pi-fw pi-cog', to: '/tablenorm', users: ['SUPERADMIN'], orderAdmin: 11, orderUser: 2 },
             { label: 'Autoevaluación', icon: 'pi pi-fw pi-cog', to: 'qualificationClient', users: ['USER','ADMIN',], orderAdmin: 12, orderUser: 3 },

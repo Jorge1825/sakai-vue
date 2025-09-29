@@ -34,7 +34,7 @@
                 <Column field="description" header="DESCRIPCIÓN" style="width: 35%" />
                 <Column field="status" header="ESTADO" style="width: 10%; text-align: left; text-transform: uppercase">
                     <template #body="slotNorms">
-                        <div style="text-align: left" v-if="role.type == 'USER'">
+                        <div style="text-align: left" v-if="role.type == 'USER' || role.type == 'ADMIN'">
                             <q-badge :color="existEnterprise(slotNorms.data) ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
                                 {{ existEnterprise(slotNorms.data) ? 'ACTIVA' : 'INACTIVA' }}
                             </q-badge>
@@ -52,9 +52,9 @@
                             <!-- Botón que cambia color de fondo sin afectar el icono -->
                             <q-btn
                                 v-if="role.type == 'ADMIN'"
-                                :icon="slotNorms.data.status === true ? 'clear' : 'check'"
-                                :style="{ backgroundColor: slotNorms.data.status === true ? 'rgb(242, 185, 179)' : 'rgb(4, 178, 217)', color: 'white' }"
-                                @click="toggleStatus(slotNorms.data)"
+                                :icon="existEnterprise(slotNorms.data) ? 'check' : 'clear'"
+                                :style="{ backgroundColor: !existEnterprise(slotNorms.data) ? 'rgb(242, 185, 179)' : 'rgb(4, 178, 217)', color: 'white' }"
+                                @click="toggleEnterprise(slotNorms.data)"
                                 dense
                                 round
                                 class="q-mr-xs"
@@ -137,6 +137,16 @@
                                 <div class="col-6">
                                     <q-select v-model="norm.defaultNorm" :options="status" label="Por Defecto" required style="padding: 10px" />
                                 </div>
+                                <div class="col-6">
+                                    <q-select v-model="norm.type" :options="typeNorm" label="Tipo de Norma" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Tipo de norma requerido']" />
+                                </div>
+                                <div class="col-6">
+                                    <q-file v-model="norm.file" label="Subir archivo de la norma" style="padding: 10px" required lazy-rules :rules="[(val) => val || 'Archivo requerido']">
+                                        <template v-slot:prepend>
+                                            <q-icon name="attach_file" />
+                                        </template>
+                                    </q-file>
+                                </div>
                             </div>
                         </q-card-section>
 
@@ -171,12 +181,19 @@ const norm = ref({
     status: true,
     defaultNorm: false,
     promptExtraction: null,
-    promptFormat: null
+    promptFormat: null,
+    type: null,
+    file: null
 });
 const expandedRows = ref([]);
 const status = ref([
     { label: 'ACTIVA', value: true },
     { label: 'INACTIVA', value: false }
+]);
+
+const typeNorm = ref([
+    { label: 'GUBERNAMENTAL', value: 1 },
+    { label: 'ENTES DE NORMALIZACIÓN', value: 2 }
 ]);
 
 const prompts = ref([]);
@@ -259,16 +276,19 @@ async function saveNorm() {
             notifyError({ message: 'Error al actualizar la norma.' });
         }
     } else {
-        const normApi = {
-            name: norm.value.name,
-            description: norm.value.description,
-            promptExtraction: norm.value.promptExtraction.value,
-            promptFormat: norm.value.promptFormat.value,
-            status: norm.value.status.value,
-            defaultNorm: norm.value.defaultNorm.value
-        };
+        const newForm = new FormData();
+        newForm.append('name', norm.value.name);
+        newForm.append('description', norm.value.description);
+        newForm.append('promptExtraction', norm.value.promptExtraction.value);
+        newForm.append('promptFormat', norm.value.promptFormat.value);
+        newForm.append('status', norm.value.status.value);
+        newForm.append('defaultNorm', norm.value.defaultNorm.value);
+        newForm.append('type', norm.value.type.value);
+        newForm.append('file', norm.value.file);
 
-        const response = await createNormApi(normApi);
+        console.log(norm.value);
+
+        const response = await createNormApi(newForm);
         console.log(response);
 
         if (response.status <= 300) {
@@ -295,6 +315,7 @@ function editNorm(selectedNorm) {
 //funcion activar desactivavr usuario
 async function toggleStatus(selectedNorm) {
     try {
+        console.log(selectedNorm);
         // Cambia el estado del usuario (activo/inactivo)
         const response = await toggleActiveNormApi(selectedNorm._id);
 
@@ -320,6 +341,8 @@ async function toggleStatus(selectedNorm) {
 //funcion activar desactivavr usuario
 async function toggleEnterprise(selectedNorm) {
     try {
+        console.log(selectedNorm);
+
         // Cambia el estado del usuario (activo/inactivo)
         const response = await toggleEnterpriseNormApi({ id: selectedNorm._id, enterprise: enterprise.value.value });
 

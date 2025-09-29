@@ -24,6 +24,7 @@ import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import VueApexCharts from "vue3-apexcharts";
 
 import '@/assets/styles.scss';
 import '@/assets/tailwind.css';
@@ -46,6 +47,7 @@ app.use(PrimeVue, {
 });
 app.use(ToastService);
 app.use(ConfirmationService);
+app.use(VueApexCharts);
 app.use(Quasar, {
     plugins: {
         Dialog,

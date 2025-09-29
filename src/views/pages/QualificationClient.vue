@@ -376,8 +376,8 @@ const renderSuggested = (suggested) => {
 
 onBeforeMount(async () => {
     enterprise.value = useStoreAuth.getSelectedCompany();
-    await getQualifications();
     await getNorms();
+    await getQualifications();
 });
 
 async function getRequirements() {
@@ -389,6 +389,8 @@ async function getRequirements() {
 
         //extraer los requirements de cada recurso y dejarlos en un array
         reqData.value = data.map((r) => r.requirements).flat();
+
+        console.log('reqData', reqData.value);
 
         requirements.value = reqData.value.map((r) => ({ label: r.title, value: r._id }));
     } catch (error) {
@@ -404,7 +406,7 @@ async function listRequirements() {
 
 async function getQualifications() {
     try {
-        const { data } = await getQualificationsApi(enterprise.value.value);
+        const { data } = await getQualificationsApi(enterprise.value.value,norm.value ? norm.value.value : null);
         console.log(data);
         qualifications.value = Array.isArray(data) ? data : [];
 

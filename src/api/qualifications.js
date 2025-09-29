@@ -1,10 +1,10 @@
 
 import axiosInstance from "@/config/axios.conf";
 
-export const getQualificationsApi = async (enterpriseId) => {
+export const getQualificationsApi = async (enterpriseId,norm) => {
     try {
 
-        const response = await axiosInstance.get(`/qualifications/${enterpriseId}`);
+        const response = await axiosInstance.get(`/qualifications/${enterpriseId}/${norm}`);
 
         return response;
     } catch (error) {
