@@ -556,19 +556,10 @@ async function uploadFileServer() {
 }
 
 function calculateQualification(data) {
-    if (data?.required) {
-        if (data?.cumple != 0) {
-            return data?.cumple;
-        } else {
-            return data?.noCumple;
-        }
-    } else {
-        if (data?.justifica != 0) {
-            return data?.justifica;
-        } else {
-            return data?.noJustifica;
-        }
-    }
+    //tomar el valor mayor entre cumple, noCumple, justifica, noJustifica
+    const values = [data?.cumple || 0, data?.noCumple || 0, data?.justifica || 0, data?.noJustifica || 0];
+    const maxValue = Math.max(...values);
+    return maxValue;
 }
 
 async function renderFile(nameFile) {

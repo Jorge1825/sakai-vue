@@ -35,9 +35,9 @@
                         {{ slotProps.data?.norm?.name }}
                     </template>
                 </Column>
-                <Column field="levelOfCompliance" header="PESO PORCENTUAL" style="width: 10%">
+                <Column field="levelOfCompliance" header="PORCENTAJE DE CUMPLIMIENTO" style="width: 10%">
                     <template #body="slotProps">
-                        <q-chip :label="`${slotProps.data?.total}`" />
+                        <q-chip :label="`${100- (100 - (slotProps.data?.cumple + slotProps.data?.justifica))}`" />
                     </template>
                 </Column>
                 <Column field="levelOfCompliance" header="CUMPLE TOTALMENTE" style="width: 10%">
@@ -295,7 +295,8 @@ async function viewDiagnostic(selectedDiagnostic) {
         cumple: selectedDiagnostic.cumple,
         noCumple: selectedDiagnostic.noCumple,
         justifica: selectedDiagnostic.justifica,
-        noJustifica: selectedDiagnostic.noJustifica
+        noJustifica: selectedDiagnostic.noJustifica,
+        totalGeneral: selectedDiagnostic.cumple + selectedDiagnostic.justifica
     }
 
     selectedDiagnostic.requirements.forEach((requirement) => {
@@ -319,6 +320,8 @@ async function viewDiagnostic(selectedDiagnostic) {
             });
         });
 
+
+
         data.push({
             reqChild,
             norm: selectedDiagnostic.norm.name,
@@ -332,7 +335,8 @@ async function viewDiagnostic(selectedDiagnostic) {
             fullyComplies: requirement.cumple,
             doesNotComply: requirement.noCumple,
             justifies: requirement.justifica,
-            doesNotJustify: requirement.noJustifica
+            doesNotJustify: requirement.noJustifica,
+            valueTotal: parseFloat(requirement.cumple || 0) + parseFloat(requirement.justifica || 0)
         });
     });
 

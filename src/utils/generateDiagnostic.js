@@ -1,6 +1,6 @@
 import { utils, writeFileXLSX } from 'xlsx';
 
-export async function generateDiagnostic(dataRow, dataTotals){
+export async function generateDiagnostic(dataRow, dataTotals) {
     const dataExcel = [
         [
             'NOMBRE DEL CLIENTE',
@@ -11,11 +11,13 @@ export async function generateDiagnostic(dataRow, dataTotals){
             'EVALUACIÓN INICIAL RESOLUCIÓN 0312/2019',
             'EVALUACIÓN INICIAL RESOLUCIÓN 0312/2019',
             'EVALUACIÓN INICIAL RESOLUCIÓN 0312/2019',
+            'EVALUACIÓN INICIAL RESOLUCIÓN 0312/2019',
             'EVALUACIÓN INICIAL RESOLUCIÓN 0312/2019'
         ],
-        ['', '', '', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', '', '', ''],
         [
+            'TABLA DE VALORES Y CALIFICACIÓN',
             'TABLA DE VALORES Y CALIFICACIÓN',
             'TABLA DE VALORES Y CALIFICACIÓN',
             'TABLA DE VALORES Y CALIFICACIÓN',
@@ -26,9 +28,9 @@ export async function generateDiagnostic(dataRow, dataTotals){
             'TABLA DE VALORES Y CALIFICACIÓN',
             'TABLA DE VALORES Y CALIFICACIÓN'
         ],
-        ['ESTANDAR', 'ESTANDAR', 'Item del estandar', 'Valor', 'Peso porcentual', 'Puntaje posible', '', '', ''],
-        ['', '', '', '', '', 'Cumple', 'No cumple', 'Justifica', 'No justifica'],
-        ['', '', '', '', '', '', '', '', '']
+        ['ESTANDAR', 'ESTANDAR', 'Item del estandar', 'Valor', 'Peso porcentual', 'Puntaje posible', '', '', '', 'CALIFICACIÓN DE LA EMPRESA O CONTRATANTE'],
+        ['', '', '', '', '', 'Cumple', 'No cumple', 'Justifica', 'No justifica', ''],
+        ['', '', '', '', '', '', '', '', '', '']
     ];
 
     dataRow.forEach((requirement) => {
@@ -43,17 +45,19 @@ export async function generateDiagnostic(dataRow, dataTotals){
                     item2.fullyComplies,
                     item2.doesNotComply,
                     item.justifies,
-                    item.doesNotJustify
+                    item.doesNotJustify,
+                    item?.items?.reduce((acc, item) => acc + parseFloat(item.valueTotal), 0),
                 ]);
             });
         });
     });
 
-    dataExcel.push(['', '', '', '', '', '', '', '', '']);
-    dataExcel.push(['TOTALES', '', '', '', dataTotals.total, dataTotals.cumple, dataTotals.noCumple, dataTotals.justifica, dataTotals.noJustifica]);
-    dataExcel.push(['Cuando se cumple con el ítem del estándar la calificación será la máxima del respectivo ítem, de lo contrario su calificación será igual a cero (0).', '', '', '', '', '', '', '', '']);
+    dataExcel.push(['', '', '', '', '', '', '', '', '', '']);
+    dataExcel.push(['TOTALES', '', '', '', dataTotals.total, dataTotals.cumple, dataTotals.noCumple, dataTotals.justifica, dataTotals.noJustifica, dataTotals.totalGeneral]);
+    dataExcel.push(['Cuando se cumple con el ítem del estándar la calificación será la máxima del respectivo ítem, de lo contrario su calificación será igual a cero (0).', '', '', '', '', '', '', '', '', '']);
     dataExcel.push([
         'Si el estándar No Aplica, se deberá justificar la situación y se calificará con el porcentaje máximo del ítem indicado para cada estándar. En caso de no justificarse, la calificación el estándar será igual a cero (0)',
+        '',
         '',
         '',
         '',
@@ -72,15 +76,22 @@ export async function generateDiagnostic(dataRow, dataTotals){
         '',
         '',
         '',
+        '',
         ''
     ]);
-    dataExcel.push(['', '', '', '', '', '', '', '', '']);
-    dataExcel.push(['', '', '', '', '', '', '', '', '']);
-    dataExcel.push(['EL NIVEL DE SU EVALUACIÓN ES:', '', '', '', '', ' ', '', '', '']);
-    dataExcel.push(['', '', '', '', '', '', '', '', '']);
-    dataExcel.push(['FIRMA RESPONSABLE DEL DISEÑO DEL SG-SST', '', '', '', '', '  ', '', '', '']);
-    dataExcel.push(['', '', '', '', '', '', '', '', '']);
-    dataExcel.push(['VALENTINA ZULUAGA HENAO SS2018060400878', '', '', '', '', ' ', '', '', '']);
+
+    const nivel = (dataTotals.totalGeneral <= 60) ? 'CRITICO '
+        : (dataTotals.totalGeneral <= 85) ? 'MODERADO '
+        : 'ACEPTABLE ';
+
+    dataExcel.push(['', '', '', '', '', '', '', '', '', '']);
+    dataExcel.push(['', '', '', '', '', '', '', '', '', '']);
+    dataExcel.push(['EL NIVEL DE SU EVALUACIÓN ES:', '', '', '', '', nivel , '', '', '', '']);
+    dataExcel.push(['', '', '', '', '', '', '', '', '', '']);
+    dataExcel.push(['FIRMA RESPONSABLE DEL DISEÑO DEL SG-SST', '', '', '', '', '  ', '', '', '', '']);
+    dataExcel.push(['', '', '', '', '', '', '', '', '', '']);
+    dataExcel.push(['VALENTINA ZULUAGA HENAO SS2018060400878', '', '', '', '', ' ', '', '', '', '']);
+    dataExcel.push(['', '', '', '', '', ' ', '', '', '', '']);
 
     const wb = utils.book_new();
     const ws = utils.aoa_to_sheet(dataExcel);
@@ -95,7 +106,8 @@ export async function generateDiagnostic(dataRow, dataTotals){
         { wch: 10 }, // Cumple
         { wch: 10 }, // No cumple
         { wch: 10 }, // Justifica
-        { wch: 10 } // No justifica
+        { wch: 10 }, // No justifica
+        { wch: 20 } // CALIFICACIÓN DE LA EMPRESA O CONTRATANTE
     ];
     ws['!cols'] = wscols;
 
@@ -116,27 +128,21 @@ export async function generateDiagnostic(dataRow, dataTotals){
         // nombre del cliente
         { s: { r: 0, c: 0 }, e: { r: 2, c: 1 } },
         // evaluación inicial resolución 0312/2019
-        { s: { r: 0, c: 2 }, e: { r: 2, c: 8 } },
+        { s: { r: 0, c: 2 }, e: { r: 0, c: 9 } },
         // tabla de valores y calificación
-        { s: { r: 3, c: 0 }, e: { r: 3, c: 8 } },
-        // Norma
-        { s: { r: 4, c: 0 }, e: { r: 6, c: 1 } },
+        { s: { r: 3, c: 0 }, e: { r: 3, c: 9 } },
+        // ESTANDAR (columnas A-B, filas 5-6)
+        { s: { r: 4, c: 0 }, e: { r: 5, c: 1 } },
         // Item del estandar
-        { s: { r: 4, c: 2 }, e: { r: 6, c: 2 } },
+        { s: { r: 4, c: 2 }, e: { r: 5, c: 2 } },
         // Valor
-        { s: { r: 4, c: 3 }, e: { r: 6, c: 3 } },
+        { s: { r: 4, c: 3 }, e: { r: 5, c: 3 } },
         // Peso porcentual
-        { s: { r: 4, c: 4 }, e: { r: 6, c: 4 } },
-        // Puntaje posible
+        { s: { r: 4, c: 4 }, e: { r: 5, c: 4 } },
+        // Puntaje posible (header spanning columns F-I)
         { s: { r: 4, c: 5 }, e: { r: 4, c: 8 } },
-        // Cumple
-        { s: { r: 5, c: 5 }, e: { r: 6, c: 5 } },
-        // No cumple
-        { s: { r: 5, c: 6 }, e: { r: 6, c: 6 } },
-        // Justifica
-        { s: { r: 5, c: 7 }, e: { r: 6, c: 7 } },
-        // No justifica
-        { s: { r: 5, c: 8 }, e: { r: 6, c: 8 } }
+        // CALIFICACIÓN DE LA EMPRESA O CONTRATANTE
+        { s: { r: 4, c: 9 }, e: { r: 5, c: 9 } }
     ];
 
     // Combinar celdas para nameRequirement y item.reqChild.description
@@ -152,6 +158,7 @@ export async function generateDiagnostic(dataRow, dataTotals){
             if (item.items.length > 1) {
                 mergeRanges.push({ s: { r: itemStartRow, c: 1 }, e: { r: startRow - 1, c: 1 } }); // item.reqChild.description
                 mergeRanges.push({ s: { r: itemStartRow, c: 4 }, e: { r: startRow - 1, c: 4 } }); // Peso porcentual
+                mergeRanges.push({ s: { r: itemStartRow, c: 9 }, e: { r: startRow - 1, c: 9 } }); // CALIFICACIÓN DE LA EMPRESA O CONTRATANTE
             }
         });
         if (requirement.items.length > 1) {
@@ -160,21 +167,22 @@ export async function generateDiagnostic(dataRow, dataTotals){
     });
 
     // Combinar celdas para los totales
-    startRow ++;
+    startRow++;
     mergeRanges.push({ s: { r: startRow, c: 0 }, e: { r: startRow, c: 3 } });
-    startRow ++;
-    mergeRanges.push({ s: { r: startRow, c: 0 }, e: { r: startRow + 1, c: 8 } });
+    startRow++;
+    mergeRanges.push({ s: { r: startRow, c: 0 }, e: { r: startRow + 1, c: 9 } });
     startRow += 2;
-    mergeRanges.push({ s: { r: startRow, c: 0 }, e: { r: startRow + 1, c: 8 } });
+    mergeRanges.push({ s: { r: startRow, c: 0 }, e: { r: startRow + 1, c: 9 } });
     startRow += 3;
     mergeRanges.push({ s: { r: startRow, c: 0 }, e: { r: startRow + 1, c: 4 } });
-    mergeRanges.push({ s: { r: startRow, c: 5 }, e: { r: startRow + 1, c: 8 } });
+    mergeRanges.push({ s: { r: startRow, c: 5 }, e: { r: startRow + 1, c: 9 } });
     startRow += 2;
     mergeRanges.push({ s: { r: startRow, c: 0 }, e: { r: startRow + 1, c: 4 } });
-    mergeRanges.push({ s: { r: startRow, c: 5 }, e: { r: startRow + 1, c: 8 } });
+    mergeRanges.push({ s: { r: startRow, c: 5 }, e: { r: startRow + 1, c: 9 } });
     startRow += 2;
     mergeRanges.push({ s: { r: startRow, c: 0 }, e: { r: startRow + 1, c: 4 } });
-    mergeRanges.push({ s: { r: startRow, c: 5 }, e: { r: startRow + 1, c: 8 } });
+    mergeRanges.push({ s: { r: startRow, c: 5 }, e: { r: startRow + 1, c: 9 } });
+
 
     ws['!merges'] = ws['!merges'].concat(mergeRanges);
 
