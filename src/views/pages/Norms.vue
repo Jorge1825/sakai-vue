@@ -40,8 +40,8 @@
                             </q-badge>
                         </div>
                         <div style="text-align: left" v-else>
-                            <q-badge :color="slotNorms.data.status === true ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
-                                {{ status.find((s) => s.value === slotNorms.data.status).label }}
+                            <q-badge :color="slotNorms.data.status == true ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
+                                {{ status.find((s) => s.value?.toString() == slotNorms.data.status)?.label || slotNorms.data.status }}
                             </q-badge>
                         </div>
                     </template>
@@ -90,7 +90,7 @@
                         <p>
                             <strong>Estado:</strong>
                             <q-badge :color="slotNorms.data.status === true ? 'blue' : 'rgb(242, 185, 179)'">
-                                {{ status.find((s) => s.value === slotNorms.data.status).label }}
+                                {{ status.find((s) => s.value === slotNorms.data?.status)?.label || slotNorms.data.status }}
                             </q-badge>
                         </p>
                         <p>
@@ -165,14 +165,19 @@
 <script setup>
 import { createNormApi, editNormApi, getNormsApi, toggleActiveNormApi, toggleEnterpriseNormApi } from '@/api/norms';
 import { getPromptsApi } from '@/api/prompts';
+import { useTaskPolling } from '@/composables/useTaskPolling';
 import { notifyError, notifySuccess } from '@/config/notifications';
 import { storeAuth } from '@/store/auth';
+import { Notify, useQuasar } from 'quasar';
 import { computed, onBeforeMount, ref } from 'vue';
 
 const useStoreAuth = storeAuth();
 const role = ref(null);
 const enterprise = ref(null);
 const norms = ref([]);
+const $q = useQuasar();
+
+const { isProcessing, startPolling, taskError } = useTaskPolling();
 const normDialog = ref(false);
 const norm = ref({
     id: null,
@@ -286,17 +291,32 @@ async function saveNorm() {
         newForm.append('type', norm.value.type.value);
         newForm.append('file', norm.value.file);
 
-        console.log(norm.value);
+        try {
+            const response = await createNormApi(newForm);
+            const taskId = response.data.taskId;
 
-        const response = await createNormApi(newForm);
-        console.log(response);
+            const dismiss = $q.notify({
+                message: 'Procesando requisitos de la norma. Esto puede tardar unos minutos...',
+                color: 'blue',
+                timeout: 0, // No se cierra automáticamente
+                actions: [{ label: 'Cerrar', color: 'white', handler: () => dismiss() }]
+            });
 
-        if (response.status <= 300) {
-            notifySuccess({ message: 'Norma creada correctamente.' });
-            await getNorms();
             hideDialog();
-        } else {
-            notifyError({ message: 'Error al crear la norma.' });
+            
+            // Refresh list to show the "PROCESSING" norm
+            await getNorms();
+
+            await startPolling(taskId);
+
+            notifySuccess({ message: 'Norma creada y requisitos procesados correctamente.' });
+            // ocultar notificación de proceso
+            dismiss();
+            await getNorms();
+        } catch (error) {
+            console.error(error);
+            notifyError({ message: 'Error al crear la norma: ' + (error.message || 'Error desconocido') });
+            await getNorms(); // To show "ERROR" status if it changed
         }
     }
 }

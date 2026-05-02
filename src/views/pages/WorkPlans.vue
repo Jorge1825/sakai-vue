@@ -132,7 +132,7 @@
                                         </td> -->
 
                                         <td style="width: 180px; max-width: 180px; min-width: 180px">
-                                            <template v-for="(input, index) in workPlan.activities">
+                                            <template v-for="(input, index) in workPlan.activities" :key="index">
                                                 <q-input class="q-mt-md q-mx-xs" v-model="input.value" dense outlined :label="'Actividad ' + (index + 1)" autogrow>
                                                     <template v-slot:append>
                                                         <q-btn round dense flat icon="minimize" color="red" @click="removeInputActivities(index)" />
@@ -142,7 +142,7 @@
                                             <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputActivities()" />
                                         </td>
                                         <td style="width: 150px; max-width: 150px; min-width: 150px">
-                                            <template v-for="(input, index) in workPlan.responsibleness">
+                                            <template v-for="(input, index) in workPlan.responsibleness" :key="index">
                                                 <q-select class="q-mt-md q-mx-xs" dense outlined :label="'Responsable ' + (index + 1)" :options="users" v-model="input.value">
                                                     <template v-slot:append>
                                                         <q-btn round dense flat icon="minimize" color="red" @click="removeInputResponsibleness(index)" />
@@ -199,8 +199,11 @@
 import { getUsersApi } from '@/api/users';
 import { editWorkPlanApi, getWorkPlanApi } from '@/api/worksPlans.js'; //ROLES
 import { storeAuth } from '@/store/auth';
+import { useTaskPolling } from '@/composables/useTaskPolling';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
+
+const { isProcessing, taskStatus, taskResult, taskError, startPolling } = useTaskPolling();
 
 const workPlans = ref([]);
 const workPlanDialog = ref(false);
@@ -240,9 +243,35 @@ async function getUsers() {
     }
 }
 
+
 async function getWorksPlan() {
     try {
-        const { data } = await getWorkPlanApi(enterprise.value.value);
+        const response = await getWorkPlanApi(enterprise.value.value);
+        
+        if (response.data && response.data.taskId) {
+            Notify.create({
+                message: 'Generando plan de trabajo...',
+                color: 'info',
+                position: 'bottom-right',
+                timeout: 0,
+                group: 'task-polling'
+            });
+
+            startPolling(response.data.taskId, async (result) => {
+                await getWorksPlan(); // Reload to get the generated plans
+                
+                // Dismiss progress notification
+                Notify.create({
+                    group: 'task-polling',
+                    timeout: 1
+                });
+                
+                notifySuccess({ message: 'Plan de trabajo generado correctamente.' });
+            });
+            return;
+        }
+
+        const data = response.data;
         workPlans.value = Array.isArray(data) ? data : [];
 
         workPlans.value?.sort((a, b) => {
@@ -258,8 +287,8 @@ async function getWorksPlan() {
             return aIndicator - bIndicator;
         });
     } catch (error) {
-        console.error('Error al obtener datos de qualifications:', error);
-        workPlans.value = []; // Asigna un array vacío para evitar futuros errores
+        console.error('Error al obtener datos de work plans:', error);
+        workPlans.value = [];
     }
 }
 

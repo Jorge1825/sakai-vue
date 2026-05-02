@@ -282,14 +282,13 @@
 import { getNormsApi } from '@/api/norms';
 import { createRequirementApi, editRequirementApi, formatDataRequirement, generateRequirementFile, getRequirementsApi } from '@/api/requirements';
 import { generateEvidencesApi, getSuggestedEvidenceApi } from '@/api/suggestedEvidences';
-import { Notify } from 'quasar';
+import { useTaskPolling } from '@/composables/useTaskPolling';
+import { Notify, useQuasar } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
-const requis = ref([
-    // Datos de ejemplo
-    { _id: 1, name: '001/6503', description: 'Norma de seguridad', requirements: 'La requia de seguridad dicta que.....', score: 0 },
-    { _id: 2, name: '002/6504', description: 'Norma de calidad', requirements: 'La requia de calidad dicta que.....', score: 0 },
-    { _id: 3, name: '003/6505', description: 'Norma de ambiente', requirements: 'La requia de ambeinte dicta que.....', score: 0 }
-]);
+const requis = ref([]);
+
+const { isProcessing, startPolling, taskError, progress } = useTaskPolling();
+const $q = useQuasar();
 
 const requiDialog = ref(false);
 const responseIADialog = ref(false);
@@ -401,45 +400,49 @@ const selectFileEvidence = async () => {
     });
 
     const formData = new FormData();
-    // formData.append('file', fileEvidence.value);
     formData.append('inputs', JSON.stringify(inputsReq));
 
     try {
-        // Cambia el estado del usuario (activo/inactivo)
         const response = await generateEvidencesApi(formData);
+        const taskId = response.data.taskId;
 
-        console.log(response);
+        const dismiss = $q.notify({
+            message: 'Generando evidencias, metas y objetivos... Esto puede tardar unos minutos.',
+            color: 'blue',
+            timeout: 0, // No se cierra automáticamente
+            actions: [{ label: 'Cerrar', color: 'white', handler: () => dismiss() }]
+        });
+
+        const result = await startPolling(taskId);
 
         //asignar las evidencias a cada input
         dataFormat.value.requirements.forEach((r) => {
             r.inputs.forEach((i) => {
-                const evidence = response.data.response.find((e) => e.id == i._id);
+                const evidence = result.response.find((e) => e.id == i._id);
                 i.suggestedEvidence = evidence?.evidence.join('\n');
             });
         });
         
-        goal.value = response.data?.responseGoal?.goal;   
-        objective.value = response.data?.responseGoal?.objective;
+        goal.value = result.responseGoal?.goal;   
+        objective.value = result.responseGoal?.objective;
 
-        // Mostrar notificación de éxito
+        dismiss();
+
         Notify.create({
-            message: `Generación de evidencias exitosa, espere mientras se procesa la información.`,
+            message: `Generación de información exitosa.`,
             type: 'positive',
             position: 'top',
-            textColor: 'white',
-            color: 'blue',
-            multiLine: true
+            color: 'green',
         });
+
     } catch (error) {
         fileEvidence.value = null;
         console.error(error);
         Notify.create({
-            message: 'Hubo un error al extraer el archivo.',
+            message: 'Hubo un error al generar información por IA: ' + error.message,
             type: 'negative',
             position: 'top',
-            textColor: 'white',
-            color: 'rgb(242, 185, 179)',
-            multiLine: true
+            color: 'red',
         });
     }
 };
@@ -590,36 +593,35 @@ async function uploadFileServer() {
     formData.append('file', file.value);
 
     try {
-        // Cambia el estado del usuario (activo/inactivo)
         const response = await generateRequirementFile(formData);
+        const taskId = response.data.taskId;
 
-        console.log(response);
+        Notify.create({
+            message: `Extracción iniciada. Procesando en segundo plano...`,
+            type: 'ongoing',
+            position: 'top',
+            color: 'blue',
+        });
 
-        if (response.status <= 300) {
-            // Mostrar notificación de éxito
-            Notify.create({
-                message: `Extracción de archivo exitosa, espere mientras se procesa la información.`,
-                type: 'positive',
-                position: 'top',
-                textColor: 'white',
-                color: 'blue',
-                multiLine: true
-            });
-            textResponse.value = response.data.response;
-            responseIADialog.value = true;
-            formatData(response.data.response);
-        } else {
-            throw new Error('Error al extraer el archivo.');
-        }
+        const result = await startPolling(taskId);
+        
+        Notify.create({
+            message: `Extracción de archivo exitosa.`,
+            type: 'positive',
+            position: 'top',
+            color: 'green',
+        });
+
+        textResponse.value = result.text;
+        responseIADialog.value = true;
+        formatData(result.text);
     } catch (error) {
         console.error(error);
         Notify.create({
-            message: 'Hubo un error al extraer el archivo.',
+            message: 'Hubo un error al extraer el archivo: ' + error.message,
             type: 'negative',
             position: 'top',
-            textColor: 'white',
-            color: 'rgb(242, 185, 179)',
-            multiLine: true
+            color: 'red',
         });
     }
 }
@@ -627,37 +629,39 @@ async function uploadFileServer() {
 async function formatData(text) {
     try {
         const response = await formatDataRequirement({ text, normId: norm.value.value });
-        console.log(response);
-        if (response.status <= 300) {
-            // Mostrar notificación de éxito
-            Notify.create({
-                message: `Operación exitosa.`,
-                type: 'positive',
-                position: 'top',
-                textColor: 'white',
-                color: 'blue',
-                multiLine: true
-            });
+        const taskId = response.data.taskId;
 
-            //hacer la descripcion un array separando su contenido por cada \n
-            response.data.response.requirements.forEach((r) => {
-                r._id = i + 1;
-                r.inputs = r.description.split('\n').map((d, i) => ({ _id: i + 1, description: d, value: null }));
-            });
+        Notify.create({
+            message: `Formateando información...`,
+            type: 'ongoing',
+            position: 'top',
+            color: 'blue',
+        });
 
-            dataFormat.value = response.data.response;
-        } else {
-            throw new Error('Error al formatear la información.');
-        }
+        const result = await startPolling(taskId);
+
+        Notify.create({
+            message: `Operación exitosa. La norma ahora está ACTIVA.`,
+            type: 'positive',
+            position: 'top',
+            color: 'green',
+        });
+
+        // The background task already saved requirements and updated norm status.
+        // We reload from DB.
+        await getRequirements();
+        
+        // Close dialogs
+        formatDialog.value = false;
+        responseIADialog.value = false;
+
     } catch (error) {
         console.error(error);
         Notify.create({
-            message: 'Hubo un error al formatear la información.',
+            message: 'Hubo un error al formatear la información: ' + error.message,
             type: 'negative',
             position: 'top',
-            textColor: 'white',
-            color: 'rgb(242, 185, 179)',
-            multiLine: true
+            color: 'red',
         });
     }
 }
