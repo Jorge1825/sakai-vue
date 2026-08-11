@@ -96,6 +96,9 @@
                                 <div class="col-6">
                                     <q-select v-model="prompt.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
+                                <div v-if="isDevMode" class="col-12">
+                                    <q-input v-model="prompt.devJsonString" label="Dev JSON (opcional)" type="textarea" hint="JSON para desarrolladores" :error="!!jsonError" :error-message="jsonError" style="padding: 10px" />
+                                </div>
                             </div>
                         </q-card-section>
 
@@ -115,7 +118,7 @@
 import { createPromptApi, editPromptApi, getPromptsApi, responsePromptApi, toggleActivePromptApi } from '@/api/prompts';
 import { notifyError, notifySuccess } from '@/config/notifications';
 import { Notify } from 'quasar';
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, ref, computed } from 'vue';
 
 const prompts = ref([]);
 const promptDialog = ref(false);
@@ -124,13 +127,18 @@ const prompt = ref({
     name: '',
     description: '',
     prompt: '',
-    status: true
+    status: true,
+    devJson: null,
+    devJsonString: ''
 });
 const expandedRows = ref([]);
+const jsonError = ref('');
 const status = ref([
     { label: 'ACTIVO', value: true },
     { label: 'INACTIVO', value: false }
 ]);
+
+const isDevMode = computed(() => localStorage.getItem('devMode') === 'true');
 
 onBeforeMount(async () => {
     await getPrompts();
@@ -153,8 +161,11 @@ function openDialog() {
         name: '',
         description: '',
         prompt: '',
-        status: status.value[0]
+        status: status.value[0],
+        devJson: null,
+        devJsonString: ''
     };
+    jsonError.value = '';
     promptDialog.value = true;
 }
 
@@ -165,13 +176,25 @@ function hideDialog() {
 async function savePrompt() {
     console.log(prompt.value);
 
+    let devJson = null;
+    if (isDevMode.value && prompt.value.devJsonString.trim()) {
+        try {
+            devJson = JSON.parse(prompt.value.devJsonString);
+            jsonError.value = '';
+        } catch (e) {
+            jsonError.value = 'JSON inválido';
+            return;
+        }
+    }
+
     if (prompt.value._id) {
         const promptApi = {
             id: prompt.value._id,
             name: prompt.value.name,
             description: prompt.value.description,
             prompt: prompt.value.prompt,
-            status: prompt.value.status.value
+            status: prompt.value.status.value,
+            devJson
         };
 
         const response = await editPromptApi(promptApi);
@@ -188,7 +211,8 @@ async function savePrompt() {
             name: prompt.value.name,
             description: prompt.value.description,
             prompt: prompt.value.prompt,
-            status: prompt.value.status.value
+            status: prompt.value.status.value,
+            devJson
         };
 
         const response = await createPromptApi(promptApi);
@@ -207,6 +231,9 @@ async function savePrompt() {
 function editPrompt(selectedPrompt) {
     prompt.value = { ...selectedPrompt };
     prompt.value.status = status.value.find((s) => s.value === selectedPrompt.status);
+    prompt.value.devJsonString = selectedPrompt.devJson ? JSON.stringify(selectedPrompt.devJson, null, 2) : '';
+    prompt.value.devJson = selectedPrompt.devJson || null;
+    jsonError.value = '';
     promptDialog.value = true;
     console.log(prompt.value);
 }
