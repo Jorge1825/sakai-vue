@@ -159,93 +159,51 @@
                             </div>
                         </q-card-section>
 
-                        <q-card-section class="overflow-auto">
-                            <table class="tablereq overflow-auto">
-                                <thead>
-                                    <tr>
-                                        <th class="col-number">Número</th>
-                                        <th class="col-title">Título</th>
-                                        <th class="col-requirements" colspan="3">Requisitos</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="col-number">{{ dataFormat.number }}</td>
-                                        <td class="col-title">
-                                            <q-input v-model="dataFormat.title" dense autogrow />
-                                        </td>
-                                        <td class="col-requirements" colspan="3">
-                                            <table class="tablereq">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="col-req-number">Número de Requisito</th>
-                                                        <th class="col-req-title">Título de Requisito</th>
-                                                        <th class="col-req-description">Descripción de Requisito</th>
-                                                        <th class="col-value">Valor</th>
-                                                        <th class="col-renovation">Renovación</th>
-                                                        <th class="col-evidence">Evidencia</th>
-                                                        <th class="col-actions">Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr v-for="req in dataFormat.requirements" :key="req.number">
-                                                        <td class="col-req-number">
-                                                            <q-input v-model="req.number" dense autogrow />
-                                                        </td>
-                                                        <td class="col-req-title">
-                                                            <q-input v-model="req.title" dense autogrow />
-                                                        </td>
-                                                        <td class="col-req-description">
-                                                            <template v-for="(input, index) in req.inputs" :key="input._id">
-                                                                <span class="hidden">
-                                                                    {{ (input.indicator = req.number + '.' + (index + 1)) }}
-                                                                </span>
-                                                                <q-input v-model="input.description" dense autogrow :hint="input.indicator">
-                                                                    <template v-slot:append>
-                                                                        <q-btn round dense flat icon="minimize" color="red" @click="removeInput(req._id, input._id)" />
-                                                                    </template>
-                                                                </q-input>
-                                                            </template>
-                                                        </td>
-                                                        <td class="col-value">
-                                                            <template v-for="input in req.inputs" :key="input._id">
-                                                                <q-input v-model="input.value" type="number" dense autogrow />
-                                                            </template>
-                                                        </td>
-                                                        <td class="col-renovation">
-                                                            <template v-for="input in req.inputs" :key="input._id">
-                                                                <q-select v-model="input.renovation" :options="renovationOptions" dense />
-                                                            </template>
-                                                        </td>
-                                                        <td class="col-evidence">
-                                                            <template v-for="input in req.inputs" :key="input._id">
-                                                                <q-input v-model="input.suggestedEvidence" dense autogrow />
-                                                            </template>
-                                                        </td>
-                                                        <td class="col-actions">
-                                                            <q-btn icon="control_point_duplicate" :style="{ color: 'rgb(4, 178, 217)' }" @click="addInput(req._id)" dense round />
+                        <q-card-section class="req-editor">
+                            <!-- Bloque por cada requisito (7.1, 7.2, ...) -->
+                            <div v-for="(req, reqIndex) in dataFormat.requirements" :key="req._id" class="req-block">
+                                <!-- Encabezado del requisito -->
+                                <div class="req-header">
+                                    <q-input v-model="req.number" dense outlined label="Número" class="req-number-input" />
+                                    <q-input v-model="req.title" dense outlined label="Título del requisito" class="req-title-input" />
+                                    <div class="req-header-actions">
+                                        <q-btn round flat icon="control_point_duplicate" color="primary" size="sm" @click="addInput(req._id)">
+                                            <q-tooltip>Agregar ítem</q-tooltip>
+                                        </q-btn>
+                                        <q-btn round flat icon="add_circle" color="green" size="sm" @click="addReq(req._id)">
+                                            <q-tooltip>Nuevo requisito</q-tooltip>
+                                        </q-btn>
+                                    </div>
+                                </div>
 
-                                                            <q-btn class="q-mx-sm" icon="add_circle" :style="{ color: '#32a600' }" @click="addReq(req._id)" dense round />
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="5">
-                                            <div class="row">
-                                                <div class="col-5 text-bold text-xl text-end">Total:</div>
-                                                <div class="col-5 text-xl q-mx-md">
-                                                    {{ calculateTotal() }}
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                <!-- Ítems del requisito (7.1.1, 7.1.2, ...) -->
+                                <div class="req-items">
+                                    <div v-for="(input, index) in req.inputs" :key="input._id" class="item-card">
+                                        <span class="hidden">{{ (input.indicator = req.number + '.' + (index + 1)) }}</span>
+                                        <div class="item-card-top">
+                                            <q-badge color="primary" class="item-badge">{{ input.indicator }}</q-badge>
+                                            <q-btn flat round dense icon="close" color="negative" size="sm" @click="removeInput(req._id, input._id)">
+                                                <q-tooltip>Eliminar ítem</q-tooltip>
+                                            </q-btn>
+                                        </div>
+
+                                        <q-input v-model="input.description" dense outlined type="textarea" autogrow label="Descripción del ítem" class="item-field" />
+
+                                        <div class="item-row">
+                                            <q-input v-model="input.value" type="number" dense outlined label="Valor / Peso (%)" class="item-value-input" />
+                                            <q-select v-model="input.renovation" :options="renovationOptions" dense outlined label="Periodo / Tiempo" class="item-renov-input" />
+                                        </div>
+
+                                        <q-input v-model="input.suggestedEvidence" dense outlined type="textarea" autogrow label="Evidencia sugerida" class="item-field" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Total acumulado -->
+                            <div class="req-total">
+                                <span class="text-bold">TOTAL</span>
+                                <q-badge color="primary" class="total-badge">{{ calculateTotal() }}</q-badge>
+                            </div>
                         </q-card-section>
                         <q-card-section>
                             <div class="row full-width">
@@ -738,96 +696,138 @@ function addReq(idCurrentReq) {
     z-index: -1;
 }
 
-.tablereq {
+.hidden {
+    display: none;
+}
+
+.req-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Bloque de un requisito (7.1, 7.2, ...) */
+.req-block {
+    background: #fafbfc;
+    border: 1px solid #e3e8ee;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.req-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed #dfe3e8;
+}
+
+.req-number-input {
+    width: 90px;
+    flex-shrink: 0;
+}
+
+.req-title-input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.req-header-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+/* Lista de ítems dentro del requisito */
+.req-items {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Card individual de cada ítem (7.1.1, 7.1.2, ...) */
+.item-card {
+    background: #ffffff;
+    border: 1px solid #e3e8ee;
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.item-card:hover {
+    border-color: rgb(4, 178, 217);
+    box-shadow: 0 2px 8px rgba(4, 178, 217, 0.12);
+}
+
+.item-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.item-badge {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.item-field {
     width: 100%;
-    border-collapse: collapse;
+    margin-bottom: 10px;
 }
 
-.tablereq th,
-.tablereq td {
-    border: 1px solid #ddd;
-    padding: 8px;
+.item-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
-.tablereq th {
-    background-color: #f2f2f2;
-    text-align: left;
-}
-
-/* Limitar el tamaño máximo de cada columna */
-.col-number {
-    width: 25px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
-}
-
-.col-title {
+.item-value-input {
     width: 150px;
-    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.item-renov-input {
+    flex: 1;
+    min-width: 160px;
+}
+
+/* Total acumulado al pie */
+.req-total {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 14px 4px;
+    border-top: 1px solid #e3e8ee;
+    font-size: 18px;
+}
+
+.total-badge {
+    font-size: 18px;
+    font-weight: 700;
+    padding: 4px 16px;
+    border-radius: 8px;
+    min-width: 56px;
     text-align: center;
 }
 
-.col-requirements {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+@media (max-width: 600px) {
+    .req-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-.col-req-number {
-    max-width: 50px;
-    min-width: 50px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
-}
-
-.col-req-title {
-    max-width: 150px;
-    min-width: 150px;
-    overflow: hidden;
-    white-space: wrap;
-}
-
-.col-req-description {
-    max-width: 150px;
-    min-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.col-value {
-    width: 15px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
-}
-
-.col-renovation {
-    width: 25px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
-}
-
-.col-evidence {
-    width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
-}
-
-.col-actions {
-    width: 25px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
+    .req-number-input,
+    .req-title-input,
+    .item-value-input,
+    .item-renov-input {
+        width: 100%;
+    }
 }
 </style>

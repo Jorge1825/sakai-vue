@@ -98,90 +98,87 @@
                             <div class="text-bold">Meta:</div>
                             <q-input v-model="workPlan.objective" outlined dense autogrow />
                         </div> -->
-                        <div class="table-container q-mt-xl">
-                            <table class="full-width">
-                                <thead>
-                                    <tr>
-                                        <th class="text-left">Numeral</th>
-                                        <th class="text-left">Requisito</th>
-                                        <!-- <th class="text-left">Criterios</th> -->
-                                        <th class="text-left">Plan de acción (Actividades)</th>
-                                        <th class="text-left">Responsable</th>
-                                        <th class="text-left">Plazo de cumplimiento</th>
-                                        <th class="text-left">Renovación</th>
-                                        <th class="text-left">Soportes sugeridos</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td style="width: 80px; max-width: 80px; min-width: 80px">
-                                            {{ workPlan.indicator }}
-                                        </td>
-                                        <td style="width: 180px; max-width: 180px; min-width: 180px">
-                                            {{ workPlan.description }}
-                                        </td>
-                                        <!-- <td style="width: 200px; max-width: 200px; min-width: 200px">
-                                            <template v-for="(input, index) in workPlan.criteria">
-                                                <q-input class="q-mt-md q-mx-xs" v-model="input.value" dense outlined :label="'Criterio ' + (index + 1)" autogrow>
-                                                    <template v-slot:append>
-                                                        <q-btn round dense flat icon="minimize" color="red" @click="removeInputCriteria(index)" />
-                                                    </template>
-                                                </q-input>
-                                            </template>
-                                            <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputCriteria()" />
-                                        </td> -->
+                        <div class="wp-editor q-mt-xl">
+                            <!-- Encabezado: numeral + requisito -->
+                            <div class="wp-header">
+                                <q-badge color="primary" class="wp-indicator-badge">{{ workPlan.indicator }}</q-badge>
+                                <div class="wp-description">{{ workPlan.description }}</div>
+                            </div>
 
-                                        <td style="width: 180px; max-width: 180px; min-width: 180px">
-                                            <template v-for="(input, index) in workPlan.activities" :key="index">
-                                                <q-input class="q-mt-md q-mx-xs" v-model="input.value" dense outlined :label="'Actividad ' + (index + 1)" autogrow>
-                                                    <template v-slot:append>
-                                                        <q-btn round dense flat icon="minimize" color="red" @click="removeInputActivities(index)" />
-                                                    </template>
-                                                </q-input>
-                                            </template>
-                                            <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputActivities()" />
-                                        </td>
-                                        <td style="width: 150px; max-width: 150px; min-width: 150px">
-                                            <template v-for="(input, index) in workPlan.responsibleness" :key="index">
-                                                <q-select class="q-mt-md q-mx-xs" dense outlined :label="'Responsable ' + (index + 1)" :options="users" v-model="input.value">
-                                                    <template v-slot:append>
-                                                        <q-btn round dense flat icon="minimize" color="red" @click="removeInputResponsibleness(index)" />
-                                                    </template>
-                                                </q-select>
-                                            </template>
-                                            <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputResponsibleness()" />
-                                        </td>
-                                        <td style="width: 120px; max-width: 120px; min-width: 120px">
-                                            <q-input class="q-mt-md q-mx-xs" outlined dense v-model="workPlan.dateCompliance" mask="date" :rules="['date']">
-                                                <template v-slot:append>
-                                                    <q-icon name="event" class="cursor-pointer">
-                                                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                                                            <q-date v-model="workPlan.dateCompliance" :options="optionsDate">
-                                                                <div class="row items-center justify-end">
-                                                                    <q-btn v-close-popup label="Close" color="primary" flat />
-                                                                </div>
-                                                            </q-date>
-                                                        </q-popup-proxy>
-                                                    </q-icon>
-                                                </template>
-                                            </q-input>
-                                        </td>
-                                        <td style="width: 80px; max-width: 80px; min-width: 80px">
-                                            {{ calculatedRenovation(workPlan.renovation) }}
-                                        </td>
-                                        <td style="width: 200px; max-width: 200px; min-width: 200px">
-                                            <template v-for="(input, index) in workPlan.suggestedEvidence" :key="index">
-                                                <q-input class="q-mt-md q-mx-xs" v-model="input.value" dense outlined :label="'Soporte ' + (index + 1)" autogrow>
-                                                    <template v-slot:append>
-                                                        <q-btn round dense flat icon="minimize" color="red" @click="removeInputSuggestedEvidence(index)" />
-                                                    </template>
-                                                </q-input>
-                                            </template>
-                                            <q-btn class="q-mt-md" dense rounded color="primary" icon="add" @click="addInputSuggestedEvidence()" />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <!-- Plan de acción: actividades -->
+                            <div class="wp-block">
+                                <div class="wp-block-title">Plan de acción (Actividades)</div>
+                                <div class="wp-items">
+                                    <div v-for="(input, index) in workPlan.activities" :key="index" class="wp-item-card">
+                                        <div class="wp-item-top">
+                                            <q-badge color="primary" class="wp-item-badge">Actividad {{ index + 1 }}</q-badge>
+                                            <q-btn flat round dense icon="close" color="negative" size="sm" @click="removeInputActivities(index)">
+                                                <q-tooltip>Eliminar actividad</q-tooltip>
+                                            </q-btn>
+                                        </div>
+                                        <q-input v-model="input.value" dense outlined type="textarea" autogrow label="Descripción de la actividad" class="wp-item-field" />
+                                    </div>
+                                </div>
+                                <q-btn dense outline color="primary" icon="add" label="Agregar actividad" class="wp-add-btn" @click="addInputActivities()" />
+                            </div>
+
+                            <!-- Responsables -->
+                            <div class="wp-block">
+                                <div class="wp-block-title">Responsables</div>
+                                <div class="wp-items">
+                                    <div v-for="(input, index) in workPlan.responsibleness" :key="index" class="wp-item-card">
+                                        <div class="wp-item-top">
+                                            <q-badge color="primary" class="wp-item-badge">Responsable {{ index + 1 }}</q-badge>
+                                            <q-btn flat round dense icon="close" color="negative" size="sm" @click="removeInputResponsibleness(index)">
+                                                <q-tooltip>Eliminar responsable</q-tooltip>
+                                            </q-btn>
+                                        </div>
+                                        <q-select v-model="input.value" :options="users" dense outlined label="Selecciona un responsable" class="wp-item-field" />
+                                    </div>
+                                </div>
+                                <q-btn dense outline color="primary" icon="add" label="Agregar responsable" class="wp-add-btn" @click="addInputResponsibleness()" />
+                            </div>
+
+                            <!-- Plazo de cumplimiento y renovación -->
+                            <div class="wp-block">
+                                <div class="wp-block-title">Plazo de cumplimiento</div>
+                                <div class="wp-item-card wp-static-card">
+                                    <q-input outlined dense v-model="workPlan.dateCompliance" mask="date" :rules="['date']" label="Fecha de cumplimiento" class="wp-item-field">
+                                        <template v-slot:append>
+                                            <q-icon name="event" class="cursor-pointer">
+                                                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                                    <q-date v-model="workPlan.dateCompliance" :options="optionsDate">
+                                                        <div class="row items-center justify-end">
+                                                            <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                                                        </div>
+                                                    </q-date>
+                                                </q-popup-proxy>
+                                            </q-icon>
+                                        </template>
+                                    </q-input>
+                                    <div class="wp-renovation">
+                                        <span class="wp-renovation-label">Renovación</span>
+                                        <q-badge color="primary" class="wp-renovation-badge">{{ calculatedRenovation(workPlan.renovation) }}</q-badge>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Soportes sugeridos -->
+                            <div class="wp-block">
+                                <div class="wp-block-title">Soportes sugeridos</div>
+                                <div class="wp-items">
+                                    <div v-for="(input, index) in workPlan.suggestedEvidence" :key="index" class="wp-item-card">
+                                        <div class="wp-item-top">
+                                            <q-badge color="primary" class="wp-item-badge">Soporte {{ index + 1 }}</q-badge>
+                                            <q-btn flat round dense icon="close" color="negative" size="sm" @click="removeInputSuggestedEvidence(index)">
+                                                <q-tooltip>Eliminar soporte</q-tooltip>
+                                            </q-btn>
+                                        </div>
+                                        <q-input v-model="input.value" dense outlined type="textarea" autogrow label="Descripción del soporte" class="wp-item-field" />
+                                    </div>
+                                </div>
+                                <q-btn dense outline color="primary" icon="add" label="Agregar soporte" class="wp-add-btn" @click="addInputSuggestedEvidence()" />
+                            </div>
                         </div>
                         <q-card-actions align="right">
                             <q-btn class="q-mx-sm" outline label="Cancelar" color="negative" @click="hideDialog" />
@@ -198,6 +195,7 @@
 <script setup>
 import { getUsersApi } from '@/api/users';
 import { editWorkPlanApi, getWorkPlanApi } from '@/api/worksPlans.js'; //ROLES
+import { notifySuccess } from '@/config/notifications';
 import { storeAuth } from '@/store/auth';
 import { useTaskPolling } from '@/composables/useTaskPolling';
 import { Notify } from 'quasar';
@@ -476,17 +474,144 @@ function optionsDate(date) {
     z-index: -1;
 }
 
-.table-container {
-    overflow-x: auto;
+.wp-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.table-work,
-thead,
-tbody,
-tr,
-th,
-td {
+/* Encabezado: numeral + requisito */
+.wp-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #fafbfc;
+    border: 1px solid #e3e8ee;
+    border-radius: 12px;
+}
+
+.wp-indicator-badge {
+    font-size: 15px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.wp-description {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Bloque de cada sección */
+.wp-block {
+    background: #fafbfc;
+    border: 1px solid #e3e8ee;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.wp-block-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: rgb(4, 178, 217);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #dfe3e8;
+}
+
+/* Lista de cards dentro de un bloque */
+.wp-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Card individual */
+.wp-item-card {
+    background: #ffffff;
+    border: 1px solid #e3e8ee;
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.wp-item-card:hover {
+    border-color: rgb(4, 178, 217);
+    box-shadow: 0 2px 8px rgba(4, 178, 217, 0.12);
+}
+
+.wp-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.wp-item-badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.wp-item-field {
+    width: 100%;
+}
+
+/* Botón de agregar al pie de cada bloque */
+.wp-add-btn {
+    margin-top: 12px;
+    border-radius: 8px;
+}
+
+/* Card estática (fecha + renovación) */
+.wp-static-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.wp-static-card .wp-item-field {
+    flex: 1;
+    min-width: 200px;
+}
+
+.wp-renovation {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.wp-renovation-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.wp-renovation-badge {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 8px;
     text-align: center;
-    border: 0.5px solid;
+}
+
+@media (max-width: 600px) {
+    .wp-static-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .wp-static-card .wp-item-field {
+        width: 100%;
+    }
 }
 </style>
