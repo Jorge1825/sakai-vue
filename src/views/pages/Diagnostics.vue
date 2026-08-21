@@ -5,7 +5,7 @@
             <div class="row q-my-md">
                 <div class="col-6">
                     <div class="text-h5" style="color: rgb(4, 178, 217); text-transform: uppercase">
-                        <strong>DIAGNOSTICO</strong>
+                        <strong>DIAGNOSTICO</strong> — {{ yearLabel }}
                     </div>
                 </div>
                 <div class="col-12 flex justify-end">
@@ -171,11 +171,14 @@
 import { createDiagnosticApi, editDiagnosticApi } from '@/api/diagnostics'; //ROLES
 import { getQualificationsByEnterprise } from '@/api/qualifications';
 import { storeAuth } from '@/store/auth';
+import { storeYear } from '@/store/year';
 import { generateDiagnostic } from '@/utils/generateDiagnostic';
 import { Notify } from 'quasar';
-import { onBeforeMount, ref } from 'vue';
+import { computed, onBeforeMount, ref } from 'vue';
 
 const useStoreAuth = storeAuth();
+const yearStore = storeYear();
+const yearLabel = computed(() => `AÑO ${yearStore.year}`);
 
 const diagnostics = ref([]);
 const diagnosticDialog = ref(false);
@@ -205,7 +208,7 @@ onBeforeMount(async () => {
 
 async function getDiagnostic() {
     try {
-        const { data } = await getQualificationsByEnterprise(enterprise.value.value);
+        const { data } = await getQualificationsByEnterprise(enterprise.value.value, yearStore.year);
         diagnostics.value = data.length ? data : [];
     } catch (error) {
         console.error(error);

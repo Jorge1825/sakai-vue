@@ -1,10 +1,12 @@
 
 import axiosInstance from "@/config/axios.conf";
 
-export const getQualificationsApi = async (enterpriseId,norm) => {
+export const getQualificationsApi = async (enterpriseId, norm, year) => {
     try {
 
-        const response = await axiosInstance.get(`/qualifications/${enterpriseId}/${norm}`);
+        const response = await axiosInstance.get(`/qualifications/${enterpriseId}/${norm}`, {
+            params: year ? { year } : undefined,
+        });
 
         return response;
     } catch (error) {
@@ -13,10 +15,12 @@ export const getQualificationsApi = async (enterpriseId,norm) => {
     }
     
 };
-export const getQualificationsByEnterprise = async (enterpriseId) => {
+export const getQualificationsByEnterprise = async (enterpriseId, year) => {
     try {
 
-        const response = await axiosInstance.get(`/qualifications/enterprise/${enterpriseId}`);
+        const response = await axiosInstance.get(`/qualifications/enterprise/${enterpriseId}`, {
+            params: year ? { year } : undefined,
+        });
 
         return response;
     } catch (error) {

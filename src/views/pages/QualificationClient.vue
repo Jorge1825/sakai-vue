@@ -194,6 +194,10 @@
                             <q-card class="my-card bg-grey-11" flat bordered>
                                 <div class="q-pa-sm text-center bg-grey-1">
                                     <div>{{ file.originalname }}</div>
+                                    <q-badge :color="isVigente(file) ? 'positive' : 'negative'">
+                                        {{ isVigente(file) ? 'VIGENTE' : 'VENCIDA' }}
+                                    </q-badge>
+                                    <div v-if="file.expiresAt" class="text-caption">Vence: {{ formatDate(file.expiresAt) }}</div>
                                 </div>
                                 <div class="justify-center flex">
                                     <q-icon :name="'description'" size="10rem" class="text-primary" />
@@ -237,16 +241,153 @@
 </template>
 
 <script setup>
+import { computed, onBeforeMount, ref } from 'vue';
+import { Notify } from 'quasar';
 import { getFileApi } from '@/api/files';
 import { getNormEnterpriseApi } from '@/api/norms';
+import { getRequirementsByNormApi } from '@/api/requirements';
+import { getQualificationsApi, processRequirementsApi } from '@/api/qualifications';
 import { useTaskPolling } from '@/composables/useTaskPolling';
+import { notifyError, notifySuccess } from '@/config/notifications';
+import { storeAuth } from '@/store/auth';
+import { storeYear } from '@/store/year';
+
+const useStoreAuth = storeAuth();
+const yearStore = storeYear();
 
 const { isProcessing, taskStatus, taskResult, taskError, startPolling } = useTaskPolling();
+
+// ---- estado ----
+let qualifications = ref([]);
+let expandedRows = ref([]);
+let norm = ref(null);
+let norms = ref([]);
+let requirement = ref(null);
+let requirements = ref([]);
+let inputs = ref([]);
+let files = ref([]);
+let evidencesView = ref([]);
+let viewDocument = ref(false);
+let qualificationDialog = ref(false);
+let enterprise = ref(null);
+
+// año evaluado: del store (persiste en localStorage['year'])
+const year = computed({
+    get: () => yearStore.year,
+    set: (value) => yearStore.setYear(value)
+});
+const yearOptions = computed(() => yearStore.yearOptions);
+
+onBeforeMount(async () => {
+    enterprise.value = useStoreAuth.getSelectedCompany();
+    await getNorms();
+    await getQualifications();
+});
+
+async function getNorms() {
+    try {
+        if (!enterprise.value?.value) return;
+        const { data } = await getNormEnterpriseApi(enterprise.value.value);
+        norms.value = (data || []).map((n) => ({ label: n.name, value: n._id }));
+        if (norms.value.length && !norm.value) {
+            norm.value = norms.value[0];
+            await getRequirements();
+        }
+    } catch (error) {
+        console.error(error);
+        notifyError({ message: 'Error al obtener las normas.' });
+    }
+}
+
+async function getRequirements() {
+    if (!norm.value?.value) {
+        requirements.value = [];
+        return;
+    }
+    try {
+        const { data } = await getRequirementsByNormApi(norm.value.value);
+        requirements.value = (data || []).flatMap((doc) =>
+            (doc.requirements || []).map((group) => ({
+                label: group.title || group.number || 'Requisito',
+                value: group._id
+            }))
+        );
+    } catch (error) {
+        console.error(error);
+        notifyError({ message: 'Error al obtener los requisitos.' });
+    }
+}
+
+async function listRequirements() {
+    if (!requirement.value?.value) {
+        inputs.value = [];
+        return;
+    }
+    try {
+        const { data } = await getRequirementsByNormApi(norm.value.value);
+        const group = (data || []).flatMap((doc) => doc.requirements || []).find((g) => g._id == requirement.value.value);
+        inputs.value = (group?.inputs || []).map((input) => ({ ...input, selected: true }));
+    } catch (error) {
+        console.error(error);
+        notifyError({ message: 'Error al listar los requisitos.' });
+    }
+}
+
+async function getQualifications() {
+    try {
+        if (!enterprise.value?.value) return;
+        const { data } = await getQualificationsApi(enterprise.value.value, norm.value?.value, yearStore.year);
+        qualifications.value = data || [];
+    } catch (error) {
+        console.error(error);
+        notifyError({ message: 'Error al obtener los requerimientos.' });
+    }
+}
+
+function evaluateQualification() {
+    qualificationDialog.value = true;
+}
+
+function hideDialog() {
+    qualificationDialog.value = false;
+    files.value = [];
+}
+
+function selectFile(event) {
+    files.value = [...event.target.files];
+    // permitir seleccionar el mismo archivo otra vez
+    event.target.value = '';
+}
+
+function uploadFile() {
+    document.getElementById('inputFile').click();
+}
+
+function renderSuggested(suggested) {
+    if (!suggested) return '';
+    const items = Array.isArray(suggested) ? suggested : String(suggested).split(/[,;]/);
+    return items.filter(Boolean).join('<br />• ');
+}
+
+// Vigencia de la evidencia: sin expiresAt = indefinida -> vigente
+function isVigente(file) {
+    if (!file?.expiresAt) return true;
+    return new Date(file.expiresAt) >= new Date();
+}
+
+function formatDate(value) {
+    if (!value) return '';
+    return new Date(value).toLocaleDateString();
+}
 
 async function uploadFileServer() {
     try {
         if (!files.value || files.value.length === 0) {
             notifyError({ message: 'Debe seleccionar un archivo.' });
+            return;
+        }
+        if (!norm.value?.value || !requirement.value?.value) {
+            notifyError({ message: 'Debe seleccionar norma y requisito.' });
             return;
         }
 

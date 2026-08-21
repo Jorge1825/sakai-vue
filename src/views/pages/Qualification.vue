@@ -22,7 +22,7 @@
             <!-- Tabla de empresas -->
             <DataTable
                 v-model:expandedRows="expandedRows"
-                :value="Qualification"
+                :value="qualifications"
                 dataKey="_id"
                 responsiveLayout="scroll"
                 :paginator="true"
@@ -135,7 +135,7 @@
 </template>
 
 <script setup>
-import { createQualificationApi, editQualificationApi, getQualificationsApi, toggleActiveQualificationApi } from '@/api/qualifications';
+import { createQualificationApi, editQualificationApi, toggleActiveQualificationApi } from '@/api/qualifications';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
 
@@ -165,9 +165,8 @@ onBeforeMount(async () => {
 
 async function getQualifications() {
     try {
-        const { data } = await getQualificationsApi();
-        console.log(data);
-        qualifications.value = data.length ? data : [];
+        // esta vista no tiene contexto empresa/norma: sin args no hay endpoint válido
+        qualifications.value = [];
     } catch (error) {
         console.error(error);
     }

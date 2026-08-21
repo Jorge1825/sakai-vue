@@ -197,6 +197,7 @@ import { getUsersApi } from '@/api/users';
 import { editWorkPlanApi, getWorkPlanApi } from '@/api/worksPlans.js'; //ROLES
 import { notifySuccess } from '@/config/notifications';
 import { storeAuth } from '@/store/auth';
+import { storeYear } from '@/store/year';
 import { useTaskPolling } from '@/composables/useTaskPolling';
 import { Notify } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
@@ -222,6 +223,7 @@ const renovationOptions = ref([
 ]);
 
 const useStoreAuth = storeAuth();
+const yearStore = storeYear();
 const enterprise = ref(null);
 onBeforeMount(async () => {
     enterprise.value = useStoreAuth.getSelectedCompany();
@@ -244,7 +246,7 @@ async function getUsers() {
 
 async function getWorksPlan() {
     try {
-        const response = await getWorkPlanApi(enterprise.value.value);
+        const response = await getWorkPlanApi(enterprise.value.value, yearStore.year);
         
         if (response.data && response.data.taskId) {
             Notify.create({

@@ -3,8 +3,10 @@ import FormProfile from '@/components/FormProfile.vue';
 import Cookies from 'js-cookie';
 import { onBeforeMount, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { storeYear } from '@/store/year';
 
 const router = useRouter();
+const yearStore = storeYear();
 let year = ref();
 let years = ref([]);
 
@@ -19,11 +21,10 @@ onBeforeMount(() => {
     const currentYear = new Date().getFullYear();
 
     // Crear un array de años desde 2023 hasta el año actual
-    years.value = Array.from({ length: currentYear - 2023 }, (_, i) => currentYear - i);
+    years.value = yearStore.yearOptions;
 
-    //obtener el año guardado en el local storage
-    let yearLocal = localStorage.getItem('year') || null;
-    year.value = yearLocal ? JSON.parse(yearLocal) : currentYear;
+    //obtener el año guardado en el store (persiste en localStorage['year'])
+    year.value = yearStore.getYear();
 });
 
 let dialog = ref(false);
@@ -47,8 +48,8 @@ function closeDialog() {
 }
 
 function changeYear() {
-    //guardar el año en el local storage
-    localStorage.setItem('year', year.value);
+    //guardar el año en el store (persiste en localStorage['year'])
+    yearStore.setYear(year.value);
     localStorage.setItem('logout-event', Date.now());
     // Redirigir a la página de inicio
     router.push({ path: '/' });
