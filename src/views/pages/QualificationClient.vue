@@ -336,7 +336,12 @@ async function listRequirements() {
 async function getQualifications() {
     try {
         if (!enterprise.value?.value) return;
-        const { data } = await getQualificationsApi(enterprise.value.value, norm.value?.value, yearStore.year);
+        // sin norma seleccionada (empresa sin normas) no hay endpoint válido
+        if (!norm.value?.value) {
+            qualifications.value = [];
+            return;
+        }
+        const { data } = await getQualificationsApi(enterprise.value.value, norm.value.value, yearStore.year);
         qualifications.value = data || [];
     } catch (error) {
         console.error(error);

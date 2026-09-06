@@ -264,7 +264,8 @@ const renovationOptions = ref([
     { label: 'Bimensual', value: 2 },
     { label: 'Trimensual', value: 3 },
     { label: 'Semanal', value: 4 },
-    { label: 'Mensual', value: 5 }
+    { label: 'Mensual', value: 5 },
+    { label: 'Permanente', value: 6 }
 ]);
 const suggestedEvidences = ref([]);
 let file = ref(null);

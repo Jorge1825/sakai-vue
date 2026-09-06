@@ -143,7 +143,7 @@
                             <div class="wp-block">
                                 <div class="wp-block-title">Plazo de cumplimiento</div>
                                 <div class="wp-item-card wp-static-card">
-                                    <q-input outlined dense v-model="workPlan.dateCompliance" mask="date" :rules="['date']" label="Fecha de cumplimiento" class="wp-item-field">
+                                    <q-input outlined dense v-model="workPlan.dateCompliance" mask="date" :rules="['date']" :disable="workPlan.renovation == 6" :label="workPlan.renovation == 6 ? 'Fecha de cumplimiento (no aplica: renovación permanente)' : 'Fecha de cumplimiento'" class="wp-item-field">
                                         <template v-slot:append>
                                             <q-icon name="event" class="cursor-pointer">
                                                 <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -219,7 +219,8 @@ const renovationOptions = ref([
     { label: 'Bimensual', value: 2 },
     { label: 'Trimensual', value: 3 },
     { label: 'Semanal', value: 4 },
-    { label: 'Mensual', value: 5 }
+    { label: 'Mensual', value: 5 },
+    { label: 'Permanente', value: 6 }
 ]);
 
 const useStoreAuth = storeAuth();

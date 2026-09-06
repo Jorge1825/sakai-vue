@@ -40,8 +40,8 @@
                             </q-badge>
                         </div>
                         <div style="text-align: left" v-else>
-                            <q-badge :color="slotNorms.data.status == true ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
-                                {{ status.find((s) => s.value?.toString() == slotNorms.data.status)?.label || slotNorms.data.status }}
+                            <q-badge :color="slotNorms.data.status === 'ACTIVE' ? 'blue' : 'rgb(242, 185, 179)'" class="q-ml-xs">
+                                {{ status.find((s) => s.value === slotNorms.data.status)?.label || slotNorms.data.status }}
                             </q-badge>
                         </div>
                     </template>
@@ -89,14 +89,14 @@
                         </p>
                         <p>
                             <strong>Estado:</strong>
-                            <q-badge :color="slotNorms.data.status === true ? 'blue' : 'rgb(242, 185, 179)'">
+                            <q-badge :color="slotNorms.data.status === 'ACTIVE' ? 'blue' : 'rgb(242, 185, 179)'">
                                 {{ status.find((s) => s.value === slotNorms.data?.status)?.label || slotNorms.data.status }}
                             </q-badge>
                         </p>
                         <p>
                             <strong>Por Defecto:</strong>
-                            <q-badge :color="slotNorms.data?.defaultNorm === true ? 'blue' : 'rgb(242, 185, 179)'">
-                                {{ status.find((s) => s.value === slotNorms.data?.defaultNorm)?.label }}
+                            <q-badge :color="slotNorms.data?.defaultNorm ? 'blue' : 'rgb(242, 185, 179)'">
+                                {{ slotNorms.data?.defaultNorm ? 'SÍ' : 'NO' }}
                             </q-badge>
                         </p>
                     </div>
@@ -135,7 +135,7 @@
                                     <q-select v-model="norm.status" :options="status" label="Estado" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
-                                    <q-select v-model="norm.defaultNorm" :options="status" label="Por Defecto" required style="padding: 10px" />
+                                    <q-select v-model="norm.defaultNorm" :options="booleanOptions" label="Por Defecto" required style="padding: 10px" />
                                 </div>
                                 <div class="col-6">
                                     <q-select v-model="norm.type" :options="typeNorm" label="Tipo de Norma" required style="padding: 10px" lazy-rules :rules="[(val) => val || 'Tipo de norma requerido']" />
@@ -183,17 +183,25 @@ const norm = ref({
     id: null,
     name: '',
     description: '',
-    status: true,
-    defaultNorm: false,
+    status: null,
+    defaultNorm: null,
     promptExtraction: null,
     promptFormat: null,
     type: null,
     file: null
 });
 const expandedRows = ref([]);
+// status de la norma: enum String del backend (models/norms.js)
 const status = ref([
-    { label: 'ACTIVA', value: true },
-    { label: 'INACTIVA', value: false }
+    { label: 'ACTIVA', value: 'ACTIVE' },
+    { label: 'INACTIVA', value: 'INACTIVE' },
+    { label: 'PROCESANDO', value: 'PROCESSING' },
+    { label: 'ERROR', value: 'ERROR' }
+]);
+// opciones booleanas para "Por Defecto" (defaultNorm sigue siendo boolean)
+const booleanOptions = ref([
+    { label: 'SÍ', value: true },
+    { label: 'NO', value: false }
 ]);
 
 const typeNorm = ref([
@@ -248,7 +256,9 @@ function openDialog() {
         promptExtraction: '',
         promptFormat: '',
         status: status.value[0],
-        defaultNorm: status.value[0]
+        defaultNorm: booleanOptions.value[1],
+        type: null,
+        file: null
     };
     normDialog.value = true;
 }
@@ -327,7 +337,7 @@ function editNorm(selectedNorm) {
     norm.value.status = status.value.find((s) => s.value === selectedNorm.status);
     norm.value.promptExtraction = prompts.value.find((p) => p.value === selectedNorm.promptExtraction?._id);
     norm.value.promptFormat = prompts.value.find((p) => p.value === selectedNorm.promptFormat?._id);
-    norm.value.defaultNorm = status.value.find((s) => s.value === selectedNorm?.defaultNorm);
+    norm.value.defaultNorm = booleanOptions.value.find((s) => s.value === selectedNorm?.defaultNorm);
     normDialog.value = true;
     console.log(norm.value);
 }
